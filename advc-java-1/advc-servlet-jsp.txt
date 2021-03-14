@@ -1,0 +1,827 @@
+advance java - servlet and jsp
+
+What is an enterprise application and what are different types of enterprise application?
+
+													java-application
+															|
+							  -------------------------------------------------------------
+							  |															  |				
+					standalone-application										enterprise-application
+							  |												    		  |																						   |
+				-----------------------------								-----------------------------
+				|				 	  		|								|				 	   		|
+	command-line-interface 			graphical-interface		web-based-enterprise-application	distributed-enterprise-application
+
+-	An enterprise-application is deployed using client-server architecture where application logic may be present on single machine or may be distributed across 
+	multiple machine.
+
+-	For web-based-enterprise-application the entire application logic is present on single machine called web-server.
+	
+	Example:
+	
+	-----------------							-----------------
+	| -------------	|							| -------------	|
+	|				| /login					|	login-app	| 
+	|				|------------>>-------------|				|
+	|				|------------<<-------------|  10101010101	|
+	|				| login-completed			|				|
+	| -------------	|							| -------------	|
+	-----------------							-----------------
+	client-web-browser								web-server			  
+
+-	For distributed-enterprise-application the entire application logic is not present on single machine instead it is distributed across multiple machine.
+
+	Example:
+	
+	-----------------							-----------------										-----------------
+	| -------------	|							| -------------	|										| -------------	|
+	|				| /pay-fees?fees=2000		|  course-app	| /tranfer-amount?from=AT781&to=AT981	|	bank-app	|
+	|				|------------>>-------------|  				|------------------>>-------------------|  				|
+	|				|------------<<-------------|  10101010101	|------------------<<-------------------|  10101010101	|
+	|				| registration-completed	|				| payment-completed						|				|
+	| -------------	|							| -------------	|										| -------------	|
+	-----------------							-----------------										-----------------
+	client-web-browser								web-server			  	 								web-server
+
+Explain working of client server architecture in an enterprise application?
+
+	A) client-web-browser will generate web-request
+	-----------------  																-----------------
+	| -------------	|  	C) protocol-created-http-request							| -------------	|
+	|				| 	----------													|	login-app	|
+	|				|	|H|B	 |http-request										|				|
+	|				|	----------													|    			| D) web-container will execute web-servlet
+	|				|		  H)protocol-terminated-virtual-socket-connection		|  				|				
+	|				|------------------------------->>------------------------------|  10101010101	|
+	|				|*********B)protocol-created-virtual-socket-connection**********|				|
+	|				|-------------------------------<<------------------------------|				| E) web-servlet will generate web-response	
+	| -------------	|							F) protocol-created-http-response	| -------------	| 
+	-----------------							----------							-----------------
+	client-web-browser							|H|B	 |http-response					web-server
+	G) client-web-browser will render HTML		----------																					
+
+Why do we use HTTP protocol for client-browser-window and web-server communication?
+
+-	The protocol is a set of rule and regulation to carry data from one machine to another.
+-	Also HTTP protocol support transfer of hyper-text data from one machine to another.
+
+-	HTTP is connection-less protocol because it do not require any wired connection between two machine inorder to carry data from one machine to another.
+-	Also it is state-less protocol because it remember only the present request data and do not remember previous request data.
+
+Explain different types of web-request method supported by HTTP protocol?												
+									
+-	HTTP protocol support seven different web-request method called as GET, POST, PUT, DELETE, HEAD, TRACE and OPTIONS.
+
+-	The GET method in web-request is default HTTP method and it is used to fetch information about an existing resource in web-response.
+
+-	The GET method in web-request will have only header part and will not have body part and hence information from client-web-browser is send to web-server
+	by appending it to end of URL called as query-string.
+
+-	The information present inside query-string is visible in request-url and hence GET method does not provide security.
+
+-	All web browser allow book-marking of GET method web-request and also maintain GET web-request in browser history. 
+
+-	Only character information can be present inside query-string and hence GET method cannot be used to carry binary information. 
+
+-	The POST method will create a new resource using information present inside the web-request body.
+
+-	The information present inside web-request is not visible in request-url and hence POST method provide security.
+
+-	The POST method web-request body can carry both character and binary information. 
+
+-	The PUT method in web-request is used to override an existing resource with new resource present inside the web-request body, but 
+
+-	The DELETE method in web-request is used to remove an existing resource.
+									
+-	The HEAD method in web-request will inform the web-server that it must not include body in web-response.								
+
+-	The OPTIONS method in web-request will inform the web-server that it must provide information about different HTTP method it support in web-response body.							
+								
+What is a web-server and what is the difference between web-server and application-server?
+
+-	Web-server is a special software installed inside a server machine and it is responsible to accept web-request from client-browser-window, identify the 
+	server-side resource for each web-request and send web-response to client-browser-window.
+
+-	The web-server will provide environment for execution of web-based-enterprise-application and not distributed-enterprise-application but the application-server 
+	will provide environment for execution of both web-based-enterprise-application and distributed-enterprise-application.
+
+-	Application-server provide middleware service like JNDI, JMS, JTA and other, but web-server does not provide any such middleware service.
+
+What is a web-container and explain different classification of a web-container?
+
+-	Container is a part of web-server or application-server that is responsible for execution of the web-resource.
+
+-	Based on technology a container can be classified as web-container which is capable to execute web resource like servlet and ejb-container which 
+	is capable to execute ejb-component.
+
+-	Based on physical existence container can be classified as standalone-container where main-server and container exist as single unit, an in-process-container the 
+	container exist inside the main-server and out-process-container the container exist outside the main-server.
+
+Explain the how web-server and web-container handle web-request?
+																					1) When web-server start 
+																					2) The web-container will identify and load /login-app from /webapp	into /work
+																					3) It will create servlet-context object for /login-app
+																					4) It will load, read and validate /login-app/WEB-INF/web.xml																			
+	5) client-web-browser will generate web-request									
+	-----------------  																|---------------------------------------------------- web-server
+	| -------------	|  	7) The client-web-browser send web-request to procotcol		| --------------------------------------------------- web-container	
+	|				| 	----------													| |	/bin /conf /lib /logs /temp /work 
+	|				|	|H|B	 |http-request										| |		
+	|				|	----------													| | ------------------------------------------------- /webapp
+	|				|		  20)protocol-terminated-virtual-socket-connection		| | | ----------------------------------------------- /login-app							
+	|				|------------------------------->>------------------------------| | | |	
+	|				|*********6)protocol-created-virtual-socket-connection**********| | | |	/css /html /jpg /docs /js
+	|				|-------------------------------<<------------------------------| |	| |			
+	| -------------	|			   18) The web-server send web-response to procotcol| | | | --------------------------------------------- /WEB-INF
+	-----------------							----------							| | | |	|
+	client-web-browser							|H|B	 |http-response				| | | |	|	/lib /classes /web.xml
+	19) client-web-browser will render HTML		----------							| | | | |
+																					| | | | |
+	8)	When the web-request is for static resource then web-server will itself		| | | | |
+		return the web-resource inside web-response but when the web-request is for	| | | | |
+		dynamic web-resource then web-server will forward it to web-container.		| | | | |
+	9)  The web-container will find web-servlet for the web-request-url from web.xml| | | |	|				
+	10)  It will load the web-servlet(Class.forName("my-servlet-class"))			| |	| | |
+	11) It will create an object of the web-servlet (class.newInstance())			| |	| |	 --------------------------------------------				
+	12) Now web-container will create servlet-config object for web-servlet.		| |	| |----------------------------------------------
+	13) Further web-container will call following method using servlet object,		| | |------------------------------------------------
+		-	public void init(ServletConfig cfg) throws ServletException				| | -------------------------------------------------
+	14) Now web-container will create servlet-request and empty server-response		|----------------------------------------------------
+	    object for web-servlet.
+	15) Now web-container will create servlet-config object for web-servlet.		21) Now web-container will destroy servlet-request and server-response object.
+	16) Further web-container will create a new thread and thread-job will call		22) When the web-server stop		
+	    following method using servlet object,										23) The web-container will call following method using servlet object,
+		-	public void service(ServletRequest req, ServletResponse rep) throws 	   -	public void destroy()
+			ServletException, IOException											
+	17) The execution of this method will return web-response which web-container   24) It will destroy the object of the web-servlet.
+	    will forward to web-server.													25) Also it will destroy the servlet-config object.
+																					26) Finally it will destroy the servlet-context object.
+																					27)	The web-container will now unload the web-servlet.																		
+Explain the servlet api?
+
+-	javax.servlet.Servlet - interface
+	
+	1. public abstract void init(ServletConfig config)
+	   throws ServletException;
+
+	2. public abstract void service(ServletRequest request, ServletResponse response)
+	   throws ServletException, IOException;
+
+	3. public abstract void destroy();
+
+	4. public abstract ServletConfig getServletConfig();
+
+	5. public abstract String getServletInfo();
+	
+-	javax.servlet.GenericServlet - protocol independent abstract adapter class
+	
+	1. public void init(ServletConfig config)
+	   throws ServletException {	
+			this.config = config;
+	   }
+	
+	2. public abstract void service(ServletRequest request, ServletResponse response)
+	   throws ServletException, IOException;
+
+	3. public void destroy() {
+		
+	   }
+	 
+	4. public ServletConfig getServletConfig() {				
+			return this.config;
+	   }
+
+	5. public String getServletInfo() {
+			return "";
+	   }
+	
+-	javax.servlet.http.HttpServlet - http protocol dependent abstract class
+
+	1. public void service(ServletRequest request, ServletResponse response)
+	   throws ServletException, IOException {
+			service((HttpServletRequest) request, (HttpServletResponse) response);
+	   }
+
+	2. protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	
+			if(GET.equals(request.getMethod()) {
+				doGet(request, response);
+			} else if(POST.equals(request.getMethod())) {
+				doPost(request, response);
+			}
+	   }
+	
+	3. protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	
+	   }
+	
+	4. protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	
+	   }
+
+
+Explain the need of servlet-config and servlet-context object and their configuration in web.xml file?
+
+-	The servlet-config object provide configuration information defined for a servlet in web.xml file.
+
+-	The servlet-config object is created when the servlet object is created for each servlet defined in web.xml file also the object is destroyed when
+	the servlet object is destroyed.
+
+-	The servlet-config provide parameter information and not attribute information and this information is available only to respective servlet and not
+	to other servlet.
+
+	Example:
+
+	<init-param>
+		<param-name>core-java-cost</param-name>
+		<param-value>500</param-value>
+	</init-param>	
+
+-	The servlet-context object provide configuration information defined for enitre web-application in web.xml file.
+
+-	The servlet-context object is created when the application is deployed also the object is destroyed when the application is un-deployed.
+
+-	The servlet-context provide parameter information and not attribute information and this information is available to all servlet inside web-application.
+
+	Example:
+
+	<init-param>
+		<context-name>tax-cost</context-name>
+		<context-value>20</context-value>
+	</init-param>
+
+Explain the life-cycle of a servlet?
+
+-	servlet-loading 				[Class class = Class.forName("my-servlet-class");]
+	|
+	|-> servlet-instantiation 		[Object myservlet = class.newInstance();]
+		|
+		|-> servlet-initialization	[class.invoke(myservlet,"init", config)]
+			|
+			|-> request-processing	[class.invoke(myservlet,"service", request, response)]
+				|
+				|->	servlet-destroy	[class.invoke(myservlet,"destroy")]	
+				
+-	The servlet-loading, servlet-instantiation and servlet-initialization step are performed only once for each servlet when client-browser-window create first 
+	web-request for that servlet.
+
+-	For every next web-request from client-browser-window the request-processing step is performed directly.	
+	
+-	When the web-application is un-deployed then the servlet-destroy step is performed for each servlet present inside web-application.
+
+-	For servlet-instantiation the web-container is able to call only public and no arguement constructor of servlet class if public and no arguement constructor
+	is missing from servlet class then we will get runtime exception saying ServletException.
+	
+Explain the load-on-startup configuration in web.xml file?
+
+-	The load-on-startup configuration for a servlet inside web.xml file will instruct web-container to perform servlet-loading, servlet-instantiation and 
+	servlet-initialization step when the web-container is started.
+
+	Example:
+	<load-on-startup>1</load-on-startup>
+
+-	When multiple servlet present inside web-application are to be loaded on web-container start then load-on-startup configuration with minimum order value is
+	loaded first.	
+
+-	When more than one servlet have same load-on-startup value then loading order for servlet is un-predictable and will vary from web-container to web-container.
+
+-	Only servlet with zero and positive order value for load-on-startup configuration are loaded and servlet with negative order value for load-on-startup 
+	configuration are ignored.
+
+Explain the configuration of welcome-file in web.xml file?
+
+Explain the servlet-communication process?
+
+																servlet-communication
+																		|
+							  -----------------------------------------------------------------------------------
+							  |											|										|	
+					browser-servlet-communication			applet-servlet-communication		    web-component-communication
+							  |												    		  						|																						   |
+		--------------------------------------------------										-----------------------------
+		|				 	  |							 |										|				 	   		|
+	reaquest-response	 error-message		 	 request-redirection					include-mechanism			 forward-mechanism
+														 |
+							-------------------------------------------------------------					
+							|							 |								|
+						hyper-link					response-header	    			send-redirect
+	
+-	response-header or send-redirect	
+	
+	A) client-web-browser will generate web-request										
+	-----------------  																-----------------
+	| -------------	|  	C) protocol-created-http-request							| -------------	|
+	|				| 	----------													|	hutch-app	|
+	|				|	|H|B	 |http-request										|				|
+	|				|	----------													|    			| D) web-container will execute web-servlet
+	|				|		  H)protocol-terminated-virtual-socket-connection		|  				|				
+	|				|------------------------------->>------------------------------|  10101010101	|
+	|				|*********B)protocol-created-virtual-socket-connection**********|				|
+	|				|-------------------------------<<------------------------------|				| E) web-servlet will generate web-response	
+	| -------------	|							F) protocol-created-http-response	| -------------	| 
+	-----------------							----------							-----------------
+	client-web-browser							|H|B	 |http-response					web-server
+G) client-web-browser will render HTML			-|---------
+		| * |									 |----> status=3XX,redirect-url=/vodafone  
+		| * |	
+		| * |I) client-web-browser will generate web-request									  
+		| * |									 
+		| * |																		----------------- 	
+	 	| * |		  	K) protocol-created-http-request							| -------------	|
+		| * |		 	----------													|  vodafone-app	|
+		| * |			|H|B	 |http-request										|				|
+		| * |			----------													|    			| L) web-container will execute web-servlet
+		| * |				  P)protocol-terminated-virtual-socket-connection		|  				|				
+		| * |--------------------------------------->>------------------------------|  10101010101	|
+		|*********************J)protocol-created-virtual-socket-connection**********|				|
+		|-------------------------------------------<<------------------------------|				| M) web-servlet will generate web-response	
+O) client-web-browser will render HTML			N) protocol-created-http-response	| -------------	| 
+												----------							-----------------
+												|H|B	 |http-response					web-server
+												----------
+
+-	include-mechanism
+
+A) client-web-browser will generate web-request													login-app		
+	-----------------  																----------------------------------
+	| -------------	|  	C) protocol-created-http-request							| -------------	   ------------- |
+	|				| 	----------													|		|						 |
+	|				|	|H|B	 |http-request										|	 D1)|		 	D2)			 |
+	|				|	----------													| 		|------->>-------		 | D) web-container will execute web-servlet
+	|				|		  H)protocol-terminated-virtual-socket-connection		|  						|D3)	 |				
+	|				|------------------------------->>------------------------------| 		--------<<------|		 |
+	|				|*********B)protocol-created-virtual-socket-connection**********|		|	D4)			   	     |
+	|				|-------------------------------<<------------------------------|	 D5)|						 | E) web-servlet will generate web-response	
+	| -------------	|							F) protocol-created-http-response	| ------|-------   ------------- | 
+	-----------------							----------							--------|--------------------------
+	client-web-browser							|H|B	 |http-response	<--------------------	web-server
+	G) client-web-browser will render HTML		----------																					
+
+-	forward-mechanism
+
+
+A) client-web-browser will generate web-request													login-app		
+	-----------------  																----------------------------------
+	| -------------	|  	C) protocol-created-http-request							| -------------	   ------------- |
+	|				| 	----------													|		|						 |
+	|				|	|H|B	 |http-request										|	 D1)|		 	D2)			 |
+	|				|	----------													| 		|------->>-------		 | D) web-container will execute web-servlet
+	|				|		  H)protocol-terminated-virtual-socket-connection		|  						|D3)	 |				
+	|				|------------------------------->>------------------------------| 		--------<<------|		 |
+	|				|*********B)protocol-created-virtual-socket-connection**********|		|				|  	     |
+	|				|-------------------------------<<------------------------------|	 	|				|		 | E) web-servlet will generate web-response	
+	| -------------	|							F) protocol-created-http-response	| -------------	   -----|------- | 
+	-----------------							----------							------------------------|---------
+	client-web-browser							|H|B	 |http-response <************************************	
+	G) client-web-browser will render HTML		----------										web-server											
+
+What is session-tracking mechanism?	
+
+										session-tracking
+												|
+				-----------------------------------------------------------------
+				|					|					|						|	
+			http-cookie			http-session		url-rewritting			hidden-field
+			
+-	http-cookie			
+																						web-server	
+	A) client-web-browser will generate web-request									   register-app
+	-----------------  																-----------------
+	| -------------	|  	C) protocol-created-http-request							| -------------	|
+	|				| 	----------													|				|
+	|				|  -|H|B	 |http-request										|				|
+	|				|  |-------------------->emp_name="john"						|    			| D) web-container will execute web-servlet
+	|				|  |->cookie=null 												|  				|				
+	|				|------------------------------->>------------------------------|  10101010101	|
+	|				|*********B)protocol-created-virtual-socket-connection**********|				|
+	|				|-------------------------------<<------------------------------|				| E) web-servlet will generate web-response	
+	| -------------	|							F) protocol-created-http-response	| -------------	| 
+	-----------------			cookie=			----------							| ------------- |
+	client-web-browser	emp_name="john"	<-------|H|B	 |http-response				|				|	
+	G) client-web-browser will render HTML		----------							|				|														
+	H)protocol-terminated-virtual-socket-connection									|				| L) web-container will execute web-servlet
+																					|				|
+					------------------------------->>------------------------------	|				|
+					*********J)protocol-created-virtual-socket-connection**********	|  10101010101	| M) web-servlet will generate web-response	
+					-------------------------------<<------------------------------	|				|	
+I) client-web-browser will generate web-request										| -------------	|																		|
+K) protocol-created-http-request													-----------------
+----------													N) protocol-created-http-response
+-|H|B	 |http-request										O) client-web-browser will render HTML
+ |-------- ----------->emp_age="24"							P)protocol-terminated-virtual-socket-connection
+ |->cookie=emp_name="john" 									cookie=			----------				
+													emp_name="john"	<-------|H|B	 |http-response	
+													emp_age="24"	<------ ----------
+
+-	http-session			
+																						web-server	
+	A) client-web-browser will generate web-request									   register-app
+	-----------------  																----------------------------------
+	| -------------	|  	C) protocol-created-http-request							| -------------	  -------------	|
+	|				| 	----------													|				  |	session_id=	|
+	|				|  -|H|B	 |http-request										|			 D1)  |	"S01"		|
+	|				|  |-------------------->emp_name="john"						|    		----->|				| D) web-container will execute web-servlet
+	|				|  |->cookie=null 												|  				  |	emp_name=	|				
+	|				|------------------------------->>------------------------------|  10101010101	  |		"john"	|
+	|				|*********B)protocol-created-virtual-socket-connection**********|				  |				|
+	|				|-------------------------------<<------------------------------|				  |				| E) web-servlet will generate web-response	
+	| -------------	|							F) protocol-created-http-response	| -------------	  |				| 
+	-----------------			cookie=			----------							| -------------   |				|
+	client-web-browser	session_id="S01"	<---|H|B	 |http-response				|				  |				|	
+	G) client-web-browser will render HTML		----------							|				  |				|														
+	H)protocol-terminated-virtual-socket-connection									|			L1)	  |	 			| L) web-container will execute web-servlet
+																					|			----->|	emp_age		|
+					------------------------------->>------------------------------	|				  |		="24"	|
+					*********J)protocol-created-virtual-socket-connection**********	|  10101010101	  |				| M) web-servlet will generate web-response	
+					-------------------------------<<------------------------------	|				  |				|	
+I) client-web-browser will generate web-request										| -------------	  -------------	|																		|
+K) protocol-created-http-request													----------------------------------
+----------													N) protocol-created-http-response
+-|H|B	 |http-request										O) client-web-browser will render HTML
+ |-------- ----------->emp_age="24"							P)protocol-terminated-virtual-socket-connection
+ |->session_id="S01"	 									cookie=			----------				
+													session_id="S01"<-------|H|B	 |http-response	
+																			----------
+-	url-rewritting			
+																						web-server	
+	A) client-web-browser will generate web-request									   register-app
+	-----------------  																----------------------------------
+	| -------------	|  	C) protocol-created-http-request							| -------------	  -------------	|
+	|				| 	----------													|				  |	session_id=	|
+	|				|  -|H|B	 |http-request										|			 D1)  |	"S01"		|
+	|				|  |-------------------->emp_name="john"						|    		----->|				| D) web-container will execute web-servlet
+	|				|  |->url-jsessionid=null 										|  		 		  |	emp_name=	|				
+	|				|------------------------------->>------------------------------|  10101010101	  |		"john"	|
+	|				|*********B)protocol-created-virtual-socket-connection**********|				  |				|
+	|				|-------------------------------<<------------------------------|				  |				| E) web-servlet will generate web-response	
+	| -------------	|							F) protocol-created-http-response	| -------------	  |				| 
+	-----------------							----------							| -------------   |				|
+	client-web-browser	url-jsessionid="S01"<---|H|B	 |http-response				|				  |				|	
+	G) client-web-browser will render HTML		----------							|				  |				|														
+	H)protocol-terminated-virtual-socket-connection									|			L1)	  |	 			| L) web-container will execute web-servlet
+																					|			----->|	emp_age		|
+					------------------------------->>------------------------------	|				  |		="24"	|
+					*********J)protocol-created-virtual-socket-connection**********	|  10101010101	  |				| M) web-servlet will generate web-response	
+					-------------------------------<<------------------------------	|				  |				|	
+I) client-web-browser will generate web-request										| -------------	  -------------	|																		|
+K) protocol-created-http-request													----------------------------------
+----------													N) protocol-created-http-response
+-|H|B	 |http-request										O) client-web-browser will render HTML
+ |-------- ----------->emp_age="24"							P)protocol-terminated-virtual-socket-connection
+ |->url-jsessionid="S01"	 													----------				
+													 url-jsessionid="S01"<------|H|B	 |http-response	
+																				----------
+
+-	hidden-field			
+																						web-server	
+	A) client-web-browser will generate web-request									   register-app
+	-----------------  																-----------------
+	| -------------	|  	C) protocol-created-http-request							| -------------	|
+	|				| 	----------													|				|
+	|				|  -|H|B	 |http-request										|				|
+	|				|  |-------------------->emp_name="john"						|				| D) web-container will execute web-servlet
+	|				|  |->hidden-field=null 										|				|			
+	|				|------------------------------->>------------------------------|  10101010101	|
+	|				|*********B)protocol-created-virtual-socket-connection**********|				|
+	|				|-------------------------------<<------------------------------|				| E) web-servlet will generate web-response	
+	| -------------	|							F) protocol-created-http-response	| -------------	|
+	-----------------							----------							| ------------- |
+	client-web-browser							|H|B	 |http-response				|				|
+	G) client-web-browser will render HTML		----------							|				|														
+	H)protocol-terminated-virtual-socket-connection	 |->hidden-field=emp_name="john"|				| L) web-container will execute web-servlet
+																					|				|
+					------------------------------->>------------------------------	|				|
+					*********J)protocol-created-virtual-socket-connection**********	|  10101010101	| M) web-servlet will generate web-response	
+					-------------------------------<<------------------------------	|				|
+I) client-web-browser will generate web-request										| -------------	|																		|
+K) protocol-created-http-request													-----------------
+----------													N) protocol-created-http-response
+-|H|B	 |http-request										O) client-web-browser will render HTML
+ |-------------------->emp_age="24"							P)protocol-terminated-virtual-socket-connection
+	|->hidden-field=emp_name="john"	 											----------				
+													 url-jsessionid="S01"<------|H|B	 |http-response	
+																				----------
+																					|->hidden-field=emp_name="john"
+																					|->hidden-field=emp_age="24"	
+
+What is a filter and what is the purpose of a filter?
+																										bank-app
+A) client-web-browser will generate web-request										---------------------------------------------------		
+	-----------------  																  /*.do (auth)	   /*.do (log)		/transaction.do
+	| -------------	|  	C) protocol-created-http-request							| -------------	   -------------	------------- |
+	|				| 	----------													|		|						 				  |
+	|				|	|H|B	 |http-request										|	 D1)|		 	D2)			 				  |
+	|				|	----------												D2)	| 		|------->>-------		 				  | D) web-container will execute web-servlet
+	|				|		  H)protocol-terminated-virtual-socket-connection	****|*<<*****  				|D3)		 D4)	  	  |				
+	|				|------------------------------->>------------------------------| 		********<<******|------->>-------		  |
+	|				|*********B)protocol-created-virtual-socket-connection**********|				D4)		   	     		|D5)	  |
+	|				|-------------------------------<<------------------------------|	 D6)|------<<-------------<<---------         | E) web-servlet will generate web-response	
+	| -------------	|							F) protocol-created-http-response	| ------|-------   -------------	------------- | 
+	-----------------							----------							--------|------------------------------------------
+	client-web-browser							|H|B	 |http-response	<--------------------			web-server
+	G) client-web-browser will render HTML		----------																					
+
+
+Explain filter configuration in web.xml file?
+
+-	Example:
+
+	<filter>
+		<filter-name>authenticationFilter</filter-name>
+		</filter-class>AuthenticationFilter</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>authenticationFilter</filter-name>
+		</url-pattern>/*</url-pattern>					<!--<servlet-name>transactionServlet</servlet-name>-->
+	</filter-mapping>
+
+Explain the filter api?
+
+-	javax.servlet.Filter - interface
+
+	1. public abstract void init(FilterConfig config)
+	   throws ServletException;
+
+	2. public abstract void doFilter(ServletRequest request, ServletResponse response, FilterChain fchain)
+	   throws ServletException, IOException;
+
+	3. public abstract void destroy();
+
+Explain the life-cycle of a filter?
+
+-	filter-loading					[Class class = Class.forName("my-filter-class");]
+	|
+	|-> filter-instantiation 		[Object myservlet = class.newInstance();]
+		|
+		|-> filter-initialization	[class.invoke(myservlet,"init", config)]
+			|
+			|-> request-processing	[class.invoke(myservlet,"doFilter", request, response, fchain)]
+				|
+				|->	filter-destroy	[class.invoke(myservlet,"destroy")]	
+				
+-	The filter-loading, filter-instantiation and filter-initialization step are performed only once when the application is deployed.
+
+-	When the web-application is un-deployed then the filter-destroy step is performed for each filter present inside web-application.
+
+What is listener? What is listener life-cycle and its configuration in web.xml file?
+
+-	In web-application the web-container will raise an event when one of the action like create, destroy, add attribute or remove attribute is performed on request,
+	session and context object.
+
+	Example:
+
+	<listener>
+		<listener-class>DefaultServletContextListenerImpl</listener-class>
+	</listener>
+
+-	When the web-application is deployed then web-container will identify the listener-class and perform listener-loading, listener-instantiation.
+
+-	Also when the web-application is un-deployed then web-container will perform listener-deinstantiation.
+
+Explain the working and configuration of welcome-files?
+
+-	Welcome page in web-application must be return to the client-browser-window by web-container as web-response when the web-request does not contain any server
+	side resource in request-url.
+
+	Example:
+
+	<welcome-file-list>
+		<welcome-file>/veg/veg-menu.jsp</welcome-file>
+		<welcome-file>/non-veg/non-veg-menu.jsp</welcome-file>
+	</welcome-file-list>
+
+-	An web-application can have more than one welcome-file and based on the directory name used in request-url following web-application name the web-container
+	will identify the appropriate welcome-file.
+	
+	Example:
+	
+	When request-url is http://10.31.21.22:7070/hotel/veg then web-container will return veg-menu.jsp file in web-response but when the request-url is	
+	http://10.31.21.22:7070/hotel/non-veg then web-container will return non-veg-menu.jsp file in web-response.
+
+-	When the web-container is not able to find appropriate welcome-file for a web-request then it will return index.jsp file in web-response but when index.jsp
+	file is not present inside required directory then web-application will return index.html file in web-response.
+
+What is alternative to web.xml configuration?
+
+	------------------------------------------------------------
+	|	scenario		|  web.xml tomcat  | web.xml web-logic |
+	------------------------------------------------------------
+	| no servlet,		|___2.5___|___3.0__|___2.5____|___3.0__|
+	| filter,listener	|optional |optional| required |required|
+	|-----------------------------------------------------------
+	| servlet,			|___2.5___|___3.0__|___2.5____|___3.0__|											
+	| filter,listener	| required|optional| required |optional|
+	|-----------------------------------------------------------
+
+-	@WebServlet(name = "my-servlet",
+	 urlPatterns={"/", "/myServlet"},
+	 loadOnStartup=1,
+	 initParams={
+		@InitParam(name="morning-message", value="good morning"),
+		@InitParam(name="afternoon-message", value="good afternoon")
+	 }
+	)
+
+-	@WebFilter(name = "my-filter",
+	 urlPatterns={"/", "/myServlet"},
+	 servletName="my-servlet"
+	)
+
+-	@WebListener(name = "my-listener")
+
+Explain the comparision of servlet and jsp?
+
+-	The servlet is based on java and j2se and require the developer to be aware of java but jsp is designed on top of servlet and do not require 
+	developer to be aware of java.
+
+-	The web-container is responsible to convert the jsp into servlet before execution of the jsp and this is called as jsp translation.
+	
+-	Inside a web-application when we change an existing servlet it become mandatory to compile the servlet and restart the web-server but for change in jsp 
+	compile jsp and restart web-server is not required.
+
+-	By convention servlet are used for controller purpose and jsp are used for view purpose in MVC architecture.
+
+-	Using servlet for controller purpose provide proper separation of business-logic and web-request-handling also using jsp for view purpose provide proper
+	separation of business-logic and view.
+
+Explain the life-cycle of a jsp?
+
+-	jsp-loading
+	|
+	|->	jsp-parsing
+		|
+		|->	jsp-translation
+			|
+			|-> servlet-compilation
+			    |
+			    |-> servlet-loading 				[Class class = Class.forName("my-servlet-class");]
+					|
+					|-> servlet-instantiation 		[Object myservlet = class.newInstance();]
+						|
+						|-> servlet-initialization	[class.invoke(myservlet,"init", config)]
+							|
+							|-> request-processing	[class.invoke(myservlet,"service", request, response)]
+								|
+								|->	servlet-destroy	[class.invoke(myservlet,"destroy")]	
+
+-	The jsp-loading, jsp-parsing, jsp-translation, servlet-compilation, servlet-loading, servlet-instantiation and servlet-initialization step are performed only 
+	once for each servlet when client-browser-window create first web-request for that servlet.
+
+-	For every next web-request from client-browser-window the request-processing step is performed directly.
+
+-	When the web-application is un-deployed then the servlet-destroy step is performed for each servlet present inside web-application.
+
+Explain the jsp api?
+
+
+
+Explain different types of jsp tag?
+
+																  jsp-page-tags
+																		|
+							  ------------------------------------------------------------------------------------
+							  |											|										 |	
+						jsp-directive								jsp-scripting		    				 jsp-action
+				(present jsp page properties)			(add java code inside present jsp page)	 (add java code inside handler class)
+							  |											|										 |
+			-----------------------------------			-----------------------------------			 -------------------------
+			|			      |			      |			|			    |			      |			 |						 |
+		include				 page		   taglib	 declaration	 scriplet		   expression	custom				  standard	
+													 (class-level) (implementation for _jspService())
+						
+What are different implicit object in jsp?
+
+	out = javax.servlet.jsp.JspWriter
+	exception = java.lang.Throwable
+	
+	request	= javax.servlet.http.HttpServlet
+	response = javax.servlet.http.HttpServlet
+	
+	session = javax.servlet.http.HttpSession
+	
+	application = javax.servlet.ServletContext
+	config = javax.servlet.ServletConfig 
+	
+	page = java.lang.Object
+	pageContext = javax.servlet.jsp.PageContext
+						
+What is the difference between PrintWriter and JspWriter?
+
+-	PrintWriter is non-buffered writer but JspWriter is buffered writer.
+
+What is the use of pageContext implicit object?
+
+-	The pageContext implicit object is used to manipulate the data present at page-scope and this implicit object is used in tag handler class of custom tag
+	to access other implicit object.
+	
+Explain different types of scope inside a web-application?
+
+-	The page scope define the scope for a variable present inside present jsp page.
+
+-	The request scope define the scope for data present inside request object and this data is available to all resources visited by that request.
+
+-	The session scope define the scope for data present inside session object and this data is available to all resources visited by that particular user in
+	one or more request.
+	
+-	The application scope define the scope for data present inside application object and this data is available to all resources visited by that all user in
+	one or more request.
+
+Explain the difference between <%@include%> and <jsp:include> tags?
+
+-	<%@include%>
+					menu.jsp									 		drinks.jsp
+			-----------------------------						-----------------------------							
+			|	  -X-X-X-1-X-X-X-		|						|							|							
+			|							|						|							|	
+			|	  <%@include%>			|						|	  -X-X-X-2-X-X-X-		|	
+			|							|				--------|							|
+		 ---|	  -X-X-X-3-X-X-X-		|				|		|							|	
+		 |	-----------------------------				|		-----------------------------
+		 |translation									|
+		 |			menu_jsp.java						|												
+		 |	-----------------------------				|										
+		 |	|	  -X-X-X-1-X-X-X-		|				|							
+		 |->|							|				|									
+			|	  -X-X-X-2-X-X-X-		|<--------------|													
+			|							|include entire content of drinks.jsp when translation of menu.jsp to menu_jsp.java													
+		 |--|	  -X-X-X-3-X-X-X-		|													
+		 |	-----------------------------																			
+		 |			web-response
+		 |	-----------------------------									
+		 | 	|	  -X-X-X-1-X-X-X-		|													
+		 |->|							|								
+			|	  -X-X-X-2-X-X-X-		|										
+			|							|													
+			|	  -X-X-X-3-X-X-X-		|													
+			-----------------------------
+			
+-	<jsp:include>
+					menu.jsp									 		drinks.jsp
+			-----------------------------						-----------------------------							
+			|	  -X-X-X-1-X-X-X-		|						|							|							
+			|							|						|							|	
+			|	  <jsp:include>			|						|	  -X-X-X-2-X-X-X-		|	
+			|							|					|---|							|
+		 ---|	  -X-X-X-3-X-X-X-		|					|	|							|	
+		 |	-----------------------------					|	-----------------------------
+		 |translation										|translation
+		 |			menu_jsp.java							|			drinks_jsp.java																	
+		 |	-----------------------------					|	-----------------------------								
+		 |	|	  -X-X-X-1-X-X-X-		|					|	|	 						|								
+		 |->|							|					|->	|							|				
+			|	rd.include(req, res)	|---------------------->|	  -X-X-X-2-X-X-X-		|								
+			|							|						|							|							
+		 |--|	  -X-X-X-3-X-X-X-		|						|	  						|							
+		 |	-----------------------------						-----------------------------							
+		 | 
+		 |			web-response
+		 |	-----------------------------									
+		 | 	|	  -X-X-X-1-X-X-X-		|													
+		 |->|							|								
+			|	  -X-X-X-2-X-X-X-		|include entire response of drinks_jsp.java when request processing											
+			|							|													
+			|	  -X-X-X-3-X-X-X-		|													
+			-----------------------------
+
+Explain the working of <jsp:forward> tag?
+
+					login.jsp									 		profile.jsp
+			-----------------------------						-----------------------------							
+			|	  -X-X-X-1-X-X-X-		|						|							|							
+			|							|						|							|	
+			|	  <jsp:forward>			|						|	  -X-X-X-2-X-X-X-		|	
+			|							|				  	|---|							|
+		 ---|	  -X-X-X-3-X-X-X-		|					|	|							|	
+		 |	-----------------------------					|	-----------------------------
+		 |translation										|translation
+		 |			login_jsp.java							|			profile_jsp.java																	
+		 |	-----------------------------					|	-----------------------------								
+		 |	|	  -X-X-X-1-X-X-X-		|					|	|	 						|								
+		 |->|							|					|->	|							|				
+			|	rd.forward(req, res)	|---------------------->|	  -X-X-X-2-X-X-X-		|								
+			|							|						|							|							
+			|	  -X-X-X-3-X-X-X-		|<**********************|	  						|							
+			-----------------------------						-----------------------------							
+					web-response										|
+			-----------------------------								|	
+			|	  -X-X-X-X-X-X-X-		|<-------------------------------													
+			|							|								
+			|	  -X-X-X-2-X-X-X-		|include only response of profile_jsp.java when request processing											
+			|							|													
+			|	  -X-X-X-X-X-X-X-		|													
+			-----------------------------		
+			
+Explain the purpose of jsp tag library and jsp expression language?
+
+-	The jsp tag library and jsp expression is an abstraction and all server vendor provide implementation for it.
+
+-	The main purpose of jsp page is to remove java code from web-application but jsp-scripting tag do not achieve this purpose, also jsp-action tag allow to remove
+	java code from jsp page but require code to be present inside handler class.
+
+-	The jsp tag library and jsp expression together allow designing of jsp page by completely removing java code present inside jsp page and also no additional
+	handler class need to be developed.
+
+-	The jsp tag library provide tag that simplify web-page development but jsp expression language provide access to only attribute information present inside
+	the page, request, session and application object.
+
+-	Using the jsp expression language web-page can have embedded expression that will be evaluvated during the translation of jsp page to servlet.	

@@ -1,0 +1,186 @@
+core java - inner class
+
+What are inner classes?
+
+-	A class declared that is inside another class is called inner class and the class within which inner class exist is outer class.
+-	We must use inner class when without existing outer class object if there is no chance of existing inner class object.
+
+-	Example:
+	Without existing Car object there is no chance of existing Engine object and without existing Map object there is no chance of existing Map.Entry object.
+
+-	Relation between outer class and inner class is not is-a relation like inheritance but has-a relation like composition or aggregation.
+
+What are different categories of inner class? Explain each category?
+
+-	Based on position of declaration and behavior all inner classes are categorized as regular normal inner class, method local inner class, anonymous inner 
+	class and static nested class.	
+	
+	a)	A regular normal inner classes
+	
+	-	The declaration of named class directly inside a class without static modifier such type of inner class is normal or regular inner class.
+
+	-	Upon compilation 2 class files are generated namely Outer.class for outer class and Outer$Inner.class for inner class.
+	
+	-	Outer class can be public, default, final and abstract but inner class can be public, default, final, abstract, private, protected and static.
+	
+	-	A regular inner classes can have instance members but cannot have static members including public static void main(String[] args) otherwise we wil 
+		get compile time error saying inner class cannot have static methods.
+		
+	-	We cannot create object of inner class without object of outer class however in instance method of outer class inner classes object can be created 
+		directly without outer class object to exist first.
+		
+	-	A regular inner class method can access static and instance members of outer class directly and to refer outer class member in inner class method use
+		OuterClassName.this.memberName to avoid member name conflict.
+		
+	-	An inner class itself can have another inner class.
+	
+	Example:
+	
+	class Product {
+
+		private static String name = "pencil";
+
+		private float price = 10.5f;
+
+		class Category {
+
+			private String name = "stationery";
+
+			public void printProductDetails() {
+
+				System.out.println("product:" + Product.name + "\tprice:" + price + "\tcategory:" + name);
+			}
+		}
+	}
+
+	public class RegularInnerDemo {
+
+		public static void main(String[] args) {
+
+			Product.Category cat = new Product().new Category();
+			cat.printProductDetails();
+		}
+	}
+
+	b)	A static nested classes
+	
+	-	The declaration of inner class with static modifier inside another class such class is called static inner class.
+	
+	-	Upon compilation 2 class files are generated namely Outer.class for outer class and Outer$Inner.class for inner class.
+	
+	-	Outer class can be public, default, final and abstract but inner class can be public, default, final, abstract, private, protected and static.
+	
+	-	A static inner classes can have instance members and static members including public static void main(String[] args) .
+
+	-	We can create object of inner class without object of outer class.
+	
+	-	A static inner class method can access only static members of outer class.
+	
+	Example:
+	
+	class Product {
+
+		private static String name = "pencil";
+
+		private float price = 10.5f;
+
+		static class Category {
+
+			private static String name = "stationery";
+
+			public void printProductDetails() {
+
+				System.out.println("product:" + Product.name + "\tcategory:" + Category.name);
+			}
+		}
+	}
+
+	public class StaticInnerDemo {
+
+		public static void main(String[] args) {
+
+			Product.Category cat = new Product.Category();
+			cat.printProductDetails();
+		}
+	}
+
+	c)	method local inner classes
+	
+	-	The declaration of named class declared inside a static or instance method of another class is called method local inner class.
+	
+	-	Upon compilation 2 class files are generated namely Outer.class for outer class and Outer$Inner.class for inner class.
+	
+	-	Outer class can be public, default, final and abstract but inner class can be final and abstract.
+	
+	-	A method local inner class can have both static members and instance members.
+	
+	-	A method local inner classes can be accessed only from the method of outer class within which it is declared.
+	
+	-	A method local inner class declared within instance method of outer class can access static and instance members of outer class, but method local inner 
+		class declared within static method of outer class can access only static members of outer class otherwise we will get compile time error saying cannot 
+		access non-static member from static context.
+	
+	-	A method local inner class is used when certain code is repeatedly required in method but that code is not required outside method.
+	
+	-	A method local inner class can access local variables of outer method that is final or effectively final.
+	
+	Example:
+	
+	public class MethodLocalDemo {
+
+		public static void compute(int x) {
+
+			class ProductOfX {
+
+				public int compute(int n) {
+					return x * n;
+				}
+			}
+
+			ProductOfX px = new ProductOfX();
+			System.out.println(px.compute(2));
+			System.out.println(px.compute(3));
+		}
+
+		public static void main(String[] args) {
+			compute(10);
+		}
+	}
+	
+	d)	anonymous inner class
+	
+	-	The declaration of inner class inside another class without name such inner class is called anonymous inner class.
+	
+	-	Upon compilation 2 class files are generated namely Outer.class for outer class and Outer$Inner.class for inner class.
+	
+	-	Outer class can be public, default, final and abstract but inner class can be final.
+	
+	-	A anonymous inner class can have both static members and instance members.
+	
+	-	A anonymous inner classes can be accessed only from the method of outer class within which it inner class is declared.
+	
+	-	A anonymous inner class declared within instance method of outer class can access static and instance members of outer class, but method local anonymous 
+		class declared within static method of outer class can access only static members of outer class otherwise we will get compile time error saying cannot 
+		access non-static member from static context.
+	
+	-	A anonymous inner class can access local variables of outer method that is final or effectively final.
+	
+	-	A anonymous inner class can extend a concrete class or abstract class or implement an interface but only one at a time.
+	
+	Example:
+	public class AnonymousDemo {
+
+		public static void main(String[] args) {
+
+			int x = 777;
+			Runnable r = new Runnable() {
+
+				@Override
+				public void run() {
+
+					System.out.println("child-" + x);
+				}
+			};
+			new Thread(r).start();
+		}
+	}

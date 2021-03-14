@@ -1,0 +1,153 @@
+core java - exception handling
+
+What is exception? What is the purpose of exception handling?
+
+-	An unexpected event that disturbs normal flow of execution of program is called exception.
+-	It is highly recommended to handle exceptions and the main objective of exception handling is graceful termination of program
+	or define alternative way to continue execution of remaining program.
+	
+-	In java exception handling is done using try, catch and finally blocks (brackets mandatory), the code that can throw an exception must be defined within try 
+	block and code that can handle exception must be defined within catch block.
+
+What is runtime stack?
+
+-	JVM creates a stack at runtime for every new thread and every method called from thread is stored on stack and called as activation-record or stack-frame.
+
+	Example:
+
+	class Test {
+	
+		public static void main(String[] args) {			
+			m1();		
+		}
+		
+		public static void m1() {
+			m2();		
+		}
+		
+		public static void m2() {}
+	}
+
+-	Now runtime stack representation,
+
+			--- --- --- ---	 		--- --- --- ---			--- --- --- ---	 			--- --- --- ---			--- --- --- ---	 			--- --- --- ---					
+			|	 		  |			|	 		  |			|	 		  |				|	 		  |			|	 		  |				|	 		  |
+			--- --- --- ---			--- --- --- ---			--- --- --- ---				--- --- --- ---			--- --- --- ---				--- --- --- ---
+			|			  |			|			  |			|	m2()	  |				|			  |			|			  |				|			  |
+			--- --- --- ---			--- --- --- ---			--- --- --- ---				--- --- --- ---			--- --- --- ---				--- --- --- ---
+			|			  |			|	m1()	  |			|	m1()	  |				|	m1()	  |			|			  |				|			  |	
+			--- --- --- ---			--- --- --- ---			--- --- --- ---				--- --- --- ---			--- --- --- ---				--- --- --- ---
+			|	main()	  |			|   main()	  |			|	main()	  |				|	main()	  |			|	main()	  |				|			  |
+			--- --- --- ---			--- --- --- ---			--- --- --- ---				--- --- --- ---			--- --- --- ---				--- --- --- ---
+			
+-	When the method execution is complete without any exception JVM removes method entry from stack and when the stack remains empty JVM destroys runtime stack.
+
+What is default exception handling?
+		
+-	While executing method public static void m2() any exception occurs then JVM checks whether catch block to handle that exception exist in method or not also
+	when such exception handling catch block does not exist then JVM delegates the exception handling to public static void m1() method and remove top stack-frame.
+ 
+-	Now JVM will check whether method public static void m1() contains catch block to handle that exception exist and when such exception handling catch block 
+	does not exist then JVM delegates the exception handling to public static void main(String[] args) method and remove top stack-frame.
+	
+-	But now JVM will check whether method public static void main(String[] args) contains catch block to handle that exception exist and when such exception 
+	handling catch block does not exist then JVM remove top stack-frame and call the default exception handler that will print exception information but program
+	execution will now terminate.	
+
+-	What is difference between exception and error?
+
+																		Throwable
+																			|		
+					-----------------------------------------------------------------------------------------------------------------------------
+					|																															|
+				Exception																													  Error
+					|																															|
+					|																															|			
+			-------------------------------------------------------------------------					-----------------------------------------------------
+			|				  		  |					 |							|					|						|							|
+		RuntimeException			IOException		FileNotFoundException 	 ServletException...	OutOfMemoryError 	StackOverflowError	ExceptionInInitializerError...
+			|
+	-----------------------------------------------------
+	|					 		|						|
+NullPointerException	NumberFormatException	ArithmeticException...	
+
+-	Most of the times exceptions are caused are by java program and these are recoverable.
+-	Example: Program reads data from remote file, at runtime remote file is not available then we will get runtime exception FileNotFoundException.
+	If FileNotFoundException exception occurs we can provide local file and continue further program execution normally.
+
+-	Most of the times errors are not caused are by java program and these are due to lack of system resources and hence errors are not recoverable.
+-	Example: If OutOfMemoryError occurs then programmer cannot do anything, in such cases system admin is responsible to increase heap memory.
+
+What are checked and unchecked exception?
+
+-	The exception which are checked by compiler at compile time to ensure smooth execution of java program are called checked exception.
+-	If java program throws checked exception then compulsory that checked exception must be handled by try..catch or throws keyword.
+-	If checked exception are not handled we will get compile time error saying method throws checked exception which must be handled.
+
+-	The exception which are not checked by compiler at compile time are called unchecked exception.
+-	If java program throws unchecked exception then not necessary that unchecked exception must be handled by try..catch or throws keyword.
+-	If unchecked exception are not handled we will not get any compile time error.
+
+-	Exception always occurs at runtime whether it is checked or unchecked. There is no chance of occuring any exception at compile time.	
+
+-	In exception hierarchy above, Error and its subclasses and RuntimeException and its subclasses are unchecked exception only and remaining all exceptions are
+	checked exceptions.
+ 
+What are fully-checked and partially-checked exception?
+
+-	A checked exception is fully-checked if all its child exception classes are checked.
+-	Example: IOException and ServletException 
+
+-	A checked exception is partially-checked if atleast one of its child exception classes are unchecked.
+-	Example: Throwable and Exception only.	
+
+What is multiple catch sequence in try with multiple catch?
+
+-	A single try block can be followed by multiple catch block and in this situation order of catch block matters.
+
+	Example:
+	
+	try {}
+	catch (Exception e) {}
+	catch (ArithmeticException e) {}
+
+-	Any exception thrown from try block will be subclass of Exception class and hence first catch block is enough to handle all exceptions thrown from try block.
+-	The exception handling block after such catch block will never execute hence it becomes unreachable code this will generate compile time error saying 
+	dead code or unreachable code. 
+
+What is unused catch block?
+
+-	In java unused catch block is that catch block which handles fully-checked exception which is never thrown from corresponding try block.
+	
+	Example:
+	
+	try {}
+	catch(IOException e) {}	/**compile time error saying try block never throws fully-checked IOException**/
+	
+-	Any exception thrown from try block will never be IOException or it subclass and hence we will get compile time error saying exception handled by catch
+	block is never thrown from try block.
+
+What is finally block?
+
+-	In java finally is a block following try catch block to contain clean up code, the finally block is executed always irrespective of whether exception 
+	is raised or not or whether handled or not handled.
+
+-	In java finally block can be put directly after try block and in such cases program terminates abnormally but executes finally block before termination.
+	
+What is purpose of throw keyword?
+
+-	In java called method can explicitly create Throwable object and handover to caller method manually using throw keyword.
+
+What is purpose of throws keyword?
+
+-	The keyword throws delegates responsibility of checked exception handling to caller method also throws keyword can be used to throw unchecked exception 
+	which does not require exception handling by caller method.
+
+-	In case of public static void main(String[] args) method throws exception then responsibility of exception handling is delegated to JVM.
+
+-	We will not get any compile time error when the throw keyword throws an exception which actually is never raised.
+
+What is ExceptionInInitializerError?
+
+-	ExceptionInInitializerError is unchecked exception which child class of java.lang.Error it is raised by JVM if any exception occurs while executing 
+	static variable assignment and static blocks.	

@@ -1,0 +1,854 @@
+core java - lambda expression
+
+What are intentions behind introducing new features in java 1.8 version?
+
+-	New features were introduced in java 1.8 version to supports simplified way of coding, functional programming and parallel programming.
+
+What is lambda expression?
+
+-	A lambda expression introduced in java version 1.8 to enable functional programming, concise coding and parallel programming.
+-	Lambda expression is an anonymous method without any method name, return type and modifiers.
+	Syntax:
+	(parameter) -> {/**method body**/}
+	
+	Example:
+	
+	public void sum(int a, int b){	
+		System.out.println(a + b);
+	}
+	
+	Lambda expression:
+	(int a, int b) -> {System.out.println(a + b);}
+
+-	Within lambda expression if single statement exist then use of curly brackets is optional.
+	
+	Lambda expression:
+	(int a, int b) -> System.out.println(a + b);
+
+-	Based on context compiler identifies datatype of parameter hence using datatype of parameter is optional within lambda expression and this is called type-referencing.
+	
+	Lambda expression:
+	(a, b) -> System.out.println(a + b);
+
+-	Within lambda expression if single return statement exist hence if curly brackets are skipped and method is expected to return then we can skip return keyword. 
+	
+	Example:
+	public int getLength(String s){	
+		return s.length();
+	}
+	
+	Lambda expression:
+	(s) -> s.length();
+
+-	Within lambda expression if only single parameter exist then use of round brackets is optional.
+
+	Lambda expression:
+	s -> s.length();
+
+What is functional interface and @FunctionalInterface annotation?
+
+-	To call lambda expression in java we require functional interface a functional interface is an interface with single abstract method but there are no 
+	restrictions on number of default and static methods within functional interface.
+
+-	To indicate an interface as functional interface we can optionally mark interface using java.lang.FunctionalInterface annotation but using @FunctionalInterface
+	annotation on interface with multiple abstract methods will give compile time error saying unexpected annotation multiple non-overriding abstract method exist.
+-	Also using @FunctionalInterface annotation on interface with no single abstract methods will give compile time error as unexpected annotation @FunctionalInterface
+	no non-overriding abstract method exist.
+
+-	An abstract class with single abstract method is not a functional interface hence cannot be used to invoke lambda expression.	
+	
+Explain working of functional interface with respect to inheritance?
+
+-	A parent functional interface inherited by child interface then if child interface do not have any abstract method then child interface is functional 
+	interface.
+-	A parent functional interface inherited by child interface then if child interface declares same single abstract method as inherited by parent then child 
+	interface is a functional interface.
+-	A parent functional interface inherited by child interface then if child interface declares another abstract method then child interface is not a functional 
+	interface.
+
+How to invoke lambda expression using functional interface?
+
+-	A functional interface type variable can hold reference to lambda expression this makes type of lambda expression as functional interface.
+
+	Example:
+	
+	interface Calculator {
+
+		public int sum(int a, int b);
+	}	
+	
+	class Test {
+	
+		public static void main(String[] args) {
+		
+			Calculator c = (a, b) -> a + b; 
+			System.out.println(c.sum(10, 20));
+		}
+	}
+	Output:
+	30
+
+Why functional interface must contain only single abstract method?
+
+-	Compiler checks the type of lambda expression and maps it to method present in its type i.e functional interface but when functional interface contains more
+	than one abstract methods then compiler cannot map lambda expression to any method of interface due to ambiguity.
+-	Also when functional interface contains no abstract method then compiler cannot map lambda expression to any method of interface.
+
+What is difference between anonymous inner class and lambda expression?
+
+-	Lambda expression provide more concise and less complex code as compared with anonymous inner class.
+
+-	Upon compilation no separate class file is generated for lambda expression but upon compilation separate class file is generated for anonymous inner class.
+
+-	Lambda expression require functional interface with single abstract method only but for anonymous inner class parent interface can have multiple abstract
+	methods.
+
+-	Lambda expression do not work with for abstract class and concrete class but anonymous inner class can extends abstract class and concrete class also.
+	
+-	The variable declared inside lambda expression is considered as method local variable but variable declared inside anonymous inner class is considered as 
+	instance variable.
+	
+-	Inside anonymous inner class keyword this refers to current anonymous inner class object but inside lambda expression keyword this refers to outer class object.	
+	
+	Example:
+	
+	class Test {
+		
+		int x = 777;
+		
+		public static void main(String[] args) {
+
+			Runnable r1 = new Runnable() {
+				
+				int x = 888;
+				public void run() {
+					
+					System.out.println(this.x);
+				}
+			};
+			new Thread(r1).start(); 
+		}		
+	}
+	Output:
+	888
+	
+	Example:
+	class Test {
+		
+		int x = 777;
+		
+		public static void main(String[] args) {
+
+			Runnable r1 = () -> {
+				
+				int x = 888;	
+				System.out.println(this.x);
+				
+			};
+			new Thread(r1).start(); 
+		}		
+	}
+	
+	Output:
+	777
+
+-	A lambda expression we can access method local variable which is final or effectively final otherwise we will get compile time error saying local variable
+	referenced from lambda expression must be final or effectively final.
+
+	Example:
+	
+	class Test {
+		
+		public static void main(String[] args) {
+			
+			int x = 888;	
+			Runnable r1 = () -> {
+				x = 999;		/**compile time error saying local variable referenced from lambda expression must be final or effectively final**/ 
+				System.out.println(x);
+				
+			};
+			new Thread(r1).start(); 
+		}		
+	}
+
+What are pre-defined functional interfaces?
+
+-	The enhancement in java 8 provided pre-defined functional interfaces to meet common programming requirements and these pre-defined functional interface are
+	in package java.util.function and can be used to hold reference to lambda expression.
+-	Following are different pre-defined functional interfaces,
+
+a)	java.util.function.Predicate<T>
+	
+	-	Predicate<T> functional interface is used to perform conditional check on input value of type T supplied if condition is met it return true else if 
+		condition not met it return false.
+	-	Predicate<T> contains below single abstract method,
+	
+	public abstract boolean test(T t)
+	
+	Example:
+	
+	class Test {
+		
+		public static void main(String[] args) {
+			
+			Predicate<Integer> p = n -> n > 10;
+			p.test(5);		/**false**/	
+			p.test(15);		/**true**/
+		}
+	}
+	-	We can also reverse a predicate using predicate negation also multiple predicate can be combined to form predicate joining.
+	-	For negation of predicate we use following default method in Predicate<T> interface,
+		
+		public Predicate<T> negate(Predicate<T> p)
+		-	compilments existing predicate and create a new predicate and return.
+		
+	Example:
+	
+	class Test {
+		
+		public static void main(String[] args) {
+
+			Predicate<Integer> p = n -> n > 10; 
+			
+			p.negate().test(5);		/**true**/	
+			p.negate().test(15);	/**false**/
+		}
+	}
+	
+	-	For joining of predicate we use following default methods in Predicate<T> interface,
+		
+		public Predicate<T> and(Predicate<T> p)
+		-	combine invoking predicate with parameter predicate and generate a new predicate that performs AND operation on both predicates.
+		
+		public Predicate<T> or(Predicate<T> p)
+		-	combine invoking predicate with parameter predicate and generate a new predicate that performs OR operation on both predicates.
+	
+	Example:
+	
+	class Test {
+		
+		public static void main(String[] args) {
+			
+			Predicate<Integer> p1 = n -> n > 10;
+			Predicate<Integer> p2 = n -> n < 10;
+			
+			Predicate<Integer> p = p1.and(p2); 
+			
+			p.test(5);		/**false**/	
+			p.test(15);		/**true**/
+		}
+	}
+	
+	-	Predicate<T> provides following static method to generate equality checking predicate and this predicate performs equality check by calling 
+		equals(Object o) method.
+		
+	public static Predicate<T> isEqual(T t)
+	
+	Example:
+	class Test {
+		
+		public static void main(String[] args) {
+			
+			Predicate<String> p1 = Predicate.isEqual("durgasoftware");
+			p.test("java");		/**false**/	
+			p.test("durgasoftware");		/**true**/
+		}
+	}
+	
+b)	java.util.function.Function<T, R>
+	
+	-	Function<T, R> functional interface is used to perform processing on input object of type T and generate another output object of same or another type R
+		and return it.
+	-	Function<T, R> contains below single abstract method,
+	
+	public abstract R apply(T t)
+	
+	Example:
+	
+	class Test {
+		
+		public static void main(String[] args) {
+			
+			Function<String, Integer> f = s -> s.length();
+			f.apply("java");		/**4**/	
+			f.apply("durgasoftware");		/**13**/
+		}
+	}	
+
+	-	We can combine multiple function together using function chaining such that output object of one function becomes input to another and output of last
+		function is returned.
+	-	For chaining of function we use following default methods in Function<T, R> interface,
+		
+	public Function<T, R> andThen(Function<T, R>)
+	
+	
+	-	We can combine multiple function together using function chaining such that output object of last function becomes input to previous and output of first
+		function is returned.
+	-	For chaining of function as above we use following default methods in Function<T, R> interface,
+		
+	public Function<T, R> compose(Function<T, R>)
+	
+	Example:
+	
+	class Test {
+		
+		public static void main(String[] args) {
+			
+			Function<Integer, Integer> f1 = i -> i + i;
+			Function<Integer, Integer> f2 = i -> i * i * i;
+			Function<Integer, Integer> f3 = f1.andThen(f2);
+			f3.andThen(2);		/**64**/	
+			
+			Function<Integer, Integer> f4 = f1.compose(f2);
+			f4.compose(2);		/**16**/
+		}
+	}	
+	
+	-	Additionally Function<T, R> provides following static method to return an Function<T, R> that returns same value as passed as parameter.
+	
+	public static Function<T, T> identity(T t)
+
+	Example:
+	
+	class Test {
+		
+		public static void main(String[] args) {
+			
+			Function<Integer, Integer> f4 = Function.identity(2);
+			f4.apply(2);		/**2**/
+		}
+	}	
+
+c)	java.util.function.Consumer<T>
+	
+	-	Consumer<T> functional interface is used to perform accepting input object of type T but do not return anything.
+	-	Consumer<T> contains below single abstract method,
+	
+	public void accept(T t)
+	
+	Example:
+	class Test {
+		
+		public static void main(String[] args) {
+			
+			Consumer<Integer> c = i -> System.out.println(i);
+			c.apply(10);		/**10**/	
+		}
+	}	
+
+	-	We can combine multiple consumer together using consumer chaining.
+	-	For chaining of consumer we use following default methods in Consumer<T> interface,
+	
+	public Consumer<T> andThen(Consumer<T>)
+		
+	
+	Example:
+	class Test {
+		
+		public static void main(String[] args) {
+			
+			Consumer<Integer> c1 = i -> System.out.print(i + " ");
+			Consumer<Integer> c2 = i -> System.out.print(i * 2 + " ");
+			Consumer<Integer> c3 = i -> System.out.print(i * 3);
+			Consumer<Integer> c = c1.andThen(c2).andThen(c3);
+			c.apply(10);		/**10 20 30**/	
+		}
+	}	
+	
+c)	java.util.function.Supplier<T>
+	
+	-	Supplier<T> functional interface is used to return an object of type T without accepting input object.
+	-	Supplier<T> contains below single abstract method,
+	
+	public T get()
+	
+	Example:
+	class Test {
+		
+		public static void main(String[] args) {
+			
+			Supplier<Integer> s = () -> 10;
+			c.get();		/**10**/	
+		}
+	}
+
+What is method reference using :: operator?
+
+-	The method reference is another alternative over lambda expression of assigning implementation to variable of type functional interface.
+	
+	Example:
+	
+	class Test {
+	
+		public void m1() {
+			System.out.println("hello world!!");
+		}
+		
+		public static void main(String[] args) {
+			
+			Test t = new Test();
+			Runnable r = t::m1;
+			new Thread(r).start();
+		}
+	}
+
+-	Using functional interface we can refer instance method using instance of the class and syntax, functionalInterface =  instanceName::instanceMethod.
+-	Also functional interface can refer static method using class name of the class and syntax, functionalInterface =  className::staticMethod.
+
+-	The operator :: is called method reference delimitier where both referring method of functional interface and referred method must have same method 
+	parameters with respect to datatype and sequence of parameters but return type of referring method must be same or parent class of return type of 
+	referred method.
+	
+What is constructor reference using :: operator?
+
+-	Constructor reference is another alternative over lambda expression of assigning implementation to variable of type functional interface.
+	
+	Example:
+	class Test {
+	
+		public Test() {
+			System.out.println("hello world!!");
+		}
+		
+		public static void main(String[] args) {
+			Runnable r = Test::new;
+			new Thread(r).start();
+		}
+	}
+
+-	Using functional interface we can refer constructor using syntax, functionalInterface =  className::new.
+-	The operator :: is called method reference delimitier where both referring method of functional interface and referred constructor must have same method 
+	parameters with respect to datatype and sequence of parameters but return type of referring method must be void or class to which constructor belongs or
+	parent class of class to which constructor belongs.
+
+What are pre-defined bi-functional interfaces?
+
+-	The pre-defined functional interface in java have restrictions with respect to number of arguements.
+-	Like the Predicate<T> functional interface in java.util.function takes input arguement of type T and performs conditional check to returns boolean value but
+	we cannot pass two arguements to Predicate<T> for conditional checking and return boolean value.
+
+-	Also Function<T, R> functional interface in java.util.function takes input arguement of type T and perform processing and generate another object of type R 
+	and return it but we cannot pass two arguements to Function<T, R> for processing and generate another object of type R and return it.
+	
+-	Also Consumer<T> functional interface in java.util.function takes input arguement of type T and perform processin but we cannot pass two arguements to Consumer<T> 
+	for processing.
+
+-	To solve this problem java introduced two arguement functional interface called bi-functional interfaces and following are different bi-functional interfaces,
+	
+a)	java.util.function.BiPredicate<T, U>
+	
+	-	BiPredicate<T, U> functional interface is used to perform conditional check on two input value of type T and U supplied if condition is met it return 
+		true else if condition not met it return false.
+	-	Parameter type T and U can be same types or different.
+	-	BiPredicate<T, U> contains below single abstract method,
+	
+	public boolean test(T1 t,U u)
+	
+	Example:
+	
+	class Test {
+		
+		public static void main(String[] args) {
+			
+			BiPredicate<Integer, Integer> p = (n1, n2) -> (n1 + n2) % 2 == 0;
+			p.test(5, 10);		/**false**/	
+			p.test(15, 13);		/**true**/
+		}
+	}
+	-	We can also reverse a predicate using predicate negation also multiple predicate can be combined to form predicate joining.
+	-	For negation of predicate we use following default method in BiPredicate<T, U> interface,
+		
+		public BiPredicate<T, U> negate(BiPredicate<T, U> p)
+		-	compilments existing predicate and create a new predicate and return.
+		
+	Example:
+	
+	class Test {
+		
+		public static void main(String[] args) {
+
+			BiPredicate<Integer, Integer> p = (n1, n2) -> (n1 + n2) % 2 == 0;
+			
+			p.negate().test(5, 10);		/**true**/	
+			p.negate().test(15, 13);	/**false**/
+		}
+	}
+	
+	-	For joining of predicate we use following default methods in Predicate<T> interface,
+		
+		public BiPredicate<T, U> and(BiPredicate<T, U> p)
+		-	combine invoking predicate with parameter predicate and generate a new predicate that performs AND operation on both predicates.
+		
+		public BiPredicate<T, U> or(BiPredicate<T, U> p)
+		-	combine invoking predicate with parameter predicate and generate a new predicate that performs OR operation on both predicates.
+	
+	Example:
+	
+	class Test {
+		
+		public static void main(String[] args) {
+			
+			BiPredicate<Integer, Integer> p1 = (n1, n2) -> (n1 + n2) % 2 == 0;
+			BiPredicate<Integer, Integer> p2 = (n1, n2) -> (n1 + n2) > 20;
+			
+			Predicate<Integer> p = p1.and(p2); 
+			
+			p.test(5, 10);		/**false**/	
+			p.test(15,13);		/**true**/
+		}
+	}
+	
+b)	java.util.function.BiFunction<T, U, R>
+	
+	-	BiFunction<T, U, R> functional interface is used to perform processing on input objects of type T and U to generate another output object of same or 
+		another type R and return it.
+	-	Parameter type T and U can be same types or different.	
+	-	BiFunction<T, U, R> contains below single abstract method,
+	
+	public R apply(T t, U u)
+	
+	Example:
+	class Test {
+		
+		public static void main(String[] args) {
+			
+			Function<String, String, Integer> f = (s1, s2) -> s1.length() + s2.length();
+			f.apply("java", "python");		/**10**/	
+			f.apply("durgasoftware", "solutions");		/**22**/
+		}
+	}	
+
+	-	We can combine BiFunction<T, U, R> with Function<T, R> using function chaining such that output object of one function becomes input to another and output of last
+		function is returned.
+	-	Two BiFunction<T, U, R> chaining is not possible.	
+	-	For chaining of function we use following default methods in BiFunction<T, U, R> interface,
+		
+	public BiFunction<T, U, R> andThen(Function<T, U, R>)
+	
+	
+	Example:
+	class Test {
+		
+		public static void main(String[] args) {
+			
+			BiFunction<Integer, Integer, Integer> f1 = (i1, i2) -> i1 + i1 + i2 + i2;
+			Function<Integer, Integer> f2 = (i) -> i * i;
+			BiFunction<Integer, Integer, Integer> f3 = f1.andThen(f2);
+			f3.andThen(2, 2);		/**64**/	
+		}
+	}	
+	
+	
+c)	java.util.function.BiConsumer<T, U>
+	
+	-	BiConsumer<T, U> functional interface is used to perform accepting input objects of type T and U but do not return anything.
+	-	Parameter type T and U can be same types or different.	
+	-	BiConsumer<T, U> contains below single abstract method,
+	
+	public void accept(T t, U u)
+	
+	Example:
+	class Test {
+		
+		public static void main(String[] args) {
+			
+			Consumer<Integer, Integer> c = (i1 + i2) -> System.out.println(i1 + i2);
+			c.apply(10, 20);		/**30**/	
+		}
+	}	
+
+	-	We can combine multiple consumer together using consumer chaining.
+	-	For chaining of consumer we use following default methods in BiConsumer<T, U> interface,
+	
+	public BiConsumer<T, U> andThen(BiConsumer<T, U>)
+		
+	
+	Example:
+	class Test {
+		
+		public static void main(String[] args) {
+			
+			BiConsumer<Integer, Integer> c1 = (i1, i2) -> System.out.print(i1 + i2 + " ");
+			BiConsumer<Integer, Integer> c2 = (i1, i2) -> System.out.print(i1 - i2);
+			BiConsumer<Integer, Integer> c = c1.andThen(c2);
+			c.apply(10, 20);		/**30 -10**/	
+		}
+	}	
+
+What are primitive type functional interfaces and why are they needed?
+
+-	All pre-defined functional interfaces have type parameters these type parameter must strictly be of object type.
+
+ 	Example:
+
+	class Test {
+		
+		public static void main(String[] args) {
+			
+			int[] arr = {10, 25, 31, 42, 60};
+			Predicate<Integer> p = (n) -> n % 2 == 0;
+			
+			for(int x : arr) {
+				p.test(x);	
+			}	
+		}
+	}
+	
+-	The above code requires conversion of primitive int to object type Integer while calling test() method i.e autoboxing also to use % operator object Integer
+	type is converted to primitive int type t.e. autounboxing and these operations are required for each array elements and hence they bring performance issues.
+
+-	To solve this problem primitive type functional interfaces were introduced that accept primitive parameters and also return primitive result.
+
+-	We have IntPredicate functional interface in java.util.function interface that accepts int arguement and perform conditional check to return boolean value.
+-	IntPredicate has following single abstract method,
+
+	public boolean test(int t)	
+	
+	Example:
+	class Test {
+		
+		public static void main(String[] args) {
+			
+			int[] arr = {10, 25, 31, 42, 60};
+			IntPredicate p = (n) -> n % 2 == 0;
+			
+			for(int x : arr) {
+			
+				p.test(x);	
+			}	
+		}
+	}	
+
+-	Following are different primitive functional interface related to predicate,
+	a)	java.util.function.IntPredicate
+	-	IntPredicate has following single abstract method that takes single int arguement and return boolean,
+
+	public boolean test(int t)	
+
+	b)	java.util.function.LongPredicate
+	-	LongPredicate has following single abstract method that takes single long arguement and return boolean,
+
+	public boolean test(int t)	
+
+	c)	java.util.function.DoublePredicate
+	-	DoublePredicate has following single abstract method that takes single double arguement and return boolean,
+
+	public boolean test(int t)	
+
+-	Following are different primitive functional interface related to function,
+	
+	I)	Category 1:- No autoboxing during method call
+	
+	a)	java.util.function.IntFunction<R>
+	-	IntFunction<R> has following single abstract method that takes single int arguement and return R type object,
+	
+	public R apply(int t)
+	
+	b)	java.util.function.LongFunction<R>
+	-	LongFunction<R> has following single abstract method that takes single long arguement and return R type object,
+	
+	public R apply(long t)
+	
+	c)	java.util.function.DoubleFunction<R>
+	-	DoubleFunction<R> has following single abstract method that takes single double arguement and return R type object,
+	
+	public R apply(double t)	
+	
+	
+	II)	Category 2:- No autoboxing during return statement execution
+	
+	a)	java.util.function.ToIntFunction<T>
+	-	ToIntFunction<T> has following single abstract method that takes single T arguement and return int,
+	
+	public int applyAsInt(T t)
+	
+	b)	java.util.function.ToLongFunction<T>
+	-	ToIntFunction<T> has following single abstract method that takes single T arguement and return long,
+	
+	public long applyAsLong(T t)
+	
+	c)	java.util.function.ToDoubleFunction<T>
+	-	ToDoubleFunction<T> has following single abstract method that takes single T arguement and return double,
+	
+	public double applyAsDouble(T t)
+	
+	d)	java.util.function.ToIntBiFunction<T, U>
+	-	ToIntBiFunction<T> has following single abstract method that takes two arguements of type T and U and return int,
+	
+	public int applyAsInt(T t, U u)
+	
+	e)	java.util.function.ToLongBiFunction<T>
+	-	ToLongBiFunction<T> has following single abstract method that takes two arguements of type T and U  and return long,
+	
+	public long applyAsLong(T t)
+	
+	f)	java.util.function.ToDoubleBiFunction<T>
+	-	ToDoubleBiFunction<T> has following single abstract method that takes two arguements of type T and U and return double,
+	
+	public double applyAsDouble(T t)
+	
+
+	II)	Category 3:- No autoboxing during method call and during return statement execution	
+	
+	a)	java.util.function.IntToLong
+	-	IntToLong has following single abstract method that takes single int arguement and return long,
+	
+	public long applyAsLong(int t)
+	
+	b)	java.util.function.IntToDouble
+	-	IntToDouble has following single abstract method that takes single int arguement and return double,
+	
+	public double applyAsDouble(int t)
+	
+	c)	java.util.function.LongToInt
+	-	LongToInt has following single abstract method that takes single long arguement and return int,
+	
+	public int applyAsInt(long t)
+	
+	d)	java.util.function.LongToDouble
+	-	LongToDouble has following single abstract method that takes single long arguement and return double,
+	
+	public double applyAsDouble(long)
+	
+	e)	java.util.function.DoubleToInt
+	-	DoubleToInt has following single abstract method that takes single double arguement and return int,
+	
+	public int applyAsInt(double t)
+	
+	f)	java.util.function.DoubleToLong
+	-	DoubleToLong has following single abstract method that takes single double arguement and return long,
+	
+	public long applyAsLong(double t)
+	
+-	Following are different primitive functional interface related to consumer,
+	
+	I)	Category 1:-
+	
+	a)	java.util.function.IntConsumer
+	-	IntConsumer has following single abstract method that takes single int arguement,
+
+	public void accept(int t)	
+
+	b)	java.util.function.LongConsumer
+	-	LongConsumer has following single abstract method that takes single long arguement,
+
+	public void accept(long t)	
+
+	c)	java.util.function.DoubleConsumer
+	-	DoubleConsumer has following single abstract method that takes single double arguement,
+
+	public void accept(double t)	
+
+	II)	Category 2:-
+	
+	a)	java.util.function.ObjIntConsumer<T>
+	-	IntConsumer has following single abstract method that takes two arguement of type T and int arguement,
+
+	public void accept(T t, int t)	
+
+	b)	java.util.function.ObjLongConsumer<T>
+	-	LongConsumer has following single abstract method that takes two arguement of type T and long arguement,
+
+	public void accept(T t, long t)	
+
+	c)	java.util.function.ObjDoubleConsumer<T>
+	-	DoubleConsumer has following single abstract method that takes two arguement of type T and double arguement,
+
+	public void accept(T t, double t)	
+
+-	Following are different primitive functional interface related to supplier,
+
+	a)	java.util.function.IntSupplier
+	-	IntSupplier has following single abstract method that takes no arguement but return int,
+
+	public int getAsInt()	
+
+	b)	java.util.function.LongSupplier
+	-	LongSupplier has following single abstract method that takes no arguement but return long,
+	
+	public long getAsLong()	
+
+	c)	java.util.function.DoubleSupplier
+	-	DoubleSupplier has following single abstract method that takes no arguement but return double,
+	
+	public double getAsDouble()	
+	
+	
+	d)	java.util.function.BooleanSupplier
+	-	DoubleSupplier has following single abstract method that takes no arguement but return boolean,
+	
+	public boolean getAsBoolean()
+
+What is UnaryOperator<T>?
+
+-	UnaryOperator<T> is functional interface in java.util.function package and it is a sub interface to Function<T, R> functional interface.
+-	It is a specialized function where input parameter and output parameter type is same i.e. type T.
+-	UnaryOperator<T> has following single abstract method,
+
+	public T apply(T t)
+
+	Example:
+	class Test {
+		
+		public static void main(String[] args) {
+			
+			UnaryOperator<Integer> u = (i) -> i * i;
+			u.apply(10);	/**100**/
+		}
+	}	
+
+-	To prevent frequent autoboxing and autounboxing primitive version of UnaryOperator<T> are available,
+-	Following are different primitive functional interface related to UnaryOperator<T>,
+
+	a)	java.util.function.IntUnaryOperator
+	-	IntUnaryOperator has following single abstract method that takes int arguement but return int,
+
+	public int applyAsInt(int i)	
+
+	b)	java.util.function.LongUnaryOperator
+	-	LongUnaryOperator has following single abstract method that takes long arguement but return long,
+	
+	public long applyAsLong(long l)	
+
+	c)	java.util.function.DoubleUnaryOperator
+	-	DoubleUnaryOperator has following single abstract method that takes double arguement but return double,
+	
+	public double applyAsDouble(double d)	
+	
+What is BinaryOperator<T>?
+
+-	BinaryOperator<T> is functional interface in java.util.function package and is a sub interface to BiFunction<T, U, R> functional interface.
+-	BinaryOperator<T> is a specialized function where both input parameters type is same i.e. type T and also return type of same type T.
+-	BinaryOperator<T> has following single abstract method,
+
+	public T apply(T t, T u)
+
+	Example:
+	class Test {
+		
+		public static void main(String[] args) {
+			
+			BinaryOperator<Integer> b = (i1, i2) -> i1 * i2;
+			b.apply(10, 20);	/**200**/
+		}
+	}	
+
+-	To prevent frequent autoboxing and autounboxing primitive version of BinaryOperator<T> are available,
+-	Following are different primitive functional interface related to BinaryOperator<T>,
+
+	a)	java.util.function.IntBinaryOperator
+	-	IntBinaryOperator has following single abstract method that takes two int arguement but return int,
+
+	public int applyAsInt(int i, int j)	
+
+	b)	java.util.function.LongBinaryOperator
+	-	LongBinaryOperator has following single abstract method that takes long arguement but return long,
+	
+	public long applyAsLong(long l, long m)	
+
+	c)	java.util.function.DoubleBinaryOperator
+	-	DoubleBinaryOperator has following single abstract method that takes double arguement but return double,
+	
+	public double applyAsDouble(double d, double e)	
+	
+	

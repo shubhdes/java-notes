@@ -1,0 +1,84 @@
+core java - interfaces8
+
+What are default methods inside interfaces?
+
+-	The enhancement in java 8 version allows defining concrete method inside an interface this method is called default method.
+
+-	A default method within a parent interface are by default available to child class or child interface and to declare a default method inside an interface 
+	use default keyword.
+	
+	Example:
+	
+	interface Calculator {
+	
+		public default int sum(int a, int b) {
+			return (a + b);
+		}
+	}
+	
+Explain default method with respect to inheritance?
+
+-	A java class can implement multiple interfaces and a java interface can have default method and default method within a parent interface are available to 	
+	child class or child interface.
+-	This can make a java class inherit multiple method with same signature but different implementation and will give compile time error saying method resolution
+	is ambigous
+
+	Example:
+	
+	interface Interface1 {
+
+		public default int m1(int a, int b) {
+			return (a + b);
+		}
+	}
+	
+	interface Interface2 {
+
+		public default int m1(int a, int b) {
+			return (a - b);
+		}
+	}
+	
+	class Test implements Interface1, Interface2 {}/**compile time error saying method resolution is ambigous**/
+
+-	To solve this issue implementing class must override default method with same signature and provide new implementation or invoke existing implementation
+	using syntax Interface.super.methodName.	
+	
+	Example:
+	
+	interface Interface1 {
+
+		public default int m1(int a, int b) {
+			return (a + b);
+		}
+	}
+	
+	interface Interface2 {
+
+		public default int m1(int a, int b) {
+			return (a - b);
+		}
+	}
+	
+	class Test implements Interface1, Interface2 {
+		
+		public default int m1(int a, int b) {
+			Interface1.super.m1(a, b);
+		}
+	}
+	
+What are static method inside interface?	
+
+-	The enhancement in java 8 version allow defining static method inside an interface including public static void main(String[] args).
+-	The method defined as static inside interface are not inherited to child class or child interface and it must strictly be public otherwise we will get 
+	compile time error saying interface cannot have private or protected members.
+
+	Example:
+	
+	interface Test {
+	
+		public static void main(String[] args) {
+			System.out.println("hello world!!);";
+		}
+	}
+	

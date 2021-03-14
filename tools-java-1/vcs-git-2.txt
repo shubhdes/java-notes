@@ -1,0 +1,384 @@
+core java -	version control system tool - 2
+
+Explain the use of git diff command?
+
+-	The git diff command is used to compare difference between of same files in all areas.
+
+-	To compare the difference between working directory and staging area we need to use following command.
+	
+	syntax:
+
+	#git diff [file_name]
+	
+	example:
+
+	#git diff durga.txt
+
+-	Inside local repository the most recent commit is referenced by master and master is referenced by HEAD.
+
+-	To compare the difference between file inside working directory and last commit we need to use following command.
+	
+	syntax:
+
+	#git diff HEAD [file_name]
+	
+	example:
+
+	#git diff HEAD durga.txt
+	
+-	To compare the difference between file inside staging area and last commit we need to use following command.
+	
+	syntax:
+
+	#git diff --staged HEAD [file_name]
+	
+	#git diff --staged [file_name]
+	
+	example:
+
+	#git diff --staged HEAD durga.txt
+	
+	example:
+
+	#git diff --staged durga.txt
+	
+-	To compare the difference between file inside working directory and specific commit we need to use following command.
+
+	syntax:
+
+	#git diff [commit_id] [file_name]
+
+	example:
+
+	#git diff 12cb2em durga.txt
+
+-	To compare the difference between file inside staging area and specific commit we need to use following command.
+
+	syntax:
+
+	#git diff --staged [commit_id] [file_name]
+
+	example:
+
+	#git diff --staged 12cb2em durga.txt	
+	
+-	To compare the difference between two specificied commit we need to use following command.
+	
+	syntax:
+
+	#git diff [source commit id] [destination commit id] [file_name]
+
+	example:
+
+	#git diff 12cb2em 52ca2fm durga.txt
+
+-	To find difference between last commit and last but one commit we need to use following command.
+
+	syntax:
+
+	#git diff HEAD HEAD~1 [file_name]
+	
+	#git diff HEAD HEAD^1 [file_name]
+	
+	#git diff HEAD HEAD^ [file_name]	
+	
+	example:
+
+	#git diff HEAD HEAD-1 durga.txt
+	
+	example:
+
+	#git diff HEAD HEAD^1 durga.txt
+	
+	example:
+
+	#git diff HEAD HEAD^ durga.txt
+	
+-	Use of filename is optional otherwise difference between all the files in specificied commit will be shown.
+
+	example:
+
+	#git diff 12cb2em 52ca2fm
+
+-	To find difference in content between two branches we need to use following command.
+
+	syntax:
+
+	#git diff [branch1] [branch2]
+	
+	example:
+
+	#git diff MASTER TEST
+	
+-	To find difference between local repository and remote repository we need to use following command.
+
+	example:
+
+	#git diff MASTER ORIGIN/MASTER
+	
+List and explain different visual difference checking tools?
+
+-	Ther are multiple visual difference checking tools like Helix visual merge tool, Meld and others.
+
+-	The Helix visual merge tool is also called as p4 merge tool where p4 means Perforce for.
+
+-	It can be used for merging and difference checking both.
+
+How to configure p4merge tool with Git?
+
+-	After installing p4merge tool we need to add path C:\Program Files\Perforce inside Path environment variable.
+
+-	To configure p4merge tool as difference checking tool with Git we need to use following command.
+
+	example:
+
+	#git config --global diff.tool p4merge
+	
+	#git config --global difftool.path C:\Program Files\Perforce\p4merge.exe
+	
+	#git config --global difftool.prompt false
+
+-	The first command will set p4merge as default difference checking tool.
+
+-	The second command will inform the location and name of exe file that must be executed for difference checking.
+	
+-	The next command will inform Git not to show alert propmt everytime before using p4merge.	
+	
+-	To configure p4merge tool as merge tool with Git we need to use following command.
+
+	example:
+
+	#git config --global merge.tool p4merge
+	
+	#git config --global mergetool.path C:\Program Files\Perforce\p4merge.exe
+	
+	#git config --global mergetool.prompt false
+
+-	The first command will set p4merge as default merge tool.
+
+-	The second command will inform the location and name of exe file that must be executed for merging.
+	
+-	The next command will inform Git not to show alert propmt everytime before using p4merge.	
+
+-	To use p4merge for comparing the difference between two files in different area we need to use following command.
+
+	syntax:
+
+	#git difftool [file_name]
+
+	example:
+
+	#git difftool durga.txt	
+
+Explain the use of git remove command?
+
+-	The git remove command is used to remove files from different areas.
+
+-	To remove files from both working directory and staging area we need to use following command.
+
+	syntax:
+
+	#git rm [file_name]
+	
+	example:
+
+	#git rm durga.txt
+
+-	The use of filename parameter is mandatory otherwise we will get an error saying no path specified.
+
+-	To remove all files from both working directory and staging area we need to use following command.
+
+	example:
+
+	#git rm -r .
+
+-	Once file is removed from both working directory and staging area we need to commit changes to remove file from local repository also.
+
+	example:
+
+	#git commit -m 'files removed from both working directory and staging area'
+
+-	To remove files only from staging area we need to use following command.
+
+	syntax:
+
+	#git rm --cached [file_name]
+	example:
+
+	#git rm --cached durga.txt
+
+-	To remove files only from working directory we need to use following command.
+
+	syntax:
+
+	#rm [file_name]
+	
+	example:
+
+	#rm durga.txt
+
+Explain the use of git checkout command?
+
+-	We can use the checkout command to discard unstaged changes in tracked files of working directory.
+
+	syntax:
+
+	#git checkout --	[.|file_name]
+	
+	example:
+
+	#git checkout --	durga.txt
+	
+	example:
+
+	#git checkout .
+	
+-	The use of filename parameter is mandatory otherwise git will list all files for which checkout is applicable.
+
+-	After checkout working directory copy and staging copy will have same content.
+
+-	It is similar to undo operation.
+
+-	Use of untracked filename as parameter will give error saying untracked path specified.
+
+Explain the use of git show command?
+
+-	To find the information about a particular commit we need to use following command.
+
+	syntax:
+
+	#git show [commit_id]
+	
+	example:
+
+	#git show 12sw11s
+	
+-	This command shows the files which were send to local repository as part of commit, difference in those files and other details.
+
+What are git references?
+
+-	For most of the commands we need to use commit id as arguements.
+
+-	But remembering these commit ids is difficult.
+
+-	Git provides some sample names for these commit ids which are called as git references or refs.
+
+-	These git references are just pointers to commit ids.
+
+-	The references MASTER and HEAD both are pointers to most recent commit id.
+
+-	Inside local repository references are stored under refs folder.
+
+What is master?
+
+-	Master is a name of a branch.
+
+-	It is reference to latest commit. Hence where ever last commit id is required we can simply use master.
+
+-	Inside local repository text file master is stored under refs/HEAD folder which contains commit id.
+
+What is HEAD?
+
+-	Head is a reference to master reference.
+
+-	A reference pointing to another reference is called symbolic reference.
+
+-	By default HEAD reference is pointing to master but in some cases HEAD is not pointing to master such HEAD is called detached HEAD.
+
+-	Inside local repository text file HEAD is stored which points to the master file.
+
+What is use of git reset command?
+
+-	There are two uses of git reset command, it can be used to remove changes from staging area.
+
+-	The same command can be used to undo commit from local repository.
+
+-	To remove changes from staging area we need to use the following command.
+
+	syntax:
+
+	#git reset [file_name]
+	
+	example:
+
+	#git reset durga.txt
+
+-	We can use the checkout command to discard unstaged changes in tracked files of working directory.
+
+-	But the reset command is used to discard staged changes from staging area.
+
+-	The command rm --cached will delete file from staging area.
+
+-	But the git reset command will not delete file from staging area instead it will reset file to previous state i.e. one state back.
+
+-	We can also use reset to undo the commit at repository level.
+
+-	This will move HEAD to specificied commit and all remaining recent commits will be deleted from the repository.	
+	
+	syntax:
+	
+	#git reset [mode] [commit_id]
+	
+-	The mode will decide whether these changes are going to be removed from staging area or not from working directory or not.
+
+-	The different possible modes are --mixed, --soft and --hard, --keep and --merge.
+
+-	The --soft mode will remove the commit from local repository but it won't touch working directory and staging area.
+
+	example:
+	
+	#git reset --soft 21sa12b
+
+-	We can revert deletion because file is available in working directory and staging area.
+
+-	Working tree won't be clean.
+
+-	The --mixed mode is default mode.
+
+-	This will remove the commit from local repository and changes from staging area but it won't touch working directory.
+	
+	example:
+	
+	#git reset --mixed 43wq17r
+	
+-	We can revert deletion because file is available in working directory.
+
+-	Working tree won't be clean.
+
+-	The --hard mode will remove the commit from local repository, working directory and staging area.
+
+	example:
+	
+	#git reset --hard 521sq15
+	
+-	We cannot revert deletion.	
+
+-	Working tree will be clean.
+
+How can we make git ignore a file?
+
+-	To ask git to ignore particular file or directory we must create hidden file inside working directory with name .gitignore.
+
+-	Inside this file mention the path of file and directory to ignore.
+
+	syntax:
+	
+	[*|file_name|directory_name/|file_path|directory_path/]
+	
+	example:
+	
+	durga.txt
+	
+	*.txt
+	
+	logs/
+	
+Explain how git treats directory?
+
+-	Git always worries about files and not about directories.
+
+-	It never gives any special importance to directories.
+
+-	But if the directory contains any files then git will worry about those files.
+
+-	Whenever we are adding files then implicitly directory will also be added.

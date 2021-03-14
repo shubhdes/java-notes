@@ -1,0 +1,733 @@
+core java - commands & JVM
+
+Explain syntax of javac command & options?
+
+-	The javac command is used to compile single or group of java source files.
+
+-	syntax:
+	javac [options] [fileName1.java fileName2.java...]
+	
+	Example:	
+	javac  File1.java 
+	
+	Example:	
+	javac File1.java File2.java File3.java 	
+	
+	Example:	
+	javac *.java
+
+-	options:
+	-version = To know the java development kit version using which java file is compiled.
+	-d = To mention base directory for package creation if java class is to be defined inside package.	 
+	-source = To compile a java program according to specific java development kit version.	
+	-verbose = To print compilation process logs on console.
+	-cp or -classpath = To mention the location where required class files are available.
+	
+Explain syntax of java command & options?
+
+-	The java command is used to execute single class file.
+
+-	syntax:
+	java [options] [fileName1]	[command line args]
+	
+	Example:	
+	java File1 
+
+-	options:
+	-version = To know the java runtime environment version using which class file is executed.
+	-D = To set a new system property.
+	-cp or -classpath = To mention the location where required class files are available.
+	
+-	We can compile any number of source files at a time but we can execute only one class file at a time.
+
+What is path?
+
+-	The path describes the location where required binary executable files like javac.exe and java.exe are located.
+-	There are 2 different ways to set path as follows,
+
+	a)	At system level by setting JAVA_HOME environment variable, this way of setting path is permanant and will be preserved across system restarts.
+	b)	At command prompt level by setting path 
+		set path = C:\ProgramFiles\java\jdk<version>\bin
+
+What is classpath?
+
+-	The classpath describes the location where required class files are available.
+-	The java compiler and java virtual machine will use classpath to locate required class files.
+-	By default java compiler and java virtual machine will search class files into current working directory.
+
+	Example:
+	class Test {
+
+		public static void main(String[] args) {
+			
+			System.out.println("classpath demo");
+		}
+	}	
+	Output:
+	C:\durga# javac Test.java	/**Test.class file created in C:\durga**/
+	C:\durga# java Test			/**classpath demo**/
+		
+	C:\# java Test	/**NoClassDefFoundError:Test**/
+
+-	If required class file is not found then java virtual machine raise runtime exception saying NoClassDefFoundError.
+-	We can explicitly change the classpath to signal java compiler and java virtual machine to look for class files in mentioned classpath.	
+
+-	There are 3 different ways to set classpath as follows,
+
+	a)	At system level by setting CLASSPATH environment variable, this way of setting classpath is permanant and will be preserved across system restarts.
+	b)	At command prompt level by setting classpath 
+		Example:
+		set classpath = C:\durga
+	c)	At command level by setting classpath 
+		Example:
+		java -classpath C:\durga Test
+		
+-	Once classpath is set explicitly then java compiler and java virtual machine will not search required class files into current working directory.
+-	To indicate java compiler and java virtual machine to search required class files into current working directory followed by mentioned classpath 
+	use below command,
+	Example:
+	java -classpath .;C:\durga Test		/**classpath demo**/
+	
+-	Consider below scenario,
+	
+	C:\
+	class MyBird {
+	
+		public void fly() {
+		
+			System.out.println("bird is flying");
+		}
+	}	
+	
+	D:\
+	class Test {
+
+		public static void main(String[] args) {
+			
+			MyBird mb = new MyBird();
+			mb.fly();
+		}
+	}	
+	
+	C:\# javac MyBird.java	/**C:\MyBird.class**/
+	
+	D:\# javac Test.java	/** compile time error cannot find symbol MyBird in location Test**/
+	D:\# javac -classpath C:\ Test.java /**D:\Test.class**/
+
+	D:\# java Test	/**NoClassDefFoundError:MyBird**/
+	D:\# java -classpath C:\ Test	/**NoClassDefFoundError:Test**/
+	D:\# java -classpath .;C:\ Test		/**bird is flying**/
+
+-	Consider below scenario,
+	
+	C:\
+	package p1.p2;
+	class MyEngine {
+	
+		public void start() {
+		
+			System.out.print("engine started");
+		}
+	}	
+	
+	D:\
+	package p3.p4;
+	class MyCar {
+	
+		public void start() {
+		
+			MyEngine e = new MyEngine();
+			e.start();
+			System.out.print("car started");
+		}
+	}	
+	
+	E:\
+	package p5.p6;
+	class Test {
+
+		public static void main(String[] args) {
+			
+			MyCar c = new MyCar();
+			c.start();
+		}
+	}	
+	
+	C:\# javac -d . MyEngine.java	/**C:\p1\p2\MyEngine.class**/
+	
+	D:\# javac -d . MyCar.java 	/**compile time error cannot find symbol MyEngine in location MyCar**/
+	D:\# javac -d . -classpath C:\ MyCar.java	/**D:\p3\p4\MyCar.class**/
+
+	E:\# javac -d . Test.java 	/**compile time error cannot find symbol MyCar in location Test**/
+	E:\# javac -d . -classpath D:\ Test.java	/**E:\p5\p6\Test.class compiler checks single level of dependency**/
+
+	E:\# java Test	/**NoClassDefFoundError:MyCar**/
+	E:\# java -classpath .;D:\ Test		/**NoClassDefFoundError:MyEngine jvm checks all level of dependency**/
+	E:\# java -classpath .;D:\;C:\ Test	/**engine started car started**/
+	
+-	The order of classpath mentioned defines order in which java compiler or java virtual machine will look for required class file until
+	it finds first required match.
+	
+How to create a JAR file in java?
+
+-	A java archieve or JAR file is used to combine a group of class files into single unit.
+-	To create a JAR file use following command,
+
+	syntax:
+	jar -cvf [jarName] [fileName1.class fileName2.class...] 	
+
+	options:
+	c = To create JAR file
+	v = To print JAR creation process logs on console.
+	f = To indicate named file
+	
+	Example:
+	jar -cvf durga.jar	File1.class File2.class File3.class
+	
+	jar -cvf durga.jar *.class
+	
+-	To extract a jar file use following command,
+
+	syntax:
+	jar -xvf [jarName]
+
+	options:
+	x = To extract JAR file
+	v = To print JAR extraction process logs on console.
+	f = To indicate named file
+	
+	Example:
+	jar -cvf durga.jar
+
+-	To display table of contents i.e class files present inside JAR file,
+
+syntax:
+	jar -tvf [jarName]
+
+	options:
+	t = To display table of contents of JAR file
+	v = To print JAR extraction process logs on console.
+	f = To indicate named file
+	
+	Example:
+	jar -tvf durga.jar
+
+-	Consider following code,
+	class MyCalculator {
+	
+		public int add(int a, int b) {
+			
+			return a + b;
+		}
+		
+		public int sub(int a, int b) {
+			
+			return a - b;
+		}
+	}
+	
+	C:\# java MyCalculator.java
+	C:\# jar -cvf calculator.jar MyCalculator.class
+	
+	class Test {
+	
+		public static void main(String[] args) {
+			
+			MyCalculator mc = new MyCalculator();
+			mc.add(10, 20);
+		}
+	}
+	
+	D:# javac Test.java		/**compile time error cannot find symbol MyCalculator in location Test**/
+	D:# javac -classpath C: Test.java	/**compile time error cannot find symbol MyCalculator in location Test, for JAR file name of JAR file in classpath is required**/
+	D:# javac -classpath C:\calculator.jar Test.java
+	
+	D:# java Test	/**NoClassDefFoundError:MyCalculator**/
+	D:# java -classpath C: Test	/**NoClassDefFoundError:Test**/
+	D:# java -classpath .;C: Test	/**NoClassDefFoundError:MyCalculator for JAR file name of JAR file in classpath is required**/
+	D:# java -classpath .;C:\calculator.jar Test	/**30**/
+	
+-	Alternatively we can place JAR inside classpath by adding JAR file inside java development kit extension folder i.e jdk<version>/jre<version>/lib/ext.
+
+What are system properties?
+
+-	For every machine some persistent information will be maintained in form of system properties.
+-	This information include name of the operating system, java version, jvm vendor, user country, etc..
+
+	class Test {
+	
+		public static void main(String[] args) {
+			
+			java.util.Properties p = System.getProperties();
+			p.list(System.out);
+		}
+	}
+
+	D:# javac Test.java
+	D:>	java -Ddurga=java Test	/**OS=windows10 java version = 8....durga=java**/
+	
+Explain is JAR vs WAR vs EAR file?
+
+-	A java archieve or JAR file is used to combine a group of class files into single unit.
+
+-	A web archieve or WAR file represent web application that contains servlets, JSP, HTML, CSS, javascript, etc..
+-	The main advantage of maintaining web application in form of WAR file is project deployment, delivery and transportation will become easy.	
+
+-	A enterprise archieve or EAR file represent enterprise application that contains servlets, JSP, HTML, CSS, javascript, JMS, EJB, etc..
+-	In general EAR file represents a group of WAR and JAR files.
+
+Explain web application vs enterprise application?
+
+-	A web application can be developed by only web related technologies like servlets, JSP, HTML, CSS, javascript, etc..
+	Example: online library management system, online shopping cart.
+-	An enterprise application  can be developed by any technology from java j2ee like servlets, JSP, HTML, CSS, javascript, JMS, EJB, etc..
+	Example: banking application, telecom based project.
+-	Enterprise application is j2ee compatible.
+	
+Explain web server vs application server?
+	
+-	A web server provides environment to run web application. 
+-	Web server provides support for only web related technologies like servlets, JSP, HTML, CSS, javascript, etc..
+	Example: Apache Tomcat
+	
+-	A application server provides environment to run enterprise application. 
+-	Enterprise server provides support for any technology from java j2ee like servlets, JSP, HTML, CSS, javascript, JMS, EJB, etc..
+	Example: Weblogic, Websphere, JBoss
+
+-	To provide support for web related technologies every application server has inbuilt web server.
+-	Application server is j2ee compatible.
+
+
+How to create and run an executable JAR file?
+
+-	To create an executable JAR file use following command,
+
+	syntax:
+	jar -cvfm [jarName] [manifestFile] [fileName1.class fileName2.class...] 	
+
+	options:
+	c = To create JAR file
+	v = To print JAR creation process logs on console.
+	f = To indicate named file
+	m = To create jar with manifest file.
+
+	manifest:
+	The manifest file informs java virtual machine location of public static void main(String[] args) method.
+	Example:
+	Main_class:Test<enter>
+	
+	Example:
+	jar -cvfm durga.jar	manifest.mf File1.class File2.class File3.class
+	
+	jar -cvfm durga.jar manifest.mf *.class
+
+-	To execute a jar file use following command,
+	
+	syntax:
+	java -jar [jarName]
+	
+	Example:
+	java -jar durga.jar
+
+Explain java vs javaw vs javaws command?
+
+-	We use java command to execute a java program and print output statements on console.
+	Example:
+	class Test {
+
+		public static void main(String[] args) {
+			
+			System.out.println("classpath demo");
+		}
+	}	
+	Output:
+	C:\# javac Test.java
+	C:\# java Test			/**classpath demo**/
+		
+-	We can suppress output statement during execution and prevent printing output statements on console using javaw command.	
+	C:\# javaw Test
+	
+-	In general we can use javaw to execute GUI based applications.
+
+-	The java web start or javaws command can be used to download and start execution of web based application.
+-	The above command can be used as follows,
+
+	syntax:
+	javaws [url]
+
+-	It downloads application from specified URL and starts execution.
+-	The main advantage of this approach is every end user will get updated version and enhancement will become easy because of centralized control.	
+
+What is virtual machine?
+
+-	It is software simulation of machine that can perform operations like physical machine.
+-	There are 2 types of virtual machines, they are
+	a) Hardware based or system based virtual machine
+	b) Application based or process based virtual machine
+
+What is hardware based or system based virtual machine?
+
+-	Hardware based or system based virtual machine provides multiple logical machines on single physical machine.
+-	The main advantage of this virtual machine is hardware resources sharing and improves utilization of hardware resources.
+	Example: Kernel based Virtual Machine (KVM) for Linux systems, VMWare, Xen, Cloud computing, etc.
+	
+What is application based or process based virtual machine?
+
+-	Application based or process based virtual machine act as run time engines to run a particular programming language applications.
+	Example: Java Virtual Machine (JVM) acts as run time engine to run java based applications, Parrot Virtual Machine (PVM) acts as run time engine
+	to run perl based applications, Common Language Runtime (CLR) acts as run time engine to run .NET based applications, etc..
+	
+Explain basic architecture of Java Virtual Machine?
+
+-	Java Virtual Machine (JVM) is part of Java Runtime Environment (JRE) and it is responsible to load and run java class files.
+
+-	Class-loader subsystem is responsible for following 3 activities,
+	a)	Loading
+		-	Loading means reading .class file from hardisk and store corresponding binary data from .class file into JVM's method memory area. 
+		-	For each .class file JVM will store corresponding information in method memory area,
+			1)	Fully qualified name of class
+			2)	Fully qualified name of immediate parent class
+			3)	Methods information
+			4)	Variables information
+			5)	Constructor information
+			6)	Modifier information
+			7)	Constant pool information, etc..
+		
+		-	Now JVM will create java.lang.Class object in heap memory area for each .class file information available in method memory area.
+		-	This class object can be used to retrieve class information like methods information, variables information, constructor information, etc..
+		-	This class object can be accessed in java program using following syntax,
+			
+			{
+				java.lang.Class c1 = object1.getClass();
+			}
+			
+		-	The heap memory area can hold only one class object for a .class file at a time, i.e default classloader will load .class file only once
+			even if the .class file is required multiple times in program.
+			Example:
+			{
+				java.lang.Class c1 = object1.getClass();
+				java.lang.Class c2 = object2.getClass();
+				System.out.println(c1 == c2);	/**true**/
+			}	
+		
+		-	Even if the .class file is modified after loading then also classloader will not re-load it, because .class file already available in method area.
+			Example:
+			{
+				Student s1 = new Student();		/**load Student.class**/
+				
+				Student s2 = new Student();		/**do not load Student.class, reuse already loaded Student.class**/
+				
+				Student s3 = new Student();		/**do not load Student.class, reuse already loaded Student.class**/
+			}	
+		
+	b)	Linking
+		-	Linking consist of 3 activities, they are
+			a)	Verification
+				-	It is a process of ensuring that binary representation of a class is structurally correct or not i.e. JVM will check whether
+					.class file is generated by valid compiler or not i.e .class file format is correct or not.
+				-	Inside class loader subsystem exist byte code verifier which is responsible for this activity. If this verification fails then we 
+					will get runtime exception saying java.lang.VerifyError.
+				
+			b)	Preparation
+				-	It is the process of allocating memory to class level static variables and assign them default values.
+				
+			c)	Resolution
+				-	It is process of replacing all symbolic names in our program with orignal memory references from method memory area.
+					Example:
+					class Test {
+					
+						public static void main(String[] args) {
+						
+							String s = "durga";				
+							Employee e = new Employee();
+						}
+					
+					}
+				-	For the above class class loader subsystem loads Test.class, Object.class, String.class and Employee.class.
+				-	The names of these classes are stored in constant pool Test class, in resolution phase these names are replaced with orignal memory
+					level references from method area.
+		
+		
+	c)	Initialization
+		-	It is process of assigning default values to static variables and execution of static blocks from parent to child in top to bottom order.
+
+	-	If any issue occurs while Loading, Linking or Initialization then we get runtime exception saying java.lang.LinkageError.
+
+What are different types of class loader subsystem?
+
+-	There are 3 types of class loader subsystem, they are
+
+	a)	Bootstrap class loader or premordial class loader
+		-	Bootstrap class loader or premordial class loader is responsible to load core java API classes i.e. the classes present in rt.jar file.
+		-	The location of rt.jar file is jdk<version>/jre<version>/lib/rt.jar where location jdk<version>/jre<version>/lib is called bootstrap classpath.
+		-	Hence bootstrap class loader or premordial class loader is responsible to load classes from bootstrap classpath.
+		-	This class loader is by default available with every JVM and it is implemented in native languages like C or C++ and not implemented in java.
+		
+	b)	Extension class loader
+		-	Extension class loader is responsible to load java API classes from extension classpath.
+		-	The location jdk<version>/jre<version>/lib/ext is called extension classpath.	
+		-	Extension class loader is implemented in java and corresponding .class file is sun.misc.Launcher$ExtClassLoader.class.
+		
+	c)	Application class loader or system class loader
+		-	Application class loader or system class loader is responsible to load java API classes from application classpath.
+		-	The application classpath can be set as follows,
+
+				a)	At system level by setting CLASSPATH environment variable, this way of setting classpath is permanant and will be preserved 
+					across system restarts.
+				b)	At command prompt level by setting classpath 
+					Example:
+					set classpath = C:\durga
+				c)	At command level by setting classpath 
+					Example:
+					java -classpath C:\durga Test
+		
+		-	The application loader or system class loader is implemented in java and corresponding .class file is sun.misc.Launcher$AppClassLoader.class.
+	
+Explain algorithm used by classloader subsystem?
+
+-	When JVM requires a .class file it will first check whether .class file is already loaded into method memory area. If the file is is already loaded into
+	method memory area then JVM will use that file.
+-	If .class file is not loaded then JVM will request classloader subsystem to load that particular class. Firstly Application class loader accepts the request
+	and delegates the request to Extension class loader.
+-	Extension class loader will in turn delegate the request to Bootstrap class loader.
+-	Now Bootstrap class loader will search in bootstrap class path if the required .class file is available then .class file is loaded into method memory area
+	by Bootstrap class loader. 
+-	If it is not available then Bootstrap class loader delegates the request to Extension class loader.	
+-	Now Extension class loader will search in extension class path if the required .class file is available then .class file is loaded into method memory area
+	by Extension class loader. 
+-	If it is not available then Extension class loader delegates the request to Application class loader.	
+-	Now Application class loader will search in application class path if the required .class file is available then .class file is loaded into method memory
+	area by Application class loader. 
+-	If it is not available then Application class then will get runtime exception saying NoClassDefFoundError or ClassNotFoundException. This algorithm is called
+	classloader subsystem delegation algorithm.	
+
+-	If .class file is present in all classpath then bootstrap classpath gets highest priority followed by extension classpath and then application classpath has
+	least priority.
+	
+	Example:
+	class Test {
+
+		public static void main(String[] args) {
+
+			System.out.println(String.class.getClassLoader());		
+			
+			System.out.println(Test.class.getClassLoader());		/**Test.class present in application classpath**/
+			
+			System.out.println(Customer.class.getClassLoader());	/**Customer.class present in both extension and application classpath**/ 
+		}	
+	}
+	Output:
+	null
+	sun.misc.Launcher$AppClassLoader@123456788		/**className@hashCode_in_hexadecimal**/
+	sun.misc.Launcher$ExtClassLoader@871224621
+
+-	For String.class is loaded from bootstrap classpath using Bootstrap class loader. 
+-	Bootstrap class loader is implemented using c or c++, hence classloader object is not java object so result is null.
+
+How to define a customized classloaders?
+
+-	To define a customized classloader we need a java class to extend java.lang.ClassLoader class and override the following method,
+	
+	public abstract Class load(String className)
+
+-	Example:
+	class MyClassLoader extends ClassLoader {
+
+		public Class load(String className) {
+		
+			/**check if .class is modified if yes re-load it if no do not re-load**/
+		}
+	}
+	
+	class Test {
+	
+		public static void main(String[] args) {
+
+			Student s1 = new Student();		/**Student.class loaded using default classloader**/
+		
+			MyClassLoader mc = new MyClassLoader();
+			mc.load("MyClassLoader");				/**Student.class loaded using MyClassLoader**/
+	
+			Student s2 = new Student();		/**Use Student.class loaded using MyClassLoader**/
+		}	
+	}
+	
+Explain method memory area for JVM?
+
+-	For every JVM one dedicated method memory area is available.
+-	Method memory area is created on RAM at the time of JVM starting, this area on RAM may or may no be continous. 
+-	Inside method memory area class level binary information and static variables are stored.
+-	Constant pools of a class will also be stored inside method memory area. 
+-	Method memory area can be accessed by multiple threads simultaneously, hence method memory area data is not thread safe. 	
+
+Explain heap memory area for JVM?
+
+-	For every JVM one dedicated heap memory area is available.
+-	Heap memory area is created on RAM at the time of JVM starting, this area on RAM may or may no be continous. 
+-	Inside heap memory area objects and corresponding instance variables will be stored.
+-	Every array in java is object, hence arrays also will be stored in heap memory area. 
+-	Heap memory area can be accessed by multiple threads simultaneously, hence heap memory area data is not thread safe. 	
+-	Heap memory is finite memory but based our requirement we can explicitly instruct JVM to change the heap memory minimum and maximum limit
+	using following commands,
+
+	java -Xmx512m Test				/**maximum heap memory changed to 512 MB**/
+	java -Xms64m Test				/**minimum heap memory changed to 64 MB**/
+	java -Xmx512m -Xms64m Test		/**maximum heap memory changed to 512 MB and minimum heap memory changed to 64 MB**/
+	
+Explain stack memory area for JVM?
+
+-	For every thread JVM will create one dedicated stack memory area at the time of thread creation.
+-	Each and every method call performed by that thread will be stored in the corresponding stack including method local variables.
+-	Each entry inside stack is called stack frame or activation record.
+-	After completing a method the corresponding entry from the stack will be removed.
+-	After completing all method calls the stack will become empty and that empty stack will be destroyed by the JVM just before terminating the thread.
+-	The data stored inside stack memory area is available only for the corresponding thread and not available for the remaining threads, hence this 
+	data is thread safe.
+
+Explain stack frame structure?
+
+-	Each stack frame or activation record contains 3 parts, they are,
+	
+	a)	Local variable array
+		-	Local variable array contains parameters and method local variables. This section is divided into slots and each slot is of 4 bytes.
+		-	The values of type int, float and object references occupy 4 bytes i.e 1 slot and values of type double and long occupy 8 bytes
+			i.e 2 consecutive slot. 
+		-	The values of type byte, short and char type will be converted to int before storing and occupy 4 bytes i.e 1 slot.
+		-	But the way of storing boolean values is varied from JVM to JVM but most of the JVMs follows 1 slot for boolean values.
+	
+	b)	Operand stack
+		-	JVM uses operand stack as workspace, some instructions can push value to operand stack and some instructions can pop values from
+			operand stack, also some instructions can performed required operations.
+			
+	c)	Frame data
+		-	Frame data contains symbolic references used inside method.
+		-	It also provides references to exception table which provides corresponding catch block information in case of exceptions.
+
+Explain PC registers?
+
+-	For every thread JVM will create one dedicated PC register or program counter register at the time of thread creation.
+-	PC register contains the address of current executing instruction.
+-	Once instruction execution completes automatically PC register will be incremented to hold address of next instruction.
+
+Explain native method stack memory area for JVM?
+
+-	For every thread JVM will create one dedicated native method stack memory area at the time of thread creation.
+-	Each and every native method call performed by that thread will be stored in the corresponding native method stack.
+
+Explain how objects and references are created in JVM memory structure?
+
+-	Consider below program,
+
+	class Test {
+		
+		static Student s1 = new Student();			/**reference in method memory area but object created in heap memory area**/
+		
+		Student s2 = new Student();					/**reference in heap memory area also object created in heap memory area**/
+		
+		public static void main(String[] args) {
+
+			Student s3 = new Student();				/**reference in stack memory area but object created in heap memory area**/
+			
+			Test t = new Test();					/**reference in stack memory area but object created in heap memory area**/
+													/**Test object will encapsulate Student object where reference in heap memory area also object created 
+														in heap memory area**/
+		}
+	}	
+
+Explain Execution engine in JVM?
+
+-	Execution engine is reponsible for execution java .class files.
+-	This engine mainly contains 2 components, they are,
+	a)	Interpreter
+	b)	JIT compiler
+
+What is Interpreter?
+	
+-	Interpreter is responsible to read byte code and convert it to machine code (native code) and execute that machine code line by line.
+-	The problem with Interpreter is it interpretes everytime even same method invoked multiple times.
+-	This reduces performance of the system, to overcome this problem SUN microsystem introduced JIT compilers in java 1.1 version.
+ 
+What is JIT compiler?
+
+-	JIT	compiler or Just In Time compiler is used to improve performance.
+-	Internally JIT compiler maintains a separate count for every method. When ever JVM come across any method call first that method
+	will be interpreted normally by interpreter and JIT compiler increments corresponding count variable.
+-	This process will be continued for every method once if any method count reaches threshold value, then JIT compiler identifies that
+	method is repeatedly used method (hot-spot).	
+-	Immediately JIT compiler compiles that method and generates corresponding native code. Next time JVM come across that method call
+	then JVM uses native code directly and executes it instead of interpreting once again and set count value to zero, so that performance
+	of system will be improved. The threshold count varied from JVM to JVM.
+-	Again JVM starts incrementing count for every use of pre-compiled native code. If frequently count value reaches threshold some advanced 
+	JIT compilers will recompile generated machine code to generate more optimized machine code.	
+-	Internally profiler which is part of JIT compiler is responsible to identify hot-spots. 	
+
+What is Java Native Interfaces?
+
+-	Java Native Interfaces (JNI) acts as mediator for java native method calls and corresponding native libraries. 
+-	Java Native Interfaces is responsible to provide information about native libraries to JVM.
+-	Native method libraries hold native methods information.
+
+Explain class file structure?
+
+-	Following is the structure of class file in java,
+
+	classFile {
+	
+		magic_number;
+		
+		minor_version;
+		major_version;
+		
+		this_class;
+		super_class;
+	
+		interface_count;
+		interface[];
+		
+		constant_pool_count;
+		constant_pool[];
+
+		field_count;
+		field[];
+		
+		method_count;
+		method[];
+		
+		attribute_count;
+		attribute[];
+		
+		accessFlags;
+	}
+
+-	magic_number =	The first 4 bytes of class file is magic_number. This is predefined value used by JVM to identify .class files is generated by valid
+	compiler or not. The value should be 0xCAFEBABE.
+	Whenever we are executing a java class and JVM unable to find valid magic_number then we will get exception saying java.lang.ClassFormatError incompatible
+	magic_number.
+	
+-	minor_version & major_version = minor_version and major_version represents .class file versions. JVM will use these versions to identify which version of
+	compiler generates the current .class file.
+	Lower version compiler generated .class files can be run by higher version JVM, but higher version compiler generated .class files cannot be run using
+	lower version JVMs this will give runtime exception saying java.lang.UnsupportedClassVersionError.
+
+-	this_class = this_class represents fully qualified name of the current class.
+-	super_class = this_class represents fully qualified name of the immediate super class of current class.
+
+-	interface_count = interface_count represent count of interfaces implemented by current class.
+-	interface[]	= interface[] represent information of interfaces implemented by current class.
+
+-	constant_pool_count = constant_pool_count represents number of constants present in constant pool.
+-	constant_pool[]	=  constant_pool[] represents information about constants present in constant pool.
+
+-	field_count = fields_count represent count of static variables present in current class.
+-	field[] = fields[] represent information of static variables present in current class.
+	
+-	method_count = method_count represent count of methods present in current class.
+-	method[] = method[] represent information of methods present in current class.
+
+-	attribute_count = attribute_count represent count of instance variables present in current class.
+-	attribute[] = attribute[] represent information of instance variables present in current class.
+
+-	accessFlags = accessFlags provides information about modifiers declared to the class.
+
+-	To print above profile of .class file use below command,
+	# javap -verbose Test.class

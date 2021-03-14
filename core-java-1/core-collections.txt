@@ -1,0 +1,287 @@
+core java - collection in java
+
+What are collections?
+
+-	A collection is used for storing a group of similar objects under a single entity. In java all collections are declared under java.util package
+
+-	Not like array these objects can be of different data types and so collection are not type safe but collection can be made type safe by using generics.
+
+-	A collection can strictly hold elements of object type and not primitive type.
+
+							Map(I)																		Dictionary(C)
+								|																			 |
+		------------------------------------------------------												 |	
+		| 		  	 										 |												 |
+	 HashMap(C)									      SortedMap(I)										 Hashtable(C)		
+		|													|												 |
+	LinkedHashMap(C)								NavigableMap(I) 										 |
+															|												 |	
+														TreeMap(C)										 Properties(C)			
+														
+														
+												Collection(I)
+													|
+		--------------------------------------------------------------------------------------------------------
+		|																									   |			
+	   List(I)																								 Set(I)		
+		|																									   |	
+	--------------																						---------------------	
+	| 		  	 |																						| 		  	 		|	
+ArrayList(C)  LinkedList(C)																			HashSet(C)			SortedSet(I)	
+																										|					|
+																									LinkedHashSet(C)	NavigableSet(I)
+																															|
+																														TreeSet(C)	
+Explain the Map.Entry interface?
+
+-	Map.Entry is a inner interface to Map interface in java.util package and its implementations represent individual entity within any type of map.
+
+Explain HashMap and its internal working?
+
+-	HashMap is a class in java.util package and its internal data-structure is hashtable.
+
+- 	It does not allow duplicate keys insertion and also allows single null key insertion but it allows multiple null values insertion.
+
+-	Whenever a new key, value is added to HashMap hashcode of the key is computed, this hashcode decides bucket location in map hence it does not maintain
+	insertion order.
+
+-	It is not suitable for insert, update, delete operation i.e. computing hashcode for every element and deciding bucket before operation is time consuming
+	but it is suitable for search operation i.e. faster searching based on hashcodes.
+
+-	HashMap is an array and it provides inner class that implements Map.Entry interface to represent individual entity within HashMap and that class includes 
+	properties like hashcode, key, value and next.
+
+Explain the internal working of HashMap? 
+
+-	Consider we are adding key = 2, value = "B" to map and hashcode of 2 computes to bucket = 2.
+	
+	 H	 K	 V	 N
+	--- --- --- ---
+2	|2	 2	"B"	 -|
+	--- --- --- ---
+3	|			  |
+	--- --- --- ---
+4	|			  |
+	--- --- --- ---
+5	|		      |
+	--- --- --- ---
+	
+-	Also we are adding key = 3, value = "C" to map and hashcode of 3 computes to bucket = 3.
+
+	 H	 K	 V	 N
+	--- --- --- ---
+2	|2	 2	"B"	 -|
+	--- --- --- ---
+3	|3	 3	"C"	 -|
+	--- --- --- ---
+4	|			  |
+	--- --- --- ---
+5	|		      |
+	--- --- --- ---
+	
+-	Also we are adding key = 2, value = "A" to map and hashcode of 2 computes to bucket = 2, but we already have a key = 2 at bucket = 2 hence value "B" gets 
+	replaced with "A".
+
+	 H	 K	 V	 N
+	--- --- --- ---
+2	|2	 2	"A"	 -|
+	--- --- --- ---
+3	|3	 3	"C"	 -|
+	--- --- --- ---
+4	|			  |
+	--- --- --- ---
+5	|		      |
+	--- --- --- ---	
+	
+-	But if we override public boolean equals(Object obj) to return false irrespective of the key being equal then even if the key already exist in bucket = 2 but 
+	a new entry is added in same bucket
+	
+					 --------------------------------					
+					 |								|
+	 H	 K	 V	 N	 |			 H	 K	 V	 N		|
+	--- --- --- ---	 |			--- --- --- ---		|
+2	|2	 2	"A"  -|	<-		2	|2	 2	"B"  -|------
+	--- --- --- ---				--- --- --- ---
+3	|			  |			3	|3	3	"C"	 -|
+	--- --- --- ---				--- --- --- ---
+4	|			  |			4	|			  |		
+	--- --- --- ---				--- --- --- ---
+5	|		      |			5	|		      |
+	--- --- --- ---				--- --- --- ---
+	
+
+Explain the working of following method in HashMap class?
+	1.	public void	put(Object key, Object value)
+	2.	public Object get(Object key)
+
+1.	public void	put(Object key, Object value)
+
+	if(null == key) {
+
+		if(isSpecialNullEmpty) {
+			addEntryInNullBucket(value);	
+			return;
+		} 
+		
+		replaceEntryInNullBucket(value);
+		return;
+	}
+	
+	int hashCode = key.hashCode();
+	
+	if(isBucketEmpty(hashCode)) {
+		addEntryInBucket(hashCode, key, value);
+		return;
+	}
+
+	for(entryInBucket : entryInBucket(hashCode)) {
+	
+		if(entryInBucket.key == key || entryInBucket.key.equals(key)) {
+			replaceEntryInBucket(hashCode, key, value);
+			return;	
+		}
+	}	
+	addEntryInBucket(hashCode, key, value);
+	return;
+	
+	
+2.	public Object get(Object key)
+
+	if(null == key) {
+
+		if(isSpecialNullEmpty) {
+			return null;
+		} 
+		
+		return getEntryFromNullBucket();
+	}
+	
+	int hashCode = key.hashCode();
+	
+	if(isBucketEmpty(hashCode)) {
+		return null;
+	}
+
+	for(entryInBucket : entryInBucket(hashCode)) {
+	
+		if(entryInBucket.key == key || entryInBucket.key.equals(key)) {
+			return getEntryFromBucket(hashCode, key, value);	
+		}
+	}	
+	return null;
+
+
+Explain LinkedHashMap and its internal working?
+
+-	LinkedHashMap is a class in java.util package and its internal data-structure is hashtable.
+
+- 	It does not allow duplicate keys insertion and also allows single null key insertion but it allows multiple null values insertion.
+
+-	Whenever a new key, value is added to LinkedHashMap hashcode of the key is computed, this hashcode decides bucket location in map but it maintain insertion order.
+
+-	It is not suitable for insert, update, delete operation i.e. computing hashcode for every element and deciding bucket before operation is time consuming
+	but it is suitable for search operation i.e. faster searching based on hashcodes.
+
+-	LinkedHashMap is an array and it provides inner class that implements Map.Entry interface to represent individual entity within LinkedHashMap and that class includes 
+	properties like hashcode, key, value, next, before and after.
+
+Explain TreeMap and its internal working?
+
+-	TreeMap is a class in java.util package and its internal data-structure is binary search tree balanced using red black tree algorithm.
+
+- 	It does not allow duplicate keys insertion and also null key is not allowed but it allows multiple null values insertion.
+
+-	Whenever a new key, value is added to TreeMap binary search tree balanced using red black tree algorithm to decide bucket location in map but it
+	does not maintain insertion order.
+
+-	It is not suitable for insert, update, delete, search operation i.e. traversing of long branches of the tree is time consuming.
+
+-	The binary search tree sorts entries using default ascending sorting order where it uses java.lang.Comparable interface to sort entries. But we can use custom
+	sorting order where it uses java.util.Comparator interface to sort entries.
+
+-	For comparision purpose the key must be strictly of type Comparable otherwise we will get runtime exception saying ClassCastException but if key is not of
+	type Comparable we must explicitly provide comparision algorithm using Comparator interface.
+
+-	The comparision algorithm must strictly follow following guidelines,
+	return (firstKey > secondKey) ? 1 : ((firstKey < secondKey) ? -1 : 0);
+	
+-	In binary search tree the child node present on left of parent node is always lesser than parent node and child node present on right of parent node is always
+	greater than the parent node.	
+
+What are the steps of red-black balancing tree algorithm?
+
+-	In binary search tree every node must be of either red or black color.
+
+-	The root of binary search tree must be always black.
+
+-	There must not be two adjacent red nodes i.e a red node cannot have a red parent and red child.
+
+-	In binary search every path from root node to any of its last child node  must have the same number of black nodes. 
+
+What is difference between Comparable and Comparator?
+
+		Comparable							Comparator
+		
+-	It is an generic interface in		- It is an generic interface in
+	java.lang package.					  java.util package.
+
+-	Implementing class must override	- Implementing class must override
+	public int compareTo(Object object)	  public int compare(Object object1, Object object2);	
+
+-	Comparable compares invoking		- Comparator compares objects
+	object with the parameter objects.	  passed to it as parameter.
+	
+-	By default all wrapper classes		- We must explicitly override this
+	implement this interface and		  method to provide custom sorting. 
+	override the above method to
+	provide ascending sorting.
+
+			
+What is difference between Iterator<T> and Iterable?
+
+		Iterator									Iterable
+		
+-	Iterator is an interface in 			- Iterable is an interface in java.util package which 
+	java.util package.					 	  which Collection interface implements.
+
+-	It is used to iterate objects inside 	- It is associated with for each style loop.	
+	collection and arrays.	
+	
+-	It provides following methods,			- It provides following method,	
+
+	public Object next()					  public Iterator iterator()	
+	
+	public boolean hasNext()
+	
+	public Object remove()
+
+Explain Hashtable and its internal working?
+
+-	Hashtable is a class in java.util package and its internal data-structure is hashtable.
+
+- 	It does not allow duplicate keys insertion and also does not allows single null key or null values insertion.
+
+-	Hashtable is completely thread-safe but HashMap is completely non-thread-safe.
+
+Explain Properties and its internal working?
+
+-	Properties is a class in java.util package and its internal data-structure is hashtable and all key and values in Properties is strictly of type String.
+
+Explain ArrayList and its internal working?
+
+-	ArrayList is a class in java.util package and its internal data-structure is dynamic size array.
+
+- 	It allows duplicate values insertion and also allows one or more null values insertion also it maintains insertion order.
+
+-	It is not suitable for insert, update, delete operation i.e. shifting elements within an array or resizing the array is time consuming.
+
+-	But it is suitable for faster searching of values based on index position as array can be accessed randomly.
+
+Explain LinkedList and its internal working?
+
+-	LinkedList is a class in java.util package and its internal data-structure is linked-list.
+
+- 	It allows duplicate values insertion and also allows one or more null values insertion also it maintains insertion order.
+
+-	It is suitable for insert, update, delete operation but it is suitable for faster searching of values i.e to search a particular value in linked-list we need to
+	begin from first element of linked-list.

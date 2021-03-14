@@ -1,0 +1,206 @@
+core java - garbage collection
+
+What is garbage collection?
+
+-	In java garbage collection is the process removing unrequired object from main memory and garbage collection thread which is low priority thread running in 
+	background is responsible for garbage collection.
+-	It is JVM role to run garbage collection thread periodically and it is unpredicatble when JVM will run garbage collection thread.
+	
+How to make java object eligible for garbage collection?
+
+-	When a object on heap does not have any direct or indirect reference from stack then object is eligible	for garbage collection. 
+-	There are 4 ways to make a java object eligible for garbage collection,
+
+	1.	Nullifying the reference
+		{
+			Test t = new Test();
+			t = null;
+		}	
+	
+	2.	Reassigning the reference
+		{
+			Test t = new Test();
+			t = new Test();
+		}	 
+		
+	3. 	Object created in method have method level scope
+	
+		case 1:
+				{
+					public static void main(String[] args){
+						m1();
+					}
+					
+					public static void m1(){
+						Test t = new Test();	
+					}
+				}
+				 
+		case 2:
+				{
+					public static void main(String[] args) {
+						Test t = m1(); 
+					}
+					
+					public static Test m1() {
+						Test t = new Test();
+						return t;
+					} 
+				}
+
+		case 3:
+				{
+					public static void main(String[] args){
+						m1();
+					}
+					
+					public static Test m1(){
+						Test t = new Test();
+						return t;
+					}
+				}
+
+
+	
+		case 4: 
+				{
+					static Test t;
+					
+					public static void main(String[] args){
+						t = m1();
+					}
+					
+					public static Test m1(){
+						Test t = new Test();
+						return t;
+					}
+				}
+				
+				
+Explain island of isolation in garbage collection?
+	
+	Example:
+	
+	class Test{
+	
+		Test i;
+		
+		public static void main(String[] args){
+		
+			Test t1 = new Test();
+			Test t2 = new Test();
+			Test t3 = new Test();
+			
+			t1.i = t2;
+			t2.i = t3;
+			t3.i = t1; /**line-1**/
+			
+			t1 = null; /**line-2**/
+			t2 = null; 
+			t3 = null; /**line-3**/
+		}
+	}
+
+	stack heap structure after line-1, no object eligible for garbage collection.	
+												________________
+											    |	           |
+	t1 ---------------------------------->	--> |		i------|-------|
+											|	|______________|	   |
+											|						   |																		
+											|	________________       |
+											|	|	           |<-------	   
+	t2 ---------------------------------->	|	|		i------|-------|
+											|	|______________|	   |
+											|						   |
+											|	________________	   |
+											|   |	           |<-------
+	t3 ---------------------------------->	|---|-------i	   |
+												|______________|
+																								
+	
+	stack heap structure after line-2, no object eligible for garbage collection as there is still indirect reference from stack for first object.
+	
+												________________
+											    |	           |
+	t1 										--> |		i------|-------|
+											|	|______________|	   |
+											|						   |																		
+											|	________________       |
+											|	|	           |<-------	   
+	t2 ---------------------------------->	|	|		i------|-------|
+											|	|______________|	   |
+											|						   |
+											|	________________	   |
+											|   |	           |<-------
+	t3 ---------------------------------->	|---|-------i	   |
+												|______________|
+	
+
+	stack heap structure after line c, all object eligible for garbage collection as there is no direct or indirect reference from stack for any object.
+	
+												________________
+											    |	           |
+	t1 										--> |		i------|-------|
+											|	|______________|	   |
+											|						   |																		
+											|	________________       |
+											|	|	           |<-------	   
+	t2 										|	|		i------|-------|
+											|	|______________|	   |
+											|						   |
+											|	________________	   |
+											|   |	           |<-------
+	t3 										|---|-------i	   |
+												|______________|
+												
+How to call garbage collection thread manually?
+
+-	It is JVM role to run garbage collection thread periodically and it is unpredicatble when JVM will run garbage collection thread.
+-	But programmer can expicitly request JVM to execute garbage collection thread but JVM can also reject programmer request and not run the garbage 
+	collection thread.
+
+-	We have System class in java.lang package that provides public static void gc() method to call garbage collection thread also Runtime class in java.lang 
+	package that provides public void gc() method to call garbage collection thread.
+
+What is finalization?
+
+-	Before destryoing unrequired object from main memory garbage collection performs finalization and this is achieved by calling protected void finalize() throws Throwable
+	method on object to be destroyed.
+	
+-	This method is available in java.lang.Object class with empty implementation and any class can override this method and provide cleanup functionality.
+
+List conclusions on finalization process?
+
+-	We have System class in java.lang package that provides public static void gc() method to call garbage collection thread also Runtime class in java.lang 
+	package that provides public void gc() method to call garbage collection thread.
+
+-	Both these methods call protected void finalize() throws Throwable on object to be destroyed.
+
+-	When we explicitly call protected void finalize() throws Throwable on object to be destroyed the method is executed but object is not destroyed.
+
+-	When we explicitly call protected void finalize() throws Throwable on object to be destroyed an uncaught exception occurs during execution this exception
+	is delegated to caller method.
+	
+-	When JVM call protected void finalize() throws Throwable on object to be destroyed an uncaught exception occurs during execution this exception	is ignored
+	and not delegated to caller method.
+
+-	The protected void finalize() throws Throwable is called only once when the object is destroyed by JVM and if the same object is eligible for garbage 
+	collection again then this method is not called but the object is directly destroyed.
+
+	Example:
+	
+	class Test{
+		
+		Test i;
+			
+		protected void finalize() throws Throwable{
+			i = this;	/**object not eligible for garbage collection**/
+		}
+			
+		public static void main(String[] args){
+			
+			Test t = new Test();
+			t = null; 	/**first time object eligible for garbage collection**/
+			i = null; 	/**second time object eligible for garbage collection**/
+		}
+	}

@@ -1,0 +1,277 @@
+spring boot - dao
+
+What is the purpose of spring dao framework?
+
+-	The spring data access object (dao) framework is responsible to handle operations related to java database connectivity.
+
+-	It will load driver class, register the driver class, creating database connection, creating statement object, closing statement object and closing result object.
+
+-	It is able to convert all checked exception related to sql query execution into unchecked exception.
+
+-	It provide transaction management. 
+
+-	It is responsible to create and manage connection pool.
+
+What are different helper classes present inside spring dao framework that support sql query execution?
+
+-	The JdbcTemplate and NamedParameterJdbcTemplate are predefined helper classes present inside spring dao framework.
+
+-	These classes are responsible to handle operations related to java database connectivity.
+
+-	They will load driver class, register the driver class, creating database connection, creating statement object, closing statement object and closing result object.
+
+-	Using JdbcTemplate we use positional parameters in query represented using '?'.
+
+-	As the number of parameters increases it becomes difficult to manage all parameters with single identification i.e. '?'.
+	
+	Example:
+	
+	jdbcTemplate.queryForUpdate("UPDATE emp set sal = ? WHERE emp_id = ?");
+	
+-	We can use NamedParameterJdbcTemplate to remove positional parameters from query and use meaningfull named parameters.
+
+	Example:
+	
+	namedParameterJdbcTemplate.queryForUpdate("UPDATE emp set sal = :sal WHERE emp_id = :empId");
+
+-	To create object of JdbcTemplate and NamedParameterJdbcTemplate class we require data source object.
+
+	Example:
+	
+	JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
+	
+	NamedParameterJdbcTemplate namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
+	
+-	The spring dao framework also provide another predefined helper classes called JdbcDaoSupport and NamedParameterJdbcDaoSupport.
+
+-	We must define class that inherit one of these classes and override the following method.
+
+	Example:
+
+	public void setDatasource(Datasource dataSource)
+
+-	When data source object is initialized then these helper classes will create object of JdbcTemplate class or NamedParameterJdbcTemplate class.
+
+What are different helper classes present inside spring dao framework that support result set handling?
+
+-	Inside spring dao framework when we execute a select query the result of select query is returned in form of ResultSet cursor object.
+
+-	Working with cursor object is difficult and hence we sometimes need to convert each record within the cursor object into entity object.
+
+-	To provide this conversion we have functional interface called RowMapper interface.
+
+-	This interface is generic interface with type parameter as entity object type and it provides following abstract method that we must override.
+
+	public abstract T mapRow(ResultSet rs, int rowNum) throws SQLException	
+
+-	By overriding this method we must initialize the fields of entity object using columns present in ResultSet cursor object	
+
+	Example:
+	
+	new RowMapper<Employee>() {
+	
+		public Employee mapRow(ResultSet rs, int rowNum) throws SQLException {
+		
+			Employee employee = new Employee();
+			employee.setId(rs.getLong("id"));
+
+			return employee;	
+		}
+	}
+
+-	But sometimes we need to initialize entity object with only specific records which are part of ResultSet cursor.
+
+-	To achieve this we use functional interface called ResultSetExtractor interface.
+	
+-	This interface is generic interface with type parameter as entity object type and it provides following single abstract method that we must override.
+
+	public abstract T extractData(ResultSet rs) throws SQLException, DataAccessException
+
+-	By overriding this method we must initialize the fields of entity object using columns present in ResultSet cursor object for only required record.	
+	
+	Example:
+	
+	new ResultSetExtractor<List<Employee>>() {
+	
+		public List<Employee> extractData(ResultSet rs) throws SQLException, DataAccessException {
+		
+			List<Employee> employeeList = new ArrayList<Employee>();
+			Employee employee = null;	
+			
+			while(rs.next()) {
+			
+				employee = new Employee();
+				employee.setId(rs.getLong("id"));
+				employeeList.add(employee);
+			}
+			return employeeList;	
+		}
+	}
+
+-	In case of RowMapper spring dao framework manages iteration over the ResultSet cursor object i.e the overriding method is called for every record present 
+	inside ResultSet cursor.
+
+-	But for ResultSetExtractor we must write code to iterate over ResultSet cursor object i.e the overriding method is called only once for entire ResultSet cursor.
+
+What is persistence-context?
+
+-	The persistence-context is a collection of entities and EntityManager interface provides different ways to access persistence-context.
+
+-	All entities inside persistence-context represent records in different tables of database.
+
+-	When a entity is added to persistence-context or existing entity is modified then such entity is called dirty entity.
+
+-	Upon committing a transaction or flushing persistence-context all dirty entities are persisted into database.
+
+-	Every persistence-context is scoped i.e. persistence-context can either be created for every new transaction and closed when transaction is completed either
+	by comitting or by rollback.
+
+-	Also we can have persistence-context that can be shared across multiple database transactions.
+
+-	In web-application the web-container creates a new thread to process each request, in such cases we must have new entity-manager for each thread. 
+
+-	We can use @PersistenceContext annotation with PersistenceContextType attribute type to define the scope of persistence-context also default scope of
+	persistence-context is one persistence-context per thread.
+
+-	Inside spring application when the @PersistenceContext annotation is used with one persistence-context per thread scope then IOC container will inject 
+	thread-safe proxy object inside entity-manager object.
+
+-	The purpose of this thread-safe proxy object is to delegate the persistence operation to non-thread-safe entity-manager object.	
+
+What is purpose of @Transactional annotation in spring dao framework?
+
+-	When we have one persistence-context per thread then IOC container creates thread-safe entity manager and use it for dependency injection.
+
+-	When a class or any method inside class is annotated with @Transactional then at runtime IOC container will create proxy bean object for it.
+
+-	This proxy bean object will be used for dependency injection instead of actual spring bean class object.
+	
+	Example:
+	
+	@Repository
+	public class EmployeeRepositoryImpl implements EmployeeRepository {
+	
+		@PersistenceContext(type = PersistenceContextType.THREAD)
+		private EntityManager entityManager;
+	
+		@Transactional
+		public void save(Employee employee){
+		
+			entityManager.save(employee);
+		}
+	}
+	
+	public class ProxyEmployeeRepositoryImpl implements EmployeeRepository {
+	
+		public void save(Employee employee){
+		
+			//transaction management pre-processing logic
+		
+			EmployeeRepositoryImpl employeeRepositoryImpl = new EmployeeRepositoryImpl();
+			
+			employeeRepositoryImpl.save(employee);
+			
+			//transaction management post-processing logic
+		}
+	}
+	
+	@Service
+	public class EmployeeServiceImpl implements EmployeeService {
+	
+		@Autowired
+		private EmployeeRepository employeeRepository;
+		
+		public void save(Employee employee){
+			
+			employeeRepository.save(employee);
+		}
+	}
+
+
+-	This proxy bean will provide implementation for transaction management pre-processing and post-processing operation.
+
+-	It will call the transaction manager spring bean which will decide whether a new transaction is required or not.
+
+-	When new entity manager is required transaction manager spring bean will create new entity manager and also begin a new transaction.
+
+-	Both entity manager and transaction references will be kept in ThreadLocal variable so that the are accessible only to current thread.
+
+-	Now proxy spring bean object will call actual method and within this method thread-safe entity manager is called to perform operation. 
+
+-	This thread-safe entity manager identifies actual entity manager from ThreadLocal variable delegate operation to it. 
+	
+-	When the operation is completed the proxy spring bean object will call the transaction manager to commit the transaction.
+
+-	Otherwise if any exception occurs proxy spring bean will ask transaction manager rollback the transaction.
+
+What are the different attributes of @Transactional annotation and why are they used?
+
+-	The @Transactional annotation has following attributes.
+
+-	The	propogation attribute helps to determine whether a new transaction is required for database operation even if a transaction exist or do not exist.
+	
+-	The	isolation attribute determine visibilty of changes made in one transaction to another transaction.
+
+-	The rollback determine for which java exceptions should the transaction be rollbacked.
+
+-	The timeout determine maximum expected time transaction must takes to complete otherwise it will be rollbacked.	
+
+-	The readOnly determine whether the transaction include only SELECT queries or it include INSERT, UPDATE and DELETE queries also.
+
+Explain the connection pooling algorithm used by spring boot framework's auto configuration feature?
+
+-	When the spring boot application is started the auto configuration feature will call connection pool dependency scan algorithm.
+
+-	It will look for hikari connection pool dependency in classpath and if this dependency exist then hikari connection pool will be created.	
+
+-	But when the hikari connection pool dependency is not present inside classpath then algorithm will look for tomcat connection pool dependency inside classpath.
+
+-	When tomcat connection pool dependency is not present inside classpath then algorithm will look for dbcp connection pool dependency inside classpath.
+
+-	Then if dbcp connection pool dependency is not present inside classpath then algorithm will look for third party connection pool dependency inside classpath.
+
+-	We can make auto configuration feature not call this connection pool dependency scan algorithm by directly providing the connection pool information inside application.properties.
+
+	Example:
+	
+	spring.datasource.type = com.mchange.v2.c3p0.ComboPooledDataSource
+
+What are different helper classes provided by spring boot jpa framework?
+
+-	In spring boot data jpa framework provide three predefined helper interfaces called JpaRepository, CrudRepository and PagingAndSortingRepository.
+
+-	These three interfaces are generic interfaces with two type parameters where first type parameter is entity class and second type parameter is primary key class. 
+
+-	These three interfaces exist in multi-level inheritance.
+
+-	CrudRepository<T, I> is grand-parent interface followed by PagingAndSortingRepository<T, I> as parent interface and JPARepository<T, I> is child interface.	
+	
+-	CrudRepository<T, I> provides declaration for abstract methods required for CRUD operation on persistent entity.
+
+-	PagingAndSortingRepository<T, I> provides declaration for abstract methods required for pagination and sorting of persistent entity.
+
+-	Finally JpaRepository<T, I> provides declaration for abstract methods that allows interaction with persistence-context like flushing the persistence-context.
+
+-	Any interface that implement any one of these interface then IOC container will generate implementation class at runtime.
+
+-	Also we can declare our own abstract method inside interface and spring boot data jpa framework will generate implementation at runtime.
+
+	Example:
+	
+	@Repository
+	public class EmployeeRepositoryImpl implements JpaRepository<Employee, Long> {
+	
+		public abstract Employee findByName(String name);
+	}
+
+
+-	This framework also provide annotation called @Query annotation that accept one string parameter called name to declare user defined query.
+
+	Example:
+	
+	@Repository
+	public class EmployeeRepositoryImpl implements JpaRepository<Employee, Long> {
+	
+		@Query(name = "from Employee e e.name = :name and e.age = :age")
+		public abstract Employee findByNameAndAge(String name, int age);
+	}	

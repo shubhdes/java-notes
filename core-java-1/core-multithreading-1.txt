@@ -1,0 +1,349 @@
+core java - multi-threading
+
+What is multi-threading and how is it different from multi-tasking?
+
+-	The process of doing multiple jobs together is called multi-tasking and multi-tasking can be process based or thread based.
+
+-	In process based multi-tasking different independent program execute simultaneously like downloading file, listening music, writing in editor but in thread 
+	based multi-tasking different independent part of same program execute simultaneously.
+
+How to create a thread in java?
+
+-	A thread is separate and independent flow of execution and to create thread in java we have class called Thread in java.lang package.
+-	This Thread class provides below method that will create separate flow of execution,
+	public void start()
+
+-	A separate flow must have a task or job to execute and to create a thread-job for thread in java we can implement the Runnable interface in in java.lang package
+	or extend Thread class in java.lang package.
+
+-	The Thread class is subclass of Runnable interface and provides empty implementation to below method, 
+	public void run()
+
+-	When we define a thread-job we must override the above method.
+
+	Example:
+	
+	class ThreadTask implements Runnable {
+	
+		public void run() {
+		
+			for(int i = 0; i < 10; i++) {
+			
+				System.out.println("child thread");
+			}
+		}
+		
+		public static void main(String[] args) {
+		
+			ThreadTask tt = new ThreadTask();		/**ThreadTask is not subclass of java.lang.Thread is does not have access to public void start()**/
+			Thread t = new Thread(tt);
+			t.start();
+		}
+	}
+	
+	Example:
+	
+	class ThreadTask extends Thread {
+	
+		public void run() {
+		
+			for(int i = 0; i < 10; i++) {
+			
+				System.out.println("child thread");
+			}
+		}
+		
+		public static void main(String[] args) {
+		
+			ThreadTask tt = new ThreadTask();
+			tt.start();
+		}
+	}
+	
+-	Inorder to start a thread we must call thread.start() method not thread.run() from otherwise a separate thread will not be created instead thread.run() 
+	method will be executed by same thread.
+
+-	We cannot start a thread that is already running otherwise we will get runtime exception saying IllegalThreadStateException.
+ 
+What are thread priorities?
+
+-	Every thread in java is associated with thread priority which is number from 1 to 10 describing thread importance.
+-	Thread with highest priority will be executed first and for threads with same priorities their execution is unpredictable and depends on thread-scheduler.
+
+-	The default priority of all thread is 5 also all child threads have same priority as parent thread.
+
+-	Thread class provides three integer constants to represent thread priorities they are,
+	
+	public static final int MIN_PRIORITY = 1;
+	public static final int NORM_PRIORITY = 5;
+	public static final int MAX_PRIORITY = 10;
+
+-	We can explicitly change thread priority using following method,
+	public final void setPriority(int priority)
+	
+-	We can retrieve thread priority using following method,
+	public final int getPriority()
+	
+-	If thread priority is set to value not within valid range i.e between 1 to 10 then we will get runtime exception saying IllegalArguementException.	
+
+How to prevent execution of thread for some time?
+
+-	To prevent execution of thread for some time we have different methods they are as follows,
+
+	a)	public static native void yield()
+
+		-	This method will pause current execution of thread to give chance to another equal or high priority thread and current thread enter wait state and 
+			it depends on thread-scheduler to deterimine when to resume the execution of current thread. But if all waiting thread are less priority thread then
+			current thread execution is resumed.
+
+		-	However some operating system does not support this method as it allows automatically releasing resource from one thread and allocating same
+			resource to another thread.
+
+	b)	public final void join() throws InterruptedException
+		public final void join(long mill) throws InterruptedException
+		public final void join(long mill, int nano) throws InterruptedException
+
+		-	This method will pause execution of one thread till another thread completes or till specified time interval is over.
+		
+		-	Now main thread will wait until child thread completes its execution but if waiting main thread is interrupted it will raise runtime exception
+			saying InterruptedException.
+
+		-	When main thread calls join on child thread which is not started yet then main thread assumes child thread execution is over and it begins its 
+			execution.
+		
+		Example:
+			
+			public static void main(String args[]){
+			
+				ChildThread ct = new ChildThread();
+				ct.start();
+
+				ct.join();	/** wait till child thread execution is complete**/
+			
+				System.out.println("main thread");
+			}
+
+
+	c)	public static native void sleep(long mill) throws InterruptedException
+		public static void sleep(long mill , int nano) throws InterruptedException
+
+	-	This method will pause current execution of thread till specified time interval is over and the paused thread enters wait state also if waiting thread 
+		is interrupted it will raise runtime exception saying InterruptedException.
+
+What are the similarities and differences between Thread.sleep(long ms) and Thread.yield()?
+
+-	Both sleep(long ms) and yield() is a static method in java.lang.Thread class and they change state of invoking thread to wait.
+
+		sleep(long ms)								yield()
+
+-	It causes invoking thread to enter			-	It causes invoking thread to enter runnable state.
+	wait state for specific time interval.			
+
+-	Thread resumes after sleep interval			-	When thread resumes depends on thread-scheduler.
+	is completed.								
+	
+-	If called from synchronized block			-	If called from synchronized block it releases
+	it does not release lock from the object.		lock from the object.	
+
+-	It throws InterruptedException when 		-	It does not throw any exception when the waiting thread
+	sleeping thread is interrupted.					is interrupted.
+
+What is synchronization in multi-threading?
+
+-	If multiple thread operate on same java object this leads to data inconsistency also called race condition to avoid this situation we use synchronization.
+	
+	Example:
+	
+	class Test {
+	
+		private int count = 0;
+		
+		public void increment() {
+			count = count + 1;
+		}
+	}
+
+-	The increment operation is not atomic and includes several operations like reading value of count, evaluvating count + 1 and assigning new value to count.  
+-	It is possible that two or more thread may overlap the above steps and result into data inconsistency.
+	Example:
+	Assume thread-1 reads count as 0 and JVM switches to thread-2 which reads count as 0 and evaluvates count + 1 to 1. Now again JVM switches to thread-1
+	which evaluvates count + 1 to 1 and set new value to count variable as 1 but when JVM switches to thread-2 it will also set count variable to 1 and changes
+	of thread-1 are missed by thread-2.	
+
+-	To achieve synchronization we use synchronized keyword which is applicable at method and block level.
+	
+	Example:
+	
+	class Test {
+	
+		private int count = 0;
+		
+		public synchronized void increment() {
+			count = count + 1;
+		}
+	}
+	
+-	When a method or block within method is declared as synchronized only single thread can operate on method and block at a time and avoid data inconsistency
+	but this increases waiting time for threads and hence affect performance. 
+
+-	Whenever a thread executes a synchronized method or block it acquires lock on the object on which the method is invoked or object used as parameter to 
+	synchronized block and after synchronized method or block execution is over the thread release lock from the object.
+
+What are different scenarios of synchronization? 
+
+-	Following are different scenarios of synchronization,
+	
+	a) When a thread is executing synchronized method on a object another thread cannot execute simultaneously synchronized method on same object.
+	
+	class Test {
+		
+		public synchronized void m1(){}
+		
+		public synchronized void m2(){}
+		
+		public void m3(){}
+	}
+
+	-	Assume following threads are available, thread-1 wants to execute synchronized method m1() and gets lock on object x, thread-2 wants to execute
+		synchronized method m2() on object x but cannot get lock and needs to wait for thread-1 to release lock.
+	-	Now thread-3 wants to execute non-synchronized method m3() on object x  hence thread-3 can start as it do not require any lock on object x.
+	
+	a) When a thread is executing static synchronized method on a object another thread cannot execute simultaneously static synchronized method on same object.
+
+	class Test {
+		
+		public synchronized void m1(){}
+		
+		public static synchronized void m2(){}
+	
+		public static void m3(){}
+		
+		public static synchronized void m4(){}
+	
+	}
+		
+	-	Assume following threads are available, thread-1 wants to execute synchronized method m1() and gets lock on object x, thread-2 wants to execute
+		synchronized method m1() on object x but needs to wait for  thread-1 to release lock.
+	-	But thread-3 wants to execute static synchronized method m2() hence it gets lock on Test.class and begins execution, now thread-4 wants to execute 
+		static non-synchronized method m3() as it do not require any lock it can begin its execution.
+	-	Now thread-5  wants to execute static synchronized method m4() but cannot get lock on Test.class and needs to wait till thread-3 releases the lock.
+
+What is inter-thread communication in multi-threading?
+
+-	In java threads can communicate with each other by acquiring and releasing locks from java objects and when a java object is locked by one thread it cannot
+	be locked by another thread till first thread release the lock from object.
+	
+-	Because threads can communicate with each other by acquiring and releasing locks from java objects using synchronization, but any attempt of thread communication
+	without synchronization will raise runtime exception saying IllegalMonitorStateException.
+
+-	The locks are present on objects and not on threads hence methods used for communication are part of java.lang.Object class and not java.lang.Thread class.
+
+-	The methods used for inter-thread communication are as follows, 
+	
+	a)	public final void wait() throws InterruptedException		
+		public final void wait(long timeout, int nanos) throws InterruptedException
+		public final void wait(long timeout) throws InterruptedException
+
+	-	This method will release lock from current object and pause execution of thread until it recieves notification and make thread to enter wait state 
+		also if the waiting thread is interrupted then it will raise runtime exception saying InterruptedException.
+		
+	b)	public native final void notify() 
+		public native final void notifyAll() 
+
+	-	This method will release lock from current object and send notification to other threads waiting to acquire lock on java object.
+
+What are the differences between Thread.sleep(long ms) and Object.wait()?
+
+		sleep(long ms)								wait()
+
+-	sleep(long ms) is a static method		-	wait() is non static method
+	in java.lang.Thread class.					in java.lang.Object class.
+
+-	It causes invoking thread to sleep		-	It causes thread from which it is invoked
+	for specific time interval.					to wait till it recieves notification from another thread.
+
+-	Thread resumes after sleep interval		-	Thread resumes after recieving notification 
+	is completed.								from another thread.
+	
+-	It can be called from synchronized		-	It must be called from synchronized	
+	or non synchronized context.				context otherwise we will get runtime exception saying IllegalMonitorStateException. 	
+
+-	If called from synchronized block		-	It releases lock from the object.	
+	it does not release lock from the object.
+
+What is deadlock in multi-threading and how does it occurs?
+
+-	Deadlock is a situation where thread-1 waits for thread-2 to release resource-1 and thread-2 waits for thread-1 to release resource-2 due to this 
+	execution comes to infinite waiting and the main reason for deadlock is locking resources using synchronization.
+	
+	Example:
+	
+	class Test {
+	
+		private Integer r1 = 10;
+		private Integer r2 = 20;
+	
+		public void m1() {
+		
+			synchronized(r1) {
+			
+				synchronized(r2) {
+				
+				}
+			}
+		}
+		
+		public void m2() {
+		
+			synchronized(r2) {
+			
+				synchronized(r1) {
+				
+				}
+			}
+		}
+	}
+
+-	Assume thread-1 is executing method m1() and it acquires lock on resource r1 now JVM switches to thread-2 which is executing m2() and acquires lock on
+	resource r2. Now thread-1 require resource r2 and hence needs to wait till thread-2 release resource r2 also thread-2 require resource r1 and needs to wait
+	till thread-1 release resource r1.
+
+-	The solution to above problem is acquiring lock on resource must be performed in same order for all threads. 
+
+	Example:
+
+	class Test {
+	
+		private Integer r1 = 10;
+		private Integer r2 = 20;
+	
+		public void m1() {
+		
+			synchronized(r1) {
+			
+				synchronized(r2) {
+				
+				}
+			}
+		}
+		
+		public void m2() {
+		
+			synchronized(r1) {
+			
+				synchronized(r2) {
+				
+				}
+			}
+		}
+	}
+	
+What are problems with synchronized keyword?
+
+-	Following are different problems with synchronized keyword,
+	
+	a)	When synchronized keyword is used assignment of lock on object to a particular thread is very random this sometimes can cause a thread to wait for 
+		longer time causing starvation.
+	b)	It causes execution of single thread at a time and other threads have to wait till it gets lock on the required object.
+	c)	If threads do not acquire lock on objects in correct sequence using synchronized keyword this can cause situation of deadlock.
+	d)	The synchronized keyword does not provide any API methods to find number of threads waiting to acquire lock on object.

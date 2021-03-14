@@ -1,0 +1,550 @@
+oracle - sql
+
+What are indexes and why are they required?
+
+-	Indexes are database objects and they are used for faster retrieval of data result using select query.
+-	An index is created on one or more table columns and such columns are called indexed columns.
+-	Index contains ordered data from the indexed column, which is mapped to phsyical address of that record in orignal table.
+-	This phsyical address is called row identifier which is combination of segment identifier, data file identifier inside tablespace, data block number
+	inside file and row number inside block.
+-	Hence whenever any insert, update or delete operation is performed on main table the corresponding action needs to be done on index hence indexes
+	reduce database performance during insert, update or delete operation.
+	
+	Example:
+	Consider below emp table in database:
+	#id		#name	#sal	#gen	#pan_no
+	e1		john	1000	M		p1
+	e2		jack	3000	M		p2
+	e3		alice	7000	F		p3
+	e4		bob		8000	M		p4
+	e5		olive	9000	F		p5
+	e6		joe		11000	M		p6
+	e7		smith	13000	M		p7
+
+	Query:
+	select 
+		sal
+	from 
+		emp
+	where
+		sal <= 7000;
+
+	Result:
+	#sal
+	1000
+	3000
+	7000
+
+-	For the above query if index does not exist on sal column of emp table then each record from emp table is compared with filter condition and this
+	process continous till last record, this is called as full table scan.
+-	If the sal column is indexed then we have following indexed object,
+	
+	#rowid		#sal
+	rowid-1	=	1000
+	rowid-2	=	3000
+	rowid-3	=	7000			
+	rowid-4	=	8000		--comparision stops here as index has ordered data and further no rowid can exist with sal > 7000
+	rowid-5	=	9000
+	rowid-6	=	11000
+	rowid-7	=	13000...
+	
+How are indexes implemented by oracle?
+	
+-	The main purpose of index is faster retrieval of data result using select query, to achieve this purpose indexes are implemented using one of the
+	following data structure,
+	a)	B-tree data structure
+	b)	Bitmap data structure
+
+What is B-tree data structure for an index?
+
+-	A b-tree data structure for an index is a binary search tree, within b-tree there are three types of nodes root node, index nodes and leaf nodes.
+-	The root node, every index node and leaf node consist of one or more key that holds the value present within indexed column.
+-	For every key within the index nodes can have atmost two child nodes called as left child node connected to left branch of the key and right 
+	child node connected to right branch of the key	
+-	The key within leaf node do not have child node i.e. leaf node is the last level of b-tree structure.
+-	The key with then leaf node are mapped to physical address of the record in orignal table.
+
+	Example:
+	Consider below emp table in database:
+	#id		#name	#sal	#gen	#pan_no
+	e1		john	1000	M		p1
+	e2		jack	3000	M		p2
+	e3		alice	7000	F		p3
+	e4		bob		8000	M		p4
+	e5		olive	9000	F		p5
+	e6		joe		11000	M		p6
+	e7		smith	13000	M		p7
+		
+	Query:
+	create index idx_sal on emp(sal);
+
+	B-tree index:
+
+										----------------
+										| 1000 | 13000 |
+										----------------
+										|	   |	   |
+						----------------	   |		-------------------------------------------------------------
+						|				  	   |																	|
+				----------------	---------------															----------------	
+				| 1000 | 50000 |	| 6000 | 9000 |	-------------------------------------------------------| 12000 | 13000 |
+				----------------	--------------											 |				-----------------
+				|	   |				   |												 |						|
+			-----	   |				  rowid-3=7000 > rowid-4=8000 > rowid-5=8000	rowid-6=11000	 		rowid-7=13000
+			|		rowid-2=3000	    
+	rowid-1=1000						  				
+
+-	The b-tree index is suitable when the column to be indexed has large number of distinct values.
+-	For every insert, update and delete operation on indexed column in table the b-tree index requires same operation to be performed on it hence
+	performance of these operations is effected. 
+
+What is Bitmap data structure for an index?
+	
+-	The bitmap structure for an index is a matrix that maps physical address location of each record from orignal table to set of binary bits.
+-	These binary bits help to identify the value present within indexed column of the database table.
+-	The bitmap structure of an index is suitable only when indexed columns have fewer possible distinct values.
+
+	Example:
+	Consider below emp table in database:
+	#id		#name	#sal	#gen	#pan_no
+	e1		john	1000	M		p1
+	e2		jack	3000	M		p2
+	e3		alice	7000	F		p3
+	e4		bob		8000	M		p4
+	e5		olive	9000	F		p5
+	e6		joe		11000	M		p6
+	e7		smith	13000	M		p7
+		
+	Query:
+	create bitmap index idx_sal on emp(gen);
+
+	Bitmap index:
+
+	#rowid		#M		#F
+	rowid-1		1		0
+	rowid-2		1		0
+	rowid-3		0		1
+	rowid-4		1		0
+	rowid-5		0		1
+	rowid-6		1		0
+	rowid-7		1		0
+	
+-	When any insert, update and delete operation on indexed column then oracle locks all column with same index values this will affect the performance
+	as during lock period other transaction cannot perform insert, update and delete operation on indexed column.	
+	Example:
+	update
+		emp
+	set
+		gen = 'F'	
+	where
+		id = 'e7';	--lock all records from emp where gen = 'F' till the transaction is committed or rollbacked
+
+	rollback;	--release lock of all records from emp where gen = 'F'
+
+-	Bitmap indexes are used only when the filter condition of the select query involves indexed column and select query is supposed to return only bitmap indexed
+	column or bitmap indexed column with other indexed columns as a part of data result.
+	Example:
+	select
+		gen
+	from	
+		emp
+	where
+		gen = 'M';
+		
+	select
+		id, gen
+	from	
+		emp
+	where
+		gen = 'M';
+
+-	But when select query returns atleast one non-indexed additional columns with bitmap indexed column as a part of data result then full table 
+	scan is performed.
+	Example:
+	select
+		name, gen
+	from	
+		emp
+	where
+		gen = 'M';
+		
+	
+What are different types of indexes?
+
+-	Following are different types of indexes based on indexed column values they store,
+
+	a)	Simple index
+	-	A simple index is an ordinary index that can be created on any one column within database table.
+	-	The default structure implementation for simple index is b-tree index.
+		Example:
+		create index idx_sal on emp(sal);
+
+	b)	Composite index
+	-	A composite index is an ordinary index that can be created on multiple column within database table.
+	-	The default structure implementation for simple index is b-tree index.
+	-	Example:
+		create index idx_id_sal on emp(id, sal);
+	
+	c)	Unique index
+	-	A unique index is a ordinary index that can be created on column within database table which hold unique values.
+	-	We cannot create a unique index on column with duplicate values.
+	-	The default structure implementation for simple index is b-tree index.
+	-	Example:
+		create unique index idx_id_pan_no on emp(pan_no);
+	
+	d)	Non-unique index
+	-	A non-unique index is a ordinary that can be created on column within database table which do not hold unique values.
+	-	We can create non-unique index on column with unique or non-unique values.
+	-	By default all indexes are non-unique indexes.
+	-	The default structure implementation for simple index is b-tree index.
+	-	Example:
+		create index idx_id_sal on emp(sal);	
+	
+	e)	Reverse key index
+	-	A reverse key index stored the indexed column value in reversed fashion.
+	-	This will ensure to ensure that leaf node have first occurrences of highest indexed column values and useful when frequent select operations 
+		involves retrieval of highest index column value.
+	-	Most of the times reverse key index ensure uniform distribution of leaf nodes across the data nodes.	
+	-	Example:
+		create index idx_id_sal on emp(sal) reverse;	
+	
+	f)	Function index
+	-	It is the index that stores function or expression computed result of indexed column value.
+	-	Example:
+		create index idx_id_sal on emp(0.10 * sal);
+		create index idx_id_name on emp(upper(name));	
+	
+When are indexes used and not used?
+
+-	Within a select query if filter condition contains indexed column then select query will use index for faster retrieval of data result.
+-	Within a select query if filter condition contains primary key or unique constraint column then select query will use index for faster 
+	retrieval of data result.
+-	Indexes do not contain null values from indexed columns hence indexes are not used for filter that involves null condition.
+-	When filter condition involves used of function on indexed columns then indexes will not be used.
+
+What are different types of index scan?
+
+-	Following are different types of index scan,
+
+	a)	Range index scan
+	-	The range type of scan is performed on non-unique index.
+	-	In below example the scan will continue even after finding first record with sal = 7000 till it finds sal > 7000 because first occurrence of
+		sal = 7000 does not gaurantee that no further record will have sal = 7000 as sal index is non-unique.
+		Example:
+		select 
+			sal
+		from 
+			emp
+		where
+			sal <= 7000;
+		
+	b)	Unique index scan
+	-	The unique type of scan is performed on unique index.
+	-	In below example the scan will stop immediately after finding first record with id = e2 as no further record will have id = e2 as
+		id index is unique.
+		Example:
+		select 
+			sal
+		from 
+			emp
+		where
+			id = 'e2';
+	
+	c)	Full index scan with aggregate function
+	-	The full index scan with aggregate function is used when select query is supposed to return aggregate function result on indexed column.
+	-	In this oracle can compute the result directly from index rather than referring orignal table using index.
+		Example:
+		select 
+			sum(sal)
+		from 
+			emp;
+	
+	d)	Fast full index scan
+	-	The fast full index scan is used when select query returns result from indexed column.
+	-	In this oracle can compute the result directly from index rather than referring orignal table using index.
+		Example:
+		select 
+			sal
+		from 
+			emp;
+
+Explain the architecture of oracle database?
+
+-	An oracle database is combination of database instance and storage area.
+-	The instance is a data structure created upon volatile memory when database is started whereas storage refers to files that actually contain user
+	data and stored upon non-volatile memory.
+
+	<--------------------------Instance--------------------------->
+	---------------------------------------------------------------
+	|					|					|					  |
+	|	 Shared Pool	|	Buffer Cache	|	Redo Log Buffer   |
+	|					|					|					  |
+	|-------------------|					|					  |
+	|	  SQL Area		|					|					  |
+	|-------------------|					|					  |
+	|  Data Dictionary	|					|					  |
+	|	   Cache		|					|					  |
+	---------------------------------------------------------------
+	|					   		Processes						  |					
+	---------------------------------------------------------------	
+	
+	<--------------------------Storage--------------------------->
+	---------------------------------------------------------------
+	|					|					|					  |
+	|	Data Files		|	Control Files	|	Redo Log Files	  |
+	|					|					|					  |
+	---------------------------------------------------------------	
+
+Explain working of listener in oracle database?
+
+-	The listener is a program in oracle that is responsible to connect the oracle client with oracle server.
+
+-	When an oracle database instance is started one of the instance process named PMON registers the database instance with the listener program.
+-	To identify one or more the listener program PMON uses listener.ora file from $ora_home/network/admin/ location.
+
+-	For every oracle client to connect an database instance requires to request the listener program with three essential parameters. 
+-	These parameters are hostname or IP address of the server on which listener program is running, port number to identify process executing the listener
+	program and service name that helps listener program identify which database instance to connect.
+	
+-	After recieving these information from oracle client listener program validates these details and once validation is complete it spawns a server process
+	at database instance.
+-	It is this server process that act as an interface between oracle client and oracle database.
+
+Explain the execution of select statement within a oracle database?
+
+-	When a client executes a select statement to fetch data result from the database these select statement execution is responsibility of server process.
+
+-	The server process find hash-code for the select query based on select query text and further it parses the SQL statement and performs syntax validation,
+	semantic validation and privelage validation.
+-	To perform syntax validation server process checks whether the SQL statement is correct and if any library function is used it is available in Shared Pool.	
+-	To perform semantic validation server process checks whether the SQL statement contains valid column names and table names to do so it check data dictionary
+	cache.
+-	Finally it performs privelage validation to ensure that the user is allowed to execute the select query upon table to do so it check data dictionary
+	cache.	
+
+-	When above validation are successfully completed the server process invokes optimizer program to optimize the query and generate execution plan.
+-	This execution plan along with the hash-code is stored in SQL area for further re-use.
+
+-	Now the server process executes the select query and data result in form of data blocks is brought to Buffer Cache from Data Files.
+-	If the same select query is re-executed the server process find hash-code for the select query based on select query text and since hash-code is available
+	in SQL area the execution plan from SQL area is directly used for query execution.
+-	In this case server process skips query validation and optimization steps.	
+	
+Explain the execution of DML/DDL statement within a oracle database?
+
+-	When a client executes a DML statement to insert or update or delete data result from the database these DML statement execution is responsibility of 
+	server process.
+
+-	The server process find hash-code for the DML query based on DML query text and further it parses the SQL statement and performs syntax validation,
+	semantic validation and privelage validation.
+-	To perform syntax validation server process checks whether the SQL statement is correct and if any library function is used it is available in Shared Pool
+	area.	
+-	To perform semantic validation server process checks whether the SQL statement contains valid column names and table names to do so it check data dictionary
+	cache.
+-	Finally it performs privelage validation to ensure that the user is allowed to execute the select query upon table to do so it check data dictionary
+	cache.	
+
+-	When above validation are successfully completed the server process invokes optimizer program to optimize the query and generate execution plan.
+-	This execution plan along with the hash-code is stored in SQL area for further re-use.
+
+-	Now the server process executes the select query and data result in form of data blocks is brought to buffer cache from data files.
+
+-	The old data value from the block is written to undo data file and the block is updated with new data value in buffer cache. Also the orignal data block 
+	from data file is locked, this means if any select query tries to read the data now then it will directly read it from data file which still has old value.
+-	At this step entry is made into redo log buffer for this transaction.
+
+-	Now if the user fires a rollback then block present in buffer cache is updated with old value from undo data file and is orignal data block from data file
+	is also updated	with block from undo data file if its value is changed.
+	
+-	But if the user fires a commit then within redo log buffer the transaction entry updated with system generated number based on timestamp.
+-	Another instance process called LGWR is responsible to empty the redo log buffer into redo log file on storage.
+	
+-	Another instance process called DBWR is responsible to write the new value from block present in buffer cache to block present in data file. 
+	
+-	This operation may happen immediately or with a delay, it may happen that DBWR writes the data block to the data file before commit.	
+-	Whenever DBWR writes data blocks to data files another process CKPT creates a check-point system generated number based on timestamp and puts this
+	number in header of orignal data block in data file.
+
+-	The execution of DDL is equivalent to DML on data dictionary tables, hence execution process remains same for DDL and DML.
+	
+Explain database instance recovery process?
+
+-	If the database instance was not terminated gracefully previously then during next database instance restart instance recovery process needs to be performed.
+-	During instance recovery the maximum check-point is identified from data files and then redo log files are read to find system generated number based 
+	on timestamp greater than check-point number.
+-	These entries are committed or roll-forwarded to the data files.	
+	
+	Example: Consider there is one transaction namely transaction-1, user of transaction-1 executes a commit and so Redo Log Buffer entries of one transaction
+	is written to Redo Log Files and system generated number based on timestamp exist only for transaction-1.
+	
+	But DBWR process do not writes all changes from Buffer cache to Data Files and immediately after this database instance crashes. Upon next database instance
+	re-start the Redo Log Files are parsed and it is identified that transaction-1 is committed.
+
+	Further these transaction are roll-forwarded or committed.	
+	
+-	During instance recovery the maximum system generated number based on timestamp is identified from redo log files and then data files are read to find 
+	check-point number greater than redo log number.
+-	These entries are rollbacked to the data files using old values from undo files.	
+
+	Example: Consider there are three transaction namely transaction-1, transaction-2 and transaction-3, user of transaction-3 executes a commit and so 
+	Redo Log Buffer entries of all three transactions is written to Redo Log Files. But system generated number based on timestamp exist only for transaction-3.
+	
+	Now DBWR process also writes all changes from Buffer cache to Data Files and immediately after this database instance crashes. Upon next database instance
+	re-start the Redo Log Files are parsed and it is identified that transaction-3 is committed but transaction-1 and transaction-2 are not committed.
+	Further these transaction are rollbacked.	
+
+Explain how redo log files are written?
+
+-	The redo log files are organized in form of groups and atleast two groups are mandatory. 
+
+-	Further each group can have two or more files, each group can have different number of files.
+-	All the files within same group must be of equal size. 
+
+-	The process called LGWR is responsible to write redo logs to a particular group at a time i.e. all the files within the group have same contents
+	written to them simultaneously.
+-	Once a group is completely filled LGWR switches to next group and if the last group is filled it switches back to first group and overwites its contents.
+
+-	Every group can have one of the three status i.e. active, current and inactive.
+-	Assume LGWR is writing logs to group-1 and group-2, after group-1 is filled it switched to next group-2	and now group-1 is active and group-2 is current.	
+	Now if check-point has occured then group-1 logs are not useful for instance recovery hence group-1 status become inactive, when group-2 is filled LGWR
+	can switch to group-1 again and overwite it.
+
+Explain database startup process?
+
+-	When startup command is fired, internally database instance structure is created upon volatile memory. This instance structure has no linkage with storage
+	memory and hence instance is in nomount status.
+-	Now parameter file is read to find location of control file using CONTROL_FILE parameter. Once control file is identified it is used to find location of
+	data files and redo log files and instance is in mount status.
+-	Finally from redo logs and data files it is identified whether an instance recovery is required or not, if instance recovery is required then it is performed
+	and database is in open status.	
+
+Explain database shutdown process?
+
+-	A shutdown command can be executed with a variety of options i.e. normal, transactional, immediate and abort.
+
+-	For a normal option shutdown is executed then database instance do not accept new connections but existing connections still continue to exist.
+-	Any ongoing transaction continues and immediately a check-point is performed.
+
+-	For a transactional option shutdown is executed then database instance do not accept new connections but existing connections still continue to exist
+	only if connections are performing transaction till the transaction is completed.
+-	A immediate check-point is performed.
+
+-	For a transactional option shutdown is executed then database instance do not accept new connections but existing connections still continue to exist
+	only if connections are performing transaction till the transaction is completed.
+-	A immediate check-point is performed.
+
+-	For a immediate option shutdown is executed then database instance do not accept new connections but also existing connections are closed.
+-	Any ongoing transaction is rollbacked and immediately a check-point is performed.
+
+-	For a abort option shutdown is executed then database instance do not accept new connections but also existing connections are closed.
+-	Any ongoing transaction is rollbacked but no check-point is performed.
+
+Explain what is tablespace and how does it store data?
+
+-	A database can be looked upon from two prespective i.e physical and logical perspective.
+
+-	From physical perspective a database consist of data files that contain the actual data and these files are stored on non-volatile storage permanantly.
+-	From logical perpsective a database is made up of tablespace that can hold one or more data files, but a data file can belong to only one tablespace.	
+-	This means a database logically stores data in the tablespaces and physically stores data in datafiles associated with the corresponding tablespaces.
+
+-	Further each tablespace contain logical units called segments, these segments are actual database objects like table, sequences, indexes, etc. that 
+	exist within the database.
+-	A segment can span across multiple data file hence segments are called non-contigous memory blocks.
+
+-	Also segment can further be logically divided into contigous memory blocks called extents, these extents are contigous and hence cannot span across
+	multiple data files.
+
+-	Also extents can further be logically divided into smallest unit of memory blocks called data blocks, they can be upto 2KB, 4KB, 8KB, 16KB, 32KB or 64KB
+	depending upon the data block size defined during database installation.
+	
+-	A data block is made up of header that contains information about data block and transaction slots. This transaction slot define how many transaction can
+	do DML operation on the data block at a time.
+-	Also row directory exist that contains the row numbers of the row present inside data block.
+
+Explain different types of tablespace?
+
+- 	An database contains tablespaces which can be broadly categorized based on size of data it stores or based on type of data it stores.
+
+-	Based on type of data tablespace stores we can have following types of tablespaces,
+	a)	system tablespace
+	b)	sysaux tablespace
+	c)	undo tablespace
+	d)	temporary tablespace
+	e)	user tablespace
+	
+-	The system tablespace contains data dictionary information and sysaux tablespace contains the performance metrics of an database.
+-	The undo tablespace holds previous values during a DML operation and temporary tablespace behaves as a workspace to perform intermediate operations
+	like sorting and ordering.
+-	Finally it is the user tablespace that contains actual data created by database user and stored.
+	
+Explain what is user schema in database?
+
+-	A schema is a collection of database objects created by that user.
+-	Whenever we create a database user by default a schema is created for that user with name same as database username.
+
+-	An database object created by user is by default created in users schema and stored in data dictionary with name as schemaName.objectName.
+-	It is due to this that different user schema can have objects with same name.
+
+-	An object present in one schema cannot be directly accessed by user who is not the owner of schema. However owner of schema can explicitly
+	give access to the user to access objects from owner's schema using ownerName.objectName.
+ 
+-	Whenever a user fires a query on a table without specifying schema name then the required table is searched in that users schema. 
+
+-	There is no relationship between a tablespace and a schema i.e objects in the same schema can use storage in different tablespaces, and a tablespace 
+	can contain data from different schemas.	
+
+-	By convention only the admin schema contains actual database object and admin gives other users access to these schema objects. These users must create
+	synonmys to access these schema objects directly by alternative name without adminName prefix. 
+
+Explain difference between count(column) and count(*) function?
+
+-	The count(column) function counts the total values present within the mentioned column of the table ignoring null values.
+	Example:
+		select 
+			count(sal)
+		from
+			emp
+-	This function can be used with distinct keyword to consider duplicate column values as single count.
+	Example:
+		select 
+			count(distinct sal)
+		from
+			emp
+-	The count(*) function counts all the rows present inside the table and not columns hence this function cannot be used with distinct keyword.
+	Example:
+		select 
+			count(*)
+		from
+			emp
+
+What is the difference between delete, truncate and drop commands?
+
+-	The delete query is used to delete all record from the table but upon rollback these records can be restored again.
+-	But the truncate query also deletes record frol table and upon rollback these records cannot be restored again.
+-	Finally the drop query deletes the records from the table and also metadata information about the table is removed which can never be restored.
+
+Explain the use of exists operator?
+
+-	The exists operator checks whether a sub-query returns a result or not.
+-	When exists operator is used the main-query is executed first and for each record of main query corresponding sub-query is executed.
+	Example:
+		select 
+			*
+		from
+			emp e
+		where
+			exist(		
+				select
+					*
+				from
+					dept d
+				where
+					e.deptid = d.id
+		)
+		
+Explain the difference between database service name and service identifier?
+
+-	A database identifies all its instances using service identifier i.e one service identifier corresponds to one database.
+-	But database instance can also register itself with the listener using one or more names called service name, one database instance can have many
+	service names also multiple instances can have same service name.
+-	Both the service name and service identifier information is available to oracle client in tnsnames.ora at location $oracle_home\network\admin.

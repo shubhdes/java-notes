@@ -1,0 +1,393 @@
+core java - maven
+
+What is maven and why is it used?
+
+-	Maven is build automation tool provided by apache software foundation.
+
+-	It is used to automate all step required to build java project.
+
+-	These step include add dependency to class path, compile source code, execute unit test, package jar file, add jar file to war file and deploy war file to server.
+
+-	Maven follow convention over configuration for which it assume specific directory for the project structure.
+
+What is pom.xml file?
+
+-	The word pom stand for project object model.
+
+-	The pom.xml file is configuration file required by maven to build a project.
+
+-	This file must exist under project's root directory.
+
+-	This file provide necessary information to maven that is required to build the project.
+
+-	It may include location of source directory, location of repository, external dependency required, plugin required and other.
+
+What is pom inheritance?
+
+-	One pom file can inherit another existing pom file.
+
+-	The inherited pom file is called parent pom and inheriting pom file is called child pom .
+
+-	The child pom will derive all dependency under the dependencies section of parent pom.
+
+-	It will also derive plugin and properties information from parent pom.
+
+-	The child pom can override dependencies, plugin and properties which it derives from parent pom.
+
+-	Every pom file directly or indirectly inherit default parent pom file provided by maven.
+
+What is a plugin?
+
+-	A plugin is collection of one or more goals.
+
+-	Each goal is task that will contribute to build process.
+
+-	Inside pom.xml file plugin is defined under build tag.
+
+	example:
+	<plugins>
+		<plugin>
+			<groupId>org.apache.maven.plugins</groupId>
+			<artifactId>maven-compiler-plugin</artifactId>
+			<executions>
+				<execution>
+					<id>default-compile</id>
+					<phase>compile</phase>
+					<goals>
+						<goal>compile</goal>
+					</goals>
+					<configuration>
+						<source>1.8</source>
+						<target>1.8</target>
+					</configuration>
+				</execution>
+			</executions>
+		</plugin>	
+	</plugins>
+
+-	The following command will call compile goal of the compiler plugin.
+
+	syntax:
+	#mvn {pluginName}:{goalName}
+
+	example:
+	#mvn compiler:compile
+
+What is a life cycle?
+
+-	A life cycle is series of stages through which project pass during its build process.
+
+-	Maven consider every project must have three life cycles.
+
+-	These life cycle are clean, build and site.
+
+-	The clean life cycle ins responsible to remove exisiting artifact for the project.
+
+-	The build life cycle will create new artifact for the project.
+
+-	The following command will call entire clean life cycle.
+
+	syntax:
+	#mvn life cycle
+
+	example:
+	#mvn clean
+
+What is a phase?
+
+-	A life cycle is series of stages through which project pass during its build process.
+
+-	Each stage is called as phase.
+
+-	A phase is collection of plugin.
+
+-	When project is under a phase then maven will call plugin and goal belonging to that phase.
+
+-	The following command will call all plugins and goals belonging to compile phase.
+
+	syntax:
+	#mvn phase
+
+	example:
+	#mvn compile
+	
+-	When we ask maven to call a particular phase from particular life cycle then maven will execute all other life cycles and phases before that particular phase.
+	
+What are project coordinates?
+	
+-	The project co-ordinate help maven identify every maven project uniquely.
+
+-	And this co-ordinate include group-id, artifact-id, version and packaging.
+
+-	The group-id is package like name which is unique across organization.
+
+-	And artifact-id is name of project and version define the version of project.
+
+-	The packaging define extension of the final product.
+
+	example:
+	<project>
+		<groupId>junit</groupId>
+		<artifactId>junit</artifactId>
+		<version>3.8.1</version>
+		<packaging>jar</packaging>
+	</project>
+	
+-	Maven will use the project coordinates as directory structure to upload or download the final product from repository.
+
+	syntax:
+	{groupId}/{artifactId}/{version}/{artifactId-version}.{packaging}
+
+	example:
+	/junit/junit/3.8.1/junit-3.8.1.jar
+
+What is a repository and what are different type of maven repositories?
+
+-	A repository is location where maven will maintain required dependencies.
+
+-	There are three such repository local, central and remote.
+
+-	The local repository is created and maintained on developer machine.
+
+-	The central repository exist on internet.
+
+-	The remote repository is created and maintained inside the organization's network.
+
+How will maven search dependency across repositories?
+
+-	When required maven will first search for dependency inside local respository.
+
+-	The location of local respository must be defined inside settings.xml file otherwise maven will create local repository at default location.
+
+	example:
+	<settings>
+		 <localRepository>${user.home}/local-repository</localRepository>
+	</settings>
+
+-	When dependency does not exist inside local repository then maven will search for dependency inside central repository.
+
+-	It will download dependency from central repository inside local respository first and then use the dependency from local respository.
+
+-	But if the dependency does not exist inside local respository then maven will search for it inside remote repository.	
+
+-	This will require the remote repository location to be configured inside pom.xml file.
+
+	example:
+	<repositories>
+		<repository>
+			<id>remote-repository-1</id>
+			<name>First remote repository</name>
+			<url>http://my-repositry.remote-repository-1</url>
+		</repository>
+		<repository>
+			<id>remote-repository-2</id>
+			<name>Second remote repository</name>
+			<url>http://my-repositry.remote-repository-2</url>
+		</repository>
+	</repositories>
+	
+-	It will download dependency from remote repository inside local respository first and then use the dependency from local respository.
+
+-	Finally if the dependency does not exist inside remote repository also then maven will raise error saying source code compilation failed .
+
+What is transitive dependency and how maven manage transitive dependency?
+
+-	Transitive dependency means one dependency require another dependency.
+
+-	A dependency is jar file which is generated by building java project using maven.
+
+-	When maven adds jar file to any repository it also adds pom.xml file of that java project to respository.
+
+-	When maven download jar file from repository it also download its pom.xml file.
+
+-	This file help maven to know which other jar files are required by the dependency and maven will download them also. 
+
+What is multi module maven project?
+
+-	A multi module project is collection of one or more java project present inside root project.
+
+-	Each project can be build independently or can be build together by building the root project.
+
+How to implement and build multi module maven project?
+
+-	To build multi module maven project following steps must be followed.
+
+-	Create root directory and add other java project inside root directory.
+
+-	Create parent pom.xml file inside root directory and define the pom file packaging as pom.
+
+	example:
+	<packaging>pom</packaging>
+	
+-	Add reference to child module inside parent	pom.xml file.
+
+	example:
+	<modules>
+		<module>my-app-1</module>
+		<module>my-app-2</module>
+	</modules>
+
+-	Update pom.xml file for child module to use root's pom.xml file as parent pom.xml file.
+
+	example:
+	<parent>
+		<groupId>com</groupId>
+		<artifactId>my-app-0</artifactId>
+		<version>1.0</version>
+	</parent>
+
+-	Build the root project.
+
+	example:
+	#mvn clean install
+
+What is scope and what are different scope in maven?
+
+-	A scope determine whether dependency will exist or not inside particular phase of build life cycle.
+
+-	There are six different scope which are called as compile, provided, test, runtime, system and import.
+
+-	The compile scope is default scope and it is required in all phases of build life cycle.
+
+-	Dependency with scope compile is required for compiling source code, test code and execution of source code.
+	
+	example:
+	<scope>compile</scope>
+
+-	The provided scope means dependency is required only for compilation of source code and test code.
+
+-	At runtime provided scope dependency will be supplied externally.
+
+-	This include dependencies like servlet classes which will be provided by web container at runtime.
+
+	example:
+	<scope>provided</scope>
+
+-	The test scope means dependency is required for compilation and execution of source code only.
+
+-	This include dependencies like junit.
+
+	example:
+	<scope>test</scope>
+
+-	The runtime scope means dependency is required only during execution of source code.
+
+-	This include dependencies like database driver classes.
+
+	example:
+	<scope>runtime</scope>
+
+-	The system scope means dependency is not available in any maven repository but it is present inside local directory.
+
+-	This will require the developer to mention the path of local directory where the dependency exisit.
+
+	example:
+	<scope>system</scope>
+	<systemPath>\${base-dir}\lib\my-app-1.jar</systemPath> 
+
+What is a profile?
+
+-	A profile is used to customise build life cycle.
+
+-	We can build the single maven project with multiple profile.
+
+-	Based on the profile name maven will make decide to include or exclude a particular file from final product.
+
+	example:
+	<profiles>
+		<profile>
+			<id>DEV</id>
+			<build>
+				<resources>
+					<resource>
+						<directory>${base-dir}/dev/application.properties</directory>
+					</resource>
+				</resources>
+			</build>
+		</profile>
+		<profile>
+			<id>QA</id>
+			<build>
+				<resources>
+					<resource>
+						<directory>${base-dir}/qa/application.properties</directory>
+					</resource>
+				</resources>
+			</build>
+		</profile>
+	</profiles>
+
+-	The following command will build project using DEV profile.
+
+	syntax:
+	#mvn phaseName -pprofileId1 -pprofileId2 -pprofileId3...
+
+	example:
+	#mvn package -pDEV
+
+What is the difference between dependencies and dependencyManagement tag inside pom file?
+
+-	The dependency present inside dependencies tag is added to the class path.
+
+-	But the dependency present inside dependencyManagement tag is not added to class path.
+
+-	Usually the dependencyManagement tag will contain set of dependencies which are version compatible with each other.
+
+-	The dependencies tag can define any dependency from this tag without using its version tag.
+
+Explain the dependency management inside spring boot maven project?
+
+-	A spring starter is maven project with packaging type as pom.
+
+-	It will define set of dependencies which are version compatible with each other.
+
+-	These dependencies exist inside the dependencies tag.
+
+	example:
+	<dependencies>
+		<dependency>
+		  <groupId>org.springframework</groupId>
+		  <artifactId>spring-web</artifactId>
+		  <version>5.2.12.RELEASE</version>
+		</dependency>
+	</dependencies>
+	
+-	The spring starter parent is also maven project with packaging type as pom.
+
+-	It will define set of spring starter project dependencies which are version compatible with each other.
+
+-	These dependencies exist inside the dependencyManagement tag.
+
+	example:
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-starter-web</artifactId>
+				<version>2.3.7.RELEASE</version>
+			</dependency>
+		</dependencies>
+	<dependencyManagement>
+
+-	A spring boot project will define pom file that inherit spring starter parent pom file.
+
+	example:
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>2.3.7.RELEASE</version>
+	</parent>
+	
+-	Inside dependencies tag we will define spring starter project dependency.
+
+-	The version for this dependency is derived from parent pom file's dependencyManagement tag.
+	
+	example:
+	<dependencies>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+	</dependencies>
+
+-	Because of transitive dependency management maven will download all dependencies present inside the spring starter project's pom file.	

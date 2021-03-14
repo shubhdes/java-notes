@@ -1,0 +1,560 @@
+spring boot - basic
+
+What is spring framework?
+
+-	The spring framework is java based framework which is open-source and light-weight that supports loose-coupling and dependency injection.
+
+-	The source code of spring framework is free and openly available for developers.
+
+-	It is possible to use spring in both web-application and non-web-application because spring framework simply works around POJO class that do not require to
+	inherit any class or interface defined within the framework.
+
+-	Also spring is multiple module framework that contains several modules like spring-core, spring-aop, spring-mvc, spring-email, etc. and all these
+	modules are self-dependent and do not require any other module for their execution except the spring-core module.
+
+What is spring bean?
+
+-	The spring bean class must be POJO class.
+
+-	It must not extend or implement any interface except the Serializable marker interface.
+
+-	It must be declared as public to make the class available to inversion of control container.
+
+-	It must be declared as non-abstract class so that inversion of control container can create object for spring bean class.
+
+-	It must be declared as non-final class so that inversion of control container can create child class to spring bean class at runtime.
+
+-	It must have no-arguement constructor so that inversion of control container can create object for spring bean class.
+
+-	The IOC container will create spring bean class object either by using spring bean configuration file or by using java method or by using stereotype annotation.
+
+	Example:
+	
+	<bean id="address" class="Address">
+	</bean>
+	
+	Example:
+	
+	@Bean
+	public Employee employee() {
+
+		Employee employee = new Employee();
+		return employee;
+	}
+	
+	Example:
+	
+	@Component
+	public class Employee {
+	
+	}
+
+Explain the life-cycle of spring bean?
+
+-	spring-bean-class-loading 				 [Class class = Class.forName("my-spring-bean-class");]
+	|
+	|-> spring-bean-class-instantiation 	 [Object mySpringBean = class.newInstance();]
+		|
+		|-> spring-bean-object-initialization
+			|
+			|-> spring-bean-object-destroy
+
+-	To initialize spring bean object the spring bean class must implement InitializingBean interface and override the following method, 				
+
+	public void afterPropertiesSet() throws Exception
+
+-	To perform action before destroying the spring bean object the spring bean class must implement DesposableBean interface and override the following method, 
+
+	public void destroy()
+
+-	Alternative to InitializingBean interface we can have custom method inside spring bean class with @PostContruct annotation and alternative to DesposableBean 
+	interface we can have custom method inside spring bean class with @PreDestroy annotation.
+
+-	The IOC container will perform spring bean object initialization and spring bean object destruction in following order,
+	
+-	execution of method marked with @PostContruct annotation.
+	|
+	|-> execution of overriding method with signature public void afterPropertiesSet() throws Exception
+		|
+		|-> execution of method marked with @PreDestroy annotation.
+			|
+			|-> execution of overriding method with signature public void destroy()	
+
+What is inversion of control? What are different types of inversion of control containers?
+
+-	In spring framework inversion of control is a spring container similar to a web container for a web application also called as IOC container.
+
+-	An inversion of control container or IOC container is responsible to read class level annotation and create object of that class called as spring bean object.
+
+-	There are two types of inversion of control container inside spring framework called as the BeanFactory container and ApplicationContext container. 
+
+-	When the BeanFactory container is started then it will read the spring bean object information from spring bean configuration file store the information inside
+	Resource object. 
+
+-	The resource object will hold name of the spring bean, class name and class package information.
+
+-	When spring bean object is requested from BeanFactory container only then BeanFactory container will read spring bean object name, class name and class package 
+	information from Resource object and load byte-code of that class to the memory.
+	
+-	BeanFactory container will create object for the loaded spring bean class and also its dependent spring bean object.
+
+-	It will store the generated spring bean and its dependent spring bean object in BeanFactory container in the form of key-value pair where key will be spring 
+	bean name and value must be spring bean object itself.
+
+	Example:
+	
+	XmlBeanFactory factory = new XmlBeanFactory(new ClassPathResource("applicationContext.xml"));
+	Employee employee = (Employee)factory.getBean("employee");
+
+-	When the ApplicationContext container is started then it will read the spring bean object information from applicationContext.xml file. 
+
+-	Then ApplicationContext container load byte-code of that class to the memory.
+
+-	ApplicationContext container will create object for the loaded spring bean class and also its dependent spring bean object.
+
+-	It will store the generated spring bean object and its dependent spring bean object in ApplicationContext container in the form of key-value pair where key will 
+	be spring bean object name and value must be spring bean object itself.
+
+	Example:
+	
+	ApplicationContext context = new ClasspathXmlApplicationContext("applicationContext.xml");
+	Employee employee = (Employee)context.getBean("employee");
+	
+-	BeanFactory perform lazy initialization of spring bean object but ApplicationContext perform early initialization of spring bean object.	
+
+What is dependency injection?
+
+-	In core java dependency means association or has-relationship between java class objects.
+	
+	Example:
+	class Employee {
+	
+		private Address address;
+	}
+	
+-	In the above example employee class object has adress object encapsulated i.e. employee object is in has-relationship with address object.
+
+-	To create an employee object we may require address object and hence setting address object into employee object is called dependency injection or
+	dependency wiring.
+
+-	We can set address object into employee object using constructor or setter method or field of Employee class.	
+
+-	We can perform dependency injection either by using spring bean configuration file or by using java method or by using auto-wiring.
+
+	Example:
+	
+	<bean id="address" class="Address"/>
+	
+	<bean id="employee"	class="Employee">
+		<property name="address" ref="address"/>
+	</bean>
+	
+	Example:
+	
+	@Bean
+	public Employee employee() {
+	
+		Address address = new Address();
+	
+		Employee employee = new Employee();
+		employee.setAddress(address);
+	}
+	
+	Example:
+	
+	<bean id="address" class="Address"/>
+	
+	<bean id="employee"	class="Employee" autowire="byType">
+	</bean>
+	
+	Example:
+	
+	@Component
+	public class Employee {
+	
+		@Autowired
+		private void setAddress(Address address) {
+		
+		}
+	}
+
+What are different ways of dependency injection?
+	
+-	In spring dependency injection is achieved using using constructor or setter method or field.
+
+-	In constructor based dependency injection to create a spring bean object IOC container call parameterized constructor of that spring bean class such that 
+	all the parameters of this constructor must be existing spring bean object.
+	
+-	When more than one parameterized constructor is present inside spring bean class then constructor with more number of parameters is called.	
+	
+	Example:
+	
+	<bean id="address" class="Address"/>
+	
+	<bean id="employee"	class="Employee">
+		<constructor-arg ref="address"/>
+	</bean>
+	
+
+-	In setter based dependency injection to create a spring bean IOC container invokes setter method present inside spring bean class to initialize	dependency 
+	with existing spring bean object.
+
+	Example:
+	
+	<bean id="address" class="Address"/>
+	
+	<bean id="employee"	class="Employee">
+		<property name="address" ref="address"/>
+	</bean>
+
+What is the difference between constructor based dependency injection and setter method based dependency injection?	
+	
+-	In constructor based dependency injection the dependency is injected through a particular constructor but in setter method based dependency injection the
+	dependency is injected through setter method.
+	
+-	In constructor based dependency injection the dependency injection is possible when all required dependencies are available with IOC container but in setter 
+	method based dependency injection the available dependency is injected.
+	
+-	In constructor based dependency injection when dependency change then new spring bean object is created by calling the constructor again and hence constructor
+	based dependency injection will create immutable spring bean object.	
+
+-	But in setter method based dependency injection when dependency change then only setter method of spring bean object is called to inject the new dependency
+	and override the existing dependency hence setter method based dependency injection will create mutable spring bean object. 	
+
+-	In constructor based dependency injection the problem of cyclic dependency will exist but in setter method based dependency injection the problem of
+	cyclic dependency will not exist.	
+	
+What is auto-wiring?
+
+-	The feature of auto-wiring allow IOC container to decide and inject one spring bean object inside another spring bean object without using external 
+	configuration.
+
+-	Auto-wiring always work in two mode called by-type and by-name mode.
+
+-	When the IOC container identify the dependent spring bean object by using the data-type of the required spring bean object then the auto-wiring mode
+	is called by-type auto-wiring mode.
+	
+-	When the IOC container identify the dependent spring bean object by using the name of the required spring bean object then the auto-wiring mode
+	is called by-name auto-wiring mode.
+
+-	The default mode of auto-wiring is by-type auto-wiring. 
+
+	Example:
+	
+	<bean id="address" class="Address"/>
+	
+	<bean id="employee"	class="Employee" autowire="byType"/>
+
+-	The @Autowired annotation is used for by-type auto-wiring. 
+
+-	The @Autowired annotation has one boolean attribute required which is always set to true by default which mean for a particular spring bean object 
+	injecting dependency is mandatory and if no eligible spring bean object exist we will get runtime exception saying NoSuchBeanDefinitionException.
+	
+-	However if we explicitly change	required flag to false then for a particular spring bean object injecting dependency is not mandatory and if no eligible 
+	spring bean object exist then default value of dependency will remain null.
+	
+	Example:
+	
+	@Component
+	class Employee {
+		
+		@Autowired
+		private void setAddress(Address address) {
+		
+		}
+	}
+
+-	When IOC container will have more the one spring bean object of same data-type to inject inside dependency then @Autowired annotation will automatically
+	follow the by-name auto-wiring mode.
+
+	Example:
+	
+	<bean id="homeAddress" class="HomeAddress"/>
+	
+	<bean id="employee"	class="Employee" autowire="byName"/>
+
+	Example:
+	
+	@Component
+	class Employee {
+		
+		@Autowired
+		private void setHomeAddress(Address address) {
+		
+		}
+	}
+	
+	@Component
+	class HomeAddress implements Address {
+	
+	}
+
+	@Component
+	class OfficeAddress implements Address {
+	
+	}
+	
+-	When IOC container will have more the one spring bean object of same data-type to inject inside dependency and also the any name of spring bean object does 
+	not match name of dependency the we will get runtime exception saying NoUniqueBeanDefinitionException.	
+
+-	We can use @Qualifier annotation with string attribute called value to mention the spring bean object name that is supposed to be injected inside the dependency.
+	
+	@Component
+	class Employee {
+		
+		@Autowired
+		@Qualifier(value = "homeAddress")
+		private Address address;
+	}
+	
+	@Component
+	class HomeAddress implements Address {
+	
+	}
+
+	@Component
+	class OfficeAddress implements Address {
+	
+	}	
+
+What are different scope of spring bean object?
+
+-	Inside standalone spring application the scope of spring bean object can be singleton or prototype.
+
+-	The singleton scope mean IOC container will create spring bean object only once and when it is required for the first time but when the same spring bean
+	object is required next time IOC container will re-use the existing spring bean object and not create new object. 
+
+	Example:
+	
+	@Scope(scopeName = ConfigurableBeanFactory.SCOPE_SINGLETON)
+
+-	The prototype scope mean IOC container will create new spring bean object every time when the same spring bean object is required.
+
+	Example:
+	
+	@Scope(scopeName = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
+	
+-	Inside web-application the scope of spring bean can be request, session and application.
+
+-	A request scope spring bean object mean IOC container will create a new spring bean object for every request.
+
+	Example:
+	
+	@Scope(scopeName = ConfigurableBeanFactory.SCOPE_REQUEST)
+	
+-	A session scope spring bean object mean IOC container will create a new spring bean object for every session.
+	
+	Example:
+	
+	@Scope(scopeName = ConfigurableBeanFactory.SCOPE_SESSION)
+	
+-	A application scope spring bean object mean IOC container will create a new spring bean object for entire web-application.
+
+	Example:
+	
+	@Scope(scopeName = ConfigurableBeanFactory.SCOPE_CONTEXT)
+	
+-	We can use @Scope annotation at class level which takes one string attribute called scopeName that is used to define the scope of spring bean.
+
+What happens when we inject a prototype scoped bean into singleton scoped bean?
+
+-	When a prototype scoped bean is injected into singleton scoped bean then singleton scoped bean will have only one instance of prototype scoped bean.
+
+-	However there may be requirement where we want new instance of prototype scoped bean should be injected into singleton scoped bean whenever the dependency
+	is used.
+	
+-	To achieve this requirement we can define the spring bean with proxy mode such that a proxy object similar to prototype scope spring bean will be injected
+	into singleton scoped spring bean.
+
+-	Now the proxy object will intercept all method calls on actual prototype scoped spring bean and for each method call a new spring bean instance will be
+	created.
+
+	Example:
+	
+	@Component
+	@Scope(scopeName = ConfigurableBeanFactory.SCOPE_PROTOTYPE, proxyMode = ScopedProxyMode.TARGET_CLASS)
+	public class Address {
+
+	}
+
+	@Component
+	@Scope(scopeName = ConfigurableBeanFactory.SCOPE_SINGLETON)
+	class Employee {
+	
+		@Autowired
+		private Address address;
+	
+	}
+
+-	In the above example proxy object will be sub class of Address class and Address class is called as target class.
+
+-	We can also make to proxy object as non-subclass of target class but sub class of all interfaces target class is implementing by setting proxyMode to 
+	ScopedProxyMode.INTERFACES.
+
+Why do we need to lazily initialize spring beans?
+
+-	When IOC container initializes a spring bean it may find that to initialize one bean it requires another bean and to initialize next bean it requires previous.
+	
+-	This situation is called cylic dependency and IOC container cannot decide which bean to initialize first and we get runtime exception saying BeanCurrentlyInCreationException. 
+	
+	Example:
+	
+	@Component
+	class Employee {
+	
+		private Department department;
+		
+		@Autowired
+		public Employee(Department department){
+		
+		}
+	}	
+	
+	@Component
+	class Department {
+	
+		private Employee employee;
+		
+		@Autowired
+		public Department(Employee employee){
+		
+		}
+	}	
+
+-	We can use @Lazy annotation to instruct IOC container to initialize one dependency with proxy temporarily and complete the dependency injection also later 
+	when proxy dependency is to be used it get re-initialized with required spring bean.	
+	
+	Example:
+	
+	@Component
+	class Employee {
+	
+		private Department department;
+		
+		@Autowired
+		public Employee(@Lazy Department department){
+		
+		}
+	}	
+	
+	@Component
+	class Department {
+	
+		private Employee employee;
+		
+		@Autowired
+		public Department(Employee employee){
+		
+		}
+	}	
+
+-	In the above example department field of Employee class will be intialized with a proxy object and Employee spring bean will be created, this bean will be 
+	injected into Department class Employee field and Department spring bean will be created.
+	
+-	Later when department field of Employee class is used it will be re-initialized with Department spring bean.	
+
+-	The @Lazy annotation has a boolean attribute value which is default set to true which means the dependency should be lazily injected.	
+	
+-	The problem of cylic dependency may occur only during constructor based dependency injection and not during setter based dependency injection.	
+
+	Example:
+	
+	@Component
+	class Employee {
+	
+		@Autowired
+		public void setDepartment(Department department) {
+		
+		}
+	}	
+	
+	@Component
+	class Department {
+	
+		@Autowired
+		public void setEmployee(Employee employee) {
+		
+		}
+	}	
+
+-	Now in above example IOC container will create spring bean of Employee class with department field as null value and inject this bean into employee field
+	of Department class and create Department class spring bean.
+	
+-	And now it will initialize existing Employee class spring bean with existing Department class spring bean.	
+
+-	Though cylic dependency does not happen in setter based dependency injection but we can still delay the dependency injection until required using @Lazy 
+	annotation at setter method level.
+
+Why do we have separate stereotype annotations?
+
+-	All stereotype annotations are internally marked with @Component annotation, but still each stereotype annotation adds unique ability to class marked with them.
+	
+-	Presence of @Controller or @RestController annotation at class level identifies such classes as responsible to handle HTTP request.
+
+-	The @RequestMapping information from these classes is registered with handler-mapping component.
+
+-	Also with @RestController annotation dispatcher-servlet adds response returned from any method of this class to HTTP response body otherwise it will add 
+	response returned as wrapper object encapsulating response view information.
+
+-	Presence of @Repository annotation at class level identifies such classes as responsible for performing database activities.
+
+-	When a java class is marked as @Repository and IOC container contains spring bean of class PersistenceExceptionTranslationPostProcessor then all checked 
+	exception thrown by any	method of such class is converted to unchecked exception.
+
+-	Presence of @Service annotation at class level identifies such classes as responsible for business processing.		
+
+-	Each stereotype annotation has one string attribute called value that define name of spring bean otherwise IOC container will create spring bean with name same
+	as class name but first alphabet in lower case.
+
+-	Other than stereotype annotations @Configuration annotation is also internally marked with @Component annotation, this annotation at class level indicates
+	that the spring bean class contain one or more method annotated with @Bean annotation.
+	
+-	If a method is annotated with @Bean annotation then object returned by the bean is managed by IOC container and by default name of spring bean is name of
+	that method.
+
+-	We can change the name of spring bean by using the string array attribute called name of @Bean annotation to mention one or more names of spring bean.
+
+Why do we need @ComponentScan annotation?
+
+-	When IOC container starts by default it expects spring bean information from spring bean configuration file, but we can explicitly use annotation for creating 
+	spring beans instead of spring bean configuration file.	
+	
+-	But IOC container default behavior is to look for spring bean configuration file and hence to instruct IOC container to use stereotype annotation to create 
+	spring bean we use @ComponentScan annotation.
+
+-	@ComponentScan identifies spring bean class which is directly or indirectly marked with @Component annotation.
+
+-	This annotation takes string array attribute named basePackages where we need to specify those packages IOC container must scan to find required annotation.
+	
+-	If we do not specify any value for this attribute then it will by default consider the current package as root package and IOC container also scan sub-packages 
+	within root package.
+
+What is spring boot? What are the key feature of spring boot framework?
+
+-	The spring boot is a framework developed on top on core spring framework that allows development of application with minimum configuration.
+
+-	The spring boot framework provide key feature such as spring boot starter, spring boot auto-configurator, spring boot cli and spring boot actuator.
+
+-	The spring boot starter project is a java project that is a collection of all required jar file into single project jar file.
+
+-	This will allow the developer to put single jar file inside pom.xml and maven will download and add all required jar file inside classpath.
+
+-	This will ensure that the collection of all required jar file are compatible with each other.
+
+-	The @SpringBootApplication annotation is combination of three annotations called @SpringBootConfiguration, @EnableAutoConfiguration and @ComponentScan.
+
+-	The @SpringBootConfiguration annotation is alternative to @Configuration annotation.
+
+-	The @EnableAutoConfiguration annotation identify class present inside class path and accordingly use default configuration.
+
+-	The spring boot auto-configurator will automatically register dispatcher-servlet when the spring boot web starter project is present inside the classpath.
+
+-	The spring boot command line interface (cli) will allow development of spring boot application using groovy script and without external configuration and
+	import statement and using gradle dependency management to resolve dependency at runtime.
+
+-	The spring boot actuator allow to monitor whether the rest web-service is running or not also space complexity and time complexity of each rest web-service.
+
+-	It is giving an option to externalize our application configuration so that we can work with the same application code in different environment using properties
+	file, yaml files, environment variable and command-line argument.
+	
+-	A spring boot application has embedded web containers like apache tomcat or jetty or undertow.	

@@ -1,0 +1,160 @@
+core java -	version control system tool - 4
+
+Explain remote repository on github?
+
+-	The remote repository on github can be public or private.
+
+-	Public repository files can be viewed by everyone but only owner can edit and commit.
+
+-	But private repository files can be viewed by owner and only owner can edit and commit.
+
+-	For public repository github provide 2 GB disk space maximum.
+
+-	Also maximum allowed file size is 100 MB.
+
+How to work with remote repository?
+
+-	To configure remote repository to local repository we need to use following command.
+
+	syntax:
+	
+	#git remote add [alias] [remote_repo_url]
+	
+	example:
+	
+	#git remote add origin https://github.com/shubhdes/my-project.git
+	
+-	For alias any name can be used but it is convention to use name origin.
+
+-	To check remote repository configured or not we need to use following command.
+
+	example:
+	
+	#git remote	-v
+
+-	This command will list all remote repository configured with to local repository.
+
+-	To send files from local repository to remote repository we need to use following command.
+
+	syntax:
+	
+	#git push [alias] [branch_name]
+	
+	example:
+	
+	#git push origin master
+
+-	Before performing push operation the local repository must be up to date as remote repository.
+
+-	Otherwise there will be conflict, we need to perform pull operation before performing push operation.
+	
+-	We can configure multiple remote repositories to single local repository using different alias names.	
+
+Explain what is cloning in git?
+
+-	We can use cloning in git to copy complete project from remote repository to working directory.
+
+-	To clone project from remote repository we need to use following command.
+
+	syntax:
+	
+	#git clone [remote_repo_url]
+	
+	example:
+	
+	#git clone https://github.com/shubhdes/my-project.git
+
+-	We can also define the working directory using following command.
+
+	syntax:
+	
+	#git clone [remote_repo_url] [working_dir]
+	
+	example:
+	
+	#git clone https://github.com/shubhdes/my-project.git my-project-demo
+
+-	This command will also create local repository for the working directory.	
+
+Explain what is fetch and pull in git?
+
+-	The git fetch command is used to check whether any updates are available in remote repository or not.
+
+-	It will download metadata information from remote repository to find  updates.	
+
+	syntax:
+
+	#git fetch [alias]
+
+	example:
+	
+	#git fetch origin
+
+-	To bring updates from remote repository to local repository we need to use git pull command.
+
+-	Git pull is combination of fetching changes and merging with local repository.
+
+	syntax:
+
+	#git pull [alias] [branch_name]
+
+	example:
+	
+	#git pull origin master
+	
+What is tagging?
+
+-	We can define fixed references to a commit to indicate significant event or milestone like version.
+
+-	Tag is a static or permanant label to a commit.
+
+-	Within the repository tag name should be unique.
+
+-	There are two types of tags, they are light weight tags and annotated tags.
+
+-	To add tag to latest commit we need to used the following command.
+
+	syntax:
+	
+	#git tag [tag_name]
+	
+	example:
+	
+	#git tag v-1.0.0
+	
+-	To list available tags we need to use following commands.
+
+	example:
+	
+	#git tag -l	
+
+	example:
+	
+	#git tag --list	
+	
+-	All lightweight tags will be stored as text file inside .git/refs/tags folder.
+
+-	To delete a tag we need to use following command.
+
+	syntax:
+	
+	#git tag -d [tag_name]
+	
+	syntax:
+	
+	#git tag --delete [tag_name]
+	
+	example:
+	
+	#git tag -d v-1.0.0
+	
+	example:
+	
+	#git tag --delete v-1.0.0
+	
+	
+	
+	
+	
+	
+	

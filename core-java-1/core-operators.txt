@@ -1,0 +1,427 @@
+core java - operators
+
+What are different rules for using increment and decrement operators?
+
+-	The increment and decrement operators can be applied on variables but not on constants otherwise we will get compile time error saying expected variable
+	found value.
+	
+	Example:
+	
+	{
+		int x = ++10;	/**compile time error saying expected variable found value**/
+	}
+-	The increment and decrement operators cannot be nested otherwise we will get compile time error saying expected variable found value.
+	
+	Example:
+	
+	{
+		int x = 10;	
+		int y = ++ (++x);	/**compile time error saying expected variable found value**/
+	}
+-	The increment and decrement operators cannot be applied on final variables otherwise we will get compile time error saying expected variable found value.
+	
+	Example:
+	
+	{
+		final int x = 10;
+		x++;	/**compile time error saying expected variable found value**/
+	}
+-	The increment and decrement operators can be applied to all primitive type expect boolean otherwise we will get compile time error saying ++ operator cannot 
+	be applied to boolean
+	
+	Example:
+	
+	{
+		float f = 10.5f;
+		++f;	/**11.5**/
+		
+		char a = 'a';
+		++a;	/**b**/
+		
+		boolean x = false;
+		x++;	/**compile time error saying ++ operator cannot be applied to boolean**/
+	}
+-	The increment and decrement operators cannot be applied to object types otherwise we will get compile time error saying cannot be applied to object.
+	
+	Example:
+	
+	{	
+		String x = "durga";
+		x++;	/**compile time error saying ++ operator cannot be applied to java.lang.String**/
+	}
+	
+What is the difference between following statements?
+	i)	b++ 
+	ii)	b + 1 
+where b is variable of type byte?
+
+-	Whenever an arithmetic operation is performed between 2 variables i.e var1 and var2 the data-type of result is computed as max(int, type of var1, type of 
+	var2,...).
+	
+	Example:
+
+	{
+		byte b = 10;
+		b = b + 1;	/**compile time error saying possible loss of precision found int required byte**/
+	}
+
+-	To solve the above compile time error we need to add explicit casting as,
+	{
+		byte b = 10;
+		b = (byte) (b + 1);
+	}
+
+	Example:
+
+	{
+		byte b = 10;
+		b++;
+	}
+-	The above code will not give compile time error because increment and decrement operators perform implicit casting i.e, (b++) will be converted	to 
+	b = (byte) (b + 1).
+
+What is the difference between following statements?
+	i)	b += 1 
+	ii)	b + 1
+where b is variable of type byte?
+
+-	Whenever an arithmetic operation is performed between 2 variables i.e var1 and var2 the data-type of result is computed as max(int, type of var1, type of 
+	var2,...).
+
+	Example:
+
+	{
+		byte b = 10;
+		b = b + 1;	/**compile time error saying possible loss of precision found int required byte**/
+	}
+	
+-	To solve the above compile time error we need to add explicit casting as,
+	{
+		byte b = 10;
+		b = (byte) (b + 1);
+	}
+
+	Example:
+
+	{
+		byte b = 10;
+		b += 1;
+	}
+-	The above code will not give compile time error because increment and decrement operators perform implicit casting i.e, (b += 1) will be converted to 
+	b = (byte) (b + 1).
+
+	
+What is the difference between following statements?
+	i) 	 System.out.println(10/0)
+	ii)  System.out.println(10/0.0)
+	iii) System.out.println(0/0)
+	iv)  System.out.println(0/0.0)
+
+-	When a number is divided by zero than result is infinity. In intergal mathematics (byte, short, int, long) there is no way to represent infinity hence we
+	will get ArithmeticException.
+-	Consider the following code,
+	{
+		System.out.println(10/0);	/**ArithmeticException / by zero**/
+	}
+
+-	But in floating point arithmetic (float, double) there is a way to represent infinity the wrapper classes java.lang.Float and java.lang.Double provides 
+	following two constants to represent infinity, 
+	
+	public static final double POSITIVE_INFINITY = 1.0 / 0;
+	public static final double NEGATIVE_INFINITY = -1.0 / 0;
+
+	Example:
+
+	{
+		System.out.println(10/0.0);	/**Infinity**/
+		System.out.println(-10/0.0);	/**Infinity**/
+	}
+
+-	When a zero is divided by zero than result is undefined. In intergal mathematics (byte, short, int, long) there is no way to represent undefined hence we
+	will get ArithmeticException.
+
+	Example:
+
+	{
+		System.out.println(0/0);	/**ArithmeticException / by zero**/
+	}
+
+-	But in floating point arithmetic (float, double) there is a way to represent undefined the wrapper classes java.lang.Float and java.lang.Double provides 
+	following one constants to represent undefined, 
+
+	public static final double NaN = 0.0d / 0.0;
+
+	Example:
+
+	{
+		System.out.println(0/0.0);	/**NaN**/
+	}
+
+What is behavior Float.Nan?
+
+-	Float.Nan intenally works as follows,
+	
+a)	For any x value excluding Float.Nan following expressions return false,
+	x < Float.Nan; x <= Float.Nan; x > Float.Nan; x >= Float.Nan; x == Float.Nan;
+	
+b)	For any x value including Float.Nan following expressions return true,
+	x != Float.NaN; Float.Nan != Float.Nan;
+	
+What is behavior of + operator with intergal or float or string operands?
+
+-	In java + operator is overloaded to perform arithmetic addition as well as string concatenation.
+-	If any one operand of + operator is string then result of operation is string and if none operand is string then result is derived by using	max(int, type of var1, type of var2....)
+	
+-	Whenver java identifies string operand used with + operator behavior of that + operator and other + operators after it in same expression changes to string
+	concatenation.
+
+	Example:
+	
+	{
+		System.out.println(10 + 20 + "durga" + 30 + 40);	/**30durga3040**/
+	}
+
+What are different rules for using relational operators?
+
+-	The relational operators can be applied to all primitive type expect boolean otherwise we will get compile time error saying relational operator cannot be 
+	applied to boolean, boolean
+
+	Example:
+
+	{
+		System.out.println(true > false);	/**compile time error saying > operator cannot be applied to boolean, boolean**/
+	}
+
+-	The relational operators cannot be applied to object types otherwise we will get compile time error saying relational operator cannot be applied to object, 
+	object.
+
+	Example:
+
+	{	
+		String x = "durga";
+		String y = "software";
+		System.out.prinltn(x > y);	/**compile time error saying > operator cannot be applied to java.lang.String, java.lang.String**/
+	}
+
+-	The relational operators cannot be nested otherwise we will get compile time error saying relational operator cannot be applied to boolean, primitive type.
+
+	Example:
+	{	
+		System.out.prinltn(10 < 20 < 30);	/**compile time error saying < operator cannot be applied to boolean, int**/
+	}
+	
+What are different rules for using equality and not equality operators?
+
+-	The equality and not equality operator can be used between operands if and only if the lower operand can be upcasted to upper operand type otherwise we 
+	will get compile time error saying incompatible type.
+-	The equality operator return true when both operands refer to same object otherwise it return false.
+
+	Example:
+
+	{	
+		String s = "durga";
+		Thread t = new Thread();
+		System.out.prinltn(s == t);	/**compile time error saying incompatible type java.lang.String, java.lang.Thread**/
+	}
+
+What are different rules for using instanceOf operator?
+
+-	The instanceOf operator can be used between an object and a class if and only if type of object type is same or child or parent of class.
+-	The instanceOf operator return true when object can be referred by variable of mentioned class type otherwise it return false.
+
+-	When any class or interface X then (null instanceOf X) is always false.	
+	
+	Example:
+	class Person {}
+
+	class Student extends Person {}
+	
+	public class Test {
+
+		public static void main(String[] args) {
+
+			Person p1 = new Person();
+			System.out.println(p1 instanceof Object);	/**true 	Object o = p1**/
+			System.out.println(p1 instanceof Person);	/**true 	Person p = p1**/
+			System.out.println(p1 instanceof Student);	/**false 	Student s = p1**/
+
+			Person p2 = new Student();
+			System.out.println(p2 instanceof Object);	/**true		Object o = p2**/
+			System.out.println(p2 instanceof Person);	/**true 	Person p = p2**/
+			System.out.println(p2 instanceof Student);	/**true 	Student s = p2**/
+
+			System.out.println(p2 instanceof Thread);	/**compile time error saying incompatible type Person, java.lang.Thread**/
+		}
+	}
+	
+What are different rules for using bitwise operator?
+
+-	Bitwise operators can be used on integral and boolean primitive type (expect ~ operator applied only to intergal) operands. The result of operation is
+	same type as that of operand.
+	Example:
+	{
+		System.out.println(true & false);	/**false**/
+		System.out.println(4 & 5);			/**4**/
+	}
+
+Explain working of ~ bitwise operator?
+
+-	Consider the following code,
+	{
+		int x = 4;
+		System.out.println(~4);	/**-5**/
+	}	
+-	Now int data type occupies 32 bits hence 32 bit representation of 4 is 00000........00000100 but byte data type is 8 bits hence only last 8 bits
+	are considered 00000100.
+-	32 bits i.e 000.......00000100 undergo 1's complement and result 1111.......11111011.
+					0	0	0	0	0	1	0	0
+	1's complement	1	1	1	1	1	0	1	1
+-	First bit is signed bit which is 1 hence result will be negative. If signed bit is negative then remaining bit represent result in
+	2's complement form. If signed bit is positive then remaining bit represent result.	
+-	31 bits i.e 111.......11111011 undergo 1's complement and result 0000.......00000100.
+
+-	To this result add 1,
+					0	0	0	0	0	1	0	0
+	addition of 1								1	=	00000101 = 5 i.e -5
+
+What is difference between bitwise (&, |) and short-circuit (&&, ||) operators?
+
+-	In bitwise operators both arguements are evaluvated always.
+-	In short-circuit operators second arguement evaluvation is optional.
+
+	Example:
+	x & y	/**y is evaluvated even if x is false**/
+	x && y	/**y is evaluvated only if x is true**/
+
+	Example:
+	x | y	/**y is evaluvated even if x is false**/
+	x || y	/**y is evaluvated only if x is false**/
+
+-	Bitwise operators can be used for boolean and integral operands but short-circuit operators can be used for both integral and boolean operands.
+
+What is loss of data in explicit type casting?
+
+-	Consider the following code,
+	{
+		int x = 130;
+		byte b = (byte) x;	/**-126**/
+	}	
+
+-	Now int data type occupies 32 bits hence 32 bit representation of 130 is 00000........10000010 but byte data type is 8 bits hence only last 8 bits
+	are considered 10000010.
+-	First bit is signed bit which is 1 hence result will be negative. If signed bit is negative then remaining bit represent result in 2's complement form.
+-	Remaining 7 bits i.e 0000010 undergo 1's complement and result 1111101.
+					0	0	0	0	0	1	0	
+	1's complement	1	1	1	1	1	0	1
+	
+-	To this result add 1,
+					1	1	1	1	1	0	1
+	addition of 1							1	=	1111110	= 126 i.e -126
+
+-	Consider the following code,
+	{
+		int x = 150;
+		short b = (short) x;	/**150**/
+	}	
+
+-	Now int data type occupies 32 bits hence 32 bit representation of 150 is 00000........010010110 but byte data type is 16 bits hence only last 16 bits
+	are considered 0000000010010110.
+-	First bit is signed bit which is 0 hence result will be positive. 
+-	Remaining 15 bits i.e 000000010010110 i.e 150.
+
+What is java operator precedence chart?
+
+-	In java operator precedence decide the order in which operators are evaluvated in a mixed expression consisting of different operators.
+-	Following is java operator precedence chart,
+	
+	1)	Unary Operator
+		[]	x++	 x--
+		++x --x  ~	!
+		new	 <type>
+	
+	2)	Arithmetic Operator
+		*	/	%
+		+	-
+	
+	3)	Shift Operator
+		>>	>>>	<<
+	
+	4)	Comparision Operator
+		<	<=	>	>=	instanceOf
+	
+	5)	Equality Operator
+		==	!=
+	
+	6)	Bitwise Operator
+		&
+		^	
+		|
+	
+	7)	Short-circuit Operator
+		&&
+		||
+	
+	8)	Conditional	Operator
+		?:
+	
+	9)	Assignment Operator
+		=	+=	-=	*=	/=	%=	...
+		
+-	Consider below code;
+
+	public class Test {
+
+		public static void main(String[] args) {
+		
+			System.out.prinltn(m1(1) + m1(2) * m1(3)/m1(4) + m1(5) * m1(6));
+		}
+	
+		public static int m1(int i) {
+			System.out.prinltn(i);
+			return i;
+		}
+	}
+-	Operator precedence decide execution order of operation but operands evaluvation is sequential from left to right.
+-	Hence above expression is converted to,
+		1 + 2 * 3 / 4 + 5 * 6 
+	=>	1 + 6 / 4 + 5 * 6 	/** operator * evaluvated with maxium preference and first occurence from left to right**/
+	=>	1 + 6 / 4 + 30 
+	=>	1 + 1 + 30
+	=>	2 + 30
+	=>  32
+	
+What is the difference between new operator and class.newInstance() method?
+
+-	The new operator is used to create class object where class name is known at compile time but class.newInstance() method is used to create object of a
+	class where class name is not known at compile time but available at runtime.
+	
+	Example:
+	
+	{	
+		Object o = Class.forName(args[0]).newInstance();
+	}
+
+-	Using new operator we can invoke no arguement or parameterized constructor of the class but using class.newInstance() we can invoke only no arguement 
+	constructor of the class and when class do not contains no arguement constructor then we will get runtime exception saying InstantiationException.
+	
+-	If class do not exist then new operator will not be able to create object of class with compile time error saying class cannot be resolved to type but at
+	runtime class does not exist then we get NoClassDefFoundError.
+	
+-	And for class.newInstance() when mentioned class do not exist at runtime we will get runtime exception ClassNotFoundException.	
+
+What is the difference between instanceOf operator and class.isInstance() method?
+
+-	The instanceOf operator is used to check whether object is of particular type or not where class name is known at compile time but class.isInstance() method 	
+	is used to check  whether object is of particular type or not where class name is not known at compile time but available at runtime.
+	
+	Example:
+	
+	{	
+		Thread t = new Thread();
+		System.out.prinltn(Class.forName(args[0]).isInstance(t));
+	}
+	
+-	If class do not exist then instanceOf operator will not be able check whether object is of particular type with compile time error saying class cannot be 
+	resolved to type but at runtime class does not exist then we get NoClassDefFoundError.
+	
+-	And for class.isInstance() when mentioned class do not exist at runtime we will get runtime exception ClassNotFoundException.	

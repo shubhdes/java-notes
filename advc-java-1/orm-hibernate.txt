@@ -1,0 +1,662 @@
+Hibernate
+-	The term hibernate means sleep mode.
+-	Hibernate technology was introduced by Gavin King.
+
+-	Hibernate provides support to object oriented database operations.
+-	Java Database Connectivity i.e. JDBC is database dependent. Developer is required to use different query syntax for same operation on 
+	different DBMS platform.
+
+-	Hibernate is ORM tool i.e Object relation Mapping which maps java object to database table and columns within table to java object fields.
+-	This mapping allows developer to work on java object using hibenrate api's rather than working on database table using sql queries.
+
+Advantages of Hibernate
+-	Database independent.
+-	Cache supported.
+-	All exceptions are unchecked.
+-	Primary Key auto generation support.
+-	Hibernate Query Language support.
+
+Disadvantages of Hibernate
+-	Hibernate is slower than JDBC.
+
+Code Snippet
+{
+	SessionFactory sessionFactory = new Configuration().configure().buildSessionFactory();	//load and verify hibernate.cfg.xml and mapping classes and create pool of database connections.
+	Session session = sessionFactory.openSession(); //Retrieving single connection from pool.
+}
+
+States of objects in hibernate
+{
+	obj.setId("EMP001");
+	obj.setName("John");	//Transient i.e object is not associated with session yet.
+	session.save(obj);	//object added to session level cache
+	transaction.commit();	//object saved in database i.e persistent
+	session.close();
+	obj.setName("Jack");	//detached i.e. changes to object are not saved in database.
+}
+{
+		Department d3 = new Department("d3","sales");
+		Transaction tx = session1.beginTransaction(); 
+		d3.setDeptName("sales0");
+		session1.save(d3);
+		d3.setDeptName("sales1");//record inserted with sales0 and immediately updated to sales1
+		tx.commit();
+		d3.setDeptName("sales3");
+		session1.close();
+		d3.setDeptName("sales4");
+}
+
+Methods on session
+
+	public void evict(Object obj) throws HibernateException 
+-	removes specific object from session
+
+	public void clear()
+-	removes all objects from session
+
+	public void flush()  throws HibernateException 
+-	copies session state to database without ending transaction, whereas commit does flush + end transaction.
+
+How to save a record in database
+public Object save(Object o)
+
+-	Returns primary key for saved record.
+-	If object with same primary key exist in database throws ConstraintViolationException.
+-	If object with same primary key exist in session it throws NonUniqueObjectException.
+
+public void saveOrUpdate(Object o)
+
+-	Do not return anything.
+-	If object with same primary key exist in database it updates the record.
+-	If object with same primary key do not exist in database it inserts the record.
+-	If object with same primary key exist in session it throws NonUniqueObjectException.
+
+public void persist(Object o)
+
+-	Do not return anything.
+-	If object with same primary key exist in database throws ConstraintViolationException.
+-	If object with same primary key exist in session it throws NonUniqueObjectException.
+
+How to update a record in database
+We need to specify all the properties for an given object before updating it.
+public void update(Object o)
+
+-	Updates the record with specified primary key.
+-	If object with same primary key do not exist in database throws StaleStateException.
+-	If object with same primary key exist in session it throws NonUniqueObjectException.
+
+public void saveOrUpdate(Object o)
+
+-	Do not return anything.
+-	If object with same primary key exist in database it updates the record.
+-	If object with same primary key do not exist in database it inserts the record.
+-	If object with same primary key exist in session it throws NonUniqueObjectException.
+
+public void merge(Object o)
+
+-	If object with same primary key exist in session then we use this method.
+-	It replaces/ overwrites the existing object in session with new one.
+-	If object with same primary key do not exist in database it inserts the record.
+
+How to delete a record from database
+public void delete(Object o)
+
+-	If object with same primary key do not exist in database it do not throw any Exception.
+-	If object with same primary key exist in session then it throws NonUniqueObjectException.
+{
+	Department d3 = new Department();
+	d3.setDeptId("d3"); //only id is enough for delete
+	Transaction tx = session1.beginTransaction(); 
+	session1.delete(d3);
+	tx.commit();
+	session1.close();
+	/*
+	*Hibernate: select department_.dept_id, department_.dept_name as dept2_8_ from dept_tab department_ where department_.dept_id=?
+	*Hibernate: update emp_tab set dept_id=null where dept_id=? // child table foreign key updated to null
+	*Hibernate: delete from dept_tab where dept_id=?
+	*/
+}
+How to retrieve a record from database
+public Object get(Class c, Serializable s)
+
+-	Retrieves record into POJO object for specified primary key.
+-	It supports eager loading i.e all properties of POJO are loaded together when the method is called.
+-	If object with same primary key do not exist in database it do not throw any Exception instead returns null.
+
+public Object load(Class c, Serializable s)
+
+-	Retrieves record into POJO object for specified primary key. It just return a proxy empty object with only primary key property set.
+-	Remaining properties are returned when the properties are accessed for first time.
+-	If object with same primary key do not exist in database it do not throw any Exception.
+-	But when getter for the object is called it throws ObjectNotFoundException.
+-	Existence of the alive session is mandatoy when remaining properties of the object are loaded, if not LazyInitializationException is raised.
+-	Can be used only when id value of object is needed in code i.e. more performance efficient than public Object get(Class c, Serializable s).
+
+hbm2ddl.auto
+
+-	hbm2ddl.auto is an property to be defined in hibernate.cfg.xml file. It can have following possible values,
+-	create	=	Drop table if exist and create new. Loss of data if table exist and contains records.
+-	update	=	If table do not exist create new. If exist alter its structure. No loss of data if table exist and contains records.
+-	validate=	Do not create/drop/modify table structure. If table has less number of column than POJO throws Exception	
+				If POJO has less number of than table do not throw any Exception.
+				If POJO and table have same number of columns but they are different in name or data type then throws Exception.		
+-	create-drop= Drop table if exist and create new. Again drop the created table on sessionfactory.close(). Loss of data if table exist and contains records.
+
+Criteria and Projections
+
+-	Criteria is used to specify one or more conditions while fetching record from database.
+-	Criterion is singular and Criteria is plural.
+
+Criteria criteria = session.createCriteria(Inventory.class);	//Criteria is an interface in package org.hibernate
+Criterion criterion1 = Restrictions.eq("inventoryId", 'I001');	//Restrictions is a class in package org.hibernate.criterion
+Criterion criterion1 = Restrictions.gt("inventoryVolume", 1000);//Criterion is an interface in package org.hibernate.criterion
+criteria.add(Restrictions.and(criterion1, criterion2));
+
+-	Projections concept is used to retrieve only a set of specific columns of table from database.
+
+Projection projection = Projections.property("inventoryName"); //Projections is a class in package org.hibernate.criterion.
+criteria.setProjection(projection);							//Projection is an interface in package org.hibernate.criterion.
+
+ProjectionList projectionList = Projections.projectionList(); //ProjectionList is a class in package org.hibernate.criterion.
+															//To retrieve multiple columns of table but not all from database								
+projectionList.add(projection1);
+projectionList.add(projection2);
+
+criteria.setProjection(projectionList);		//ProjectionList is a sub class of interface org.hibernate.criterion.Projection
+
+Pagination
+
+-	Pagination concept means when several rows are available in result set and we need to display on few fixed number of rows on each page.
+
+query.setFirstResult(rownumber);
+query.setMaxResult(rownumber); 
+
+criteria.setFirstResult(rownumber);
+criteria.setMaxResult(rownumber); 
+
+HQL
+
+-	HQL stands for Hibernate query language.
+-	Hibernate uses HQL to perform Data Manipulation on multiple rows.
+-	HQL is also called as Object query.
+-	This is because we use class name in HQL for table name and property name in place of column name.
+-	Note Insert query in HQL can copy data from one table into another, but cannot be used to insert a new record into table.
+
+Select
+
+Query query = session.createQuery("from Inventory");
+query.list();
+
+Query query = session.createQuery("from Inventory where inventoryId='I001'");
+query.uniqueResult();
+
+Query query = session.createQuery("select inventoryName from Inventory");
+query.list();
+
+Update
+
+Query query = session.createQuery("update Inventory set inventoryName='MyInventory' where inventoryId ='I001'");
+query.executeUpdate();
+
+Delete
+
+Query query = session.createQuery("delete from Inventory where inventoryId ='I001'");
+query.executeUpdate();
+
+@NamedQuery
+-	Separates query from code.
+-	compiled and validated when session factory is initialized.
+@NamedQueries({
+	@NamedQuery(name = "checkLogin", query = "from WebUser where webUserId=:webUserId and webUserPassword=:webUserPassword") 
+})
+
+Cache
+
+-	Caching is a mechanism where in hibernate stores the result of certain select operation in temporary memory.
+-	If the same query is fired again then query is not made to database but instead result is retrieved from cache.
+-	Hibernate supports 3 levels of cache as follows,
+
+-	Session level cache
+
+-	It is primary or first level cache.
+-	It is enabled by default, cannot be disabled.
+-	For every session object created has a cache associated with it.
+-	Select operation performed within same session requires query to be fired in database.
+-	If same select operation is performed repeatedly in same session, we can retrieve result from session cache rather than making a database query.
+-	Information in session level cache is available till the session is active once it is closed information in session cache is lost.
+-	Information within session cache can be accessed only till the time session is active.
+
+Inventory inventory1 = (Inventory) session.get(Inventory.class,'I001');	//query fired 
+Inventory inventory2 = (Inventory) session.get(Inventory.class,'I001');	// query not fired
+Query query = session.createQuery("from Inventory where id='I001'"); //query fired
+query.getResultList();
+
+-	HQL are fired to database irrespective of required results exist in cache or not.
+-	Consider a lazy loading scenario where Department object encapsulates list of Employee objects.
+
+Department d1 = session.get(Department.class, "D-1001");
+-	This above snippet will initialize department object but not list of Employee objects it encapsulates.
+
+List<Employee> empList1 = d1.getEmpList();
+for(Employee e : empList1) {...}			 
+-	This above snippet will initialize department object with list of Employee objects it encapsulates by making a select query.
+-	This will require hibernate session to be active if inactive LazyInitializationException is raised.
+
+Query query = session.createQuery("from Department where id='D001'"); //query fired
+query.getResultList();
+
+-	The above HQL will fire irrespective of required results exist in cache or not.
+-	This above snippet will initialize department object but not list of Employee objects it encapsulates.
+
+List<Employee> empList1 = d1.getEmpList();
+for(Employee e : empList1) {...}			 
+-	This above snippet will initialize department object with list of Employee objects it encapsulates without making select query.
+-	This time it will use the result present in cache itself.
+
+Conclusion:
+-	If an hql is loading an object lazily later to load child collection object hibenate checks existence of child collection object data in cache,
+	if found it do not fire select query and if not found hibernate fires a select query.
+	
+SessionFactory level cache
+
+-	It is secondary or second level cache.
+-	It is not enabled by default. 
+-	Whenever hibernate session try to load an entity,  it look for cached copy of entity in first level cache (associated with particular hibernate session).
+-	If cached copy of entity is present in first level cache, it is returned as result.
+-	If there is no cached entity in first level cache, then second level cache is looked up for cached entity.
+-	If second level cache has cached entity, it is returned as result.
+-	But, before returning the entity, it is stored in first level cache.
+-	If entity is not found in first level cache and second level cache also, then database query is executed and entity is stored in both cache levels, 
+	before returning as response.
+-	Information in second level cache is available at global level i.e. can be queried by all active sessions.
+-	Information in SessionFactory level cache is available till the SessionFactory is active once it is closed information in SessionFactory cache is lost.
+
+Inventory inventory1 = (Inventory) session1.get(Inventory.class,'I001');	//query fired 
+session1.close();
+session2 = factory.openSession();
+Inventory inventory2 = (Inventory) session2.get(Inventory.class,'I001');	// query not fired
+
+-	When a session is accessing second level cache, another session cannot access it.
+
+Hibernate: select userstab0_.USERID as USERID0_0_, userstab0_.USERNAME as USERNAME0_0_, userstab0_.PASSWORD as PASSWORD0_0_, userstab0_.ROLE as ROLE0_0_, userstab0_.ACTIVE as ACTIVE0_0_ from USERS_TAB userstab0_ where userstab0_.USERID=?
+09:17:46,371 DEBUG       ReadWriteCache             - Caching: bean.UsersTab#EP4167
+09:17:46,371 DEBUG       EhCache                    - key: bean.UsersTab#EP4167
+09:17:46,372 DEBUG       ReadWriteCache             - Cached: bean.UsersTab#EP4167
+09:17:46,373 DEBUG       ReadWriteCache             - Cache lookup: bean.UsersTab#EP4167
+09:17:46,373 DEBUG       EhCache                    - key: bean.UsersTab#EP4167
+09:17:46,373 DEBUG       ReadWriteCache             - Cached item was locked: bean.UsersTab#EP4167
+Hibernate: select userstab0_.USERID as USERID0_0_, userstab0_.USERNAME as USERNAME0_0_, userstab0_.PASSWORD as PASSWORD0_0_, userstab0_.ROLE as ROLE0_0_, userstab0_.ACTIVE as ACTIVE0_0_ from USERS_TAB userstab0_ where userstab0_.USERID=?
+09:17:46,375 DEBUG       ReadWriteCache             - Caching: bean.UsersTab#EP4167
+09:17:46,375 DEBUG       EhCache                    - key: bean.UsersTab#EP4167
+09:17:46,375 DEBUG       ReadWriteCache             - Item was already cached: bean.UsersTab#EP4167
+
+-	Hibernate itself do not provide any implementation for second level cache. We need to explicitly configure it.
+
+ehcache.xml
+<ehcache>
+	<defaultCache 
+	   eternal= "false"	//Will the entities last for entire life time into main memory
+	   name="cacheName"	  	  // name given to cache		
+       maxElementsInMemory="1000" 	 //	maximum elements in second level cache at a time.	
+	   overflowToDisk="true"		//	maximum elements in second level cache at a time exceed should elements be stored on hard disk.	
+       maxElementsOnDisk="10000"   //  maximum elements in hard disk at a time.	
+       timeToIdleSeconds="..."	  //  maximum time duration upto which the unused entities should stay in second level cache.		
+       timeToLiveSeconds="...">		//  maximum time duration upto which the entities should stay in second level cache.	
+	</defaultCache>
+</ehcache>
+
+hibernate.cfg.xml
+<property name="hibernate.cache.use_second_level_cache">true</property>
+<property name="hibernate.cache.region.factory_class">org.hibernate.cache.ehcache.EhCacheRegionFactory</property>
+
+Annotation
+@Cache(usage=CacheConcurrencyStrategy.READ_WRITE)
+
+Concurrency Strategy helps to decide whether the data in second level cache is stale or consistency. There are different concurrency strategies as follows,
+
+READ_ONLY
+-	Used only for entities that never change 
+-	Exception is thrown if an attempt to update such an entity is made. 
+
+NONSTRICT_READ_WRITE
+-	Cache is updated after a transaction and data has been committed to database.
+-	Thus, strong consistency is not guaranteed and there is a small time window in which stale data may be obtained from cache. 
+-	Updated entity is deleted from cache.
+
+READ_WRITE
+-	This strategy guarantees strong consistency which it achieves by using soft locks.
+-	Before a cached entity is updated, a soft lock is stored in the cache for that entity as well.
+-	All concurrent transactions that access soft-locked entries will fetch the corresponding data directly from database.
+-	Locked entity is deleted from cache.
+
+TRANSACTIONAL
+-	Cache changes are done in distributed XA transactions.
+-	A change in a cached entity is either committed or rolled back in both database and cache in the same XA transaction
+
+Note 
+Whenever transaction.commit() is performed state of session object is copied to database.
+Synchronous	=	state of session object is copied to database and session factory cache together.
+Asynchronous =	state of session object is copied to database first then session factory cache.
+
+
+Query Level cache
+
+-	Whenever any HQL query is fired , result of that query is never looked up in cache.
+-	Instead the query is hit to database.
+-	However hibernate provides an additional cache to look for result and cache results of HQL queries. This cache is called Query cache.
+
+query.setCacheable(true); // search for result in query cache and load result into it.
+
+- 	Query cache stores result in form of map where key is HQL query with its parameters and value is identifier of objects that match the query.
+-	These objects are then searched into second level cache where they are stored in dehydrated(not Student object but id, name, etc values) form like a map.
+-	Key of this map id object identifier and value is columns retrieved by query.After the columns are retrieved the object is hydrated.
+-	In case of HQL query retrieving only specific columns, in place if object identifier these column values are stored in query cache. 
+-	Query cache is not enabled by default we need to enable it as follows,
+
+hibernate.cfg.xml
+<property name="hibernate.cache.use_query_cache">true</property>
+
+Composite Primary Key
+
+-	A composite id means a table holds primary key, and primary key is combination of two or more columns.
+-	The primary key class must fulfill several conditions,
+	a)it should be defined using @EmbeddedId or @IdClass annotations
+	b)it should be public, serializable and have a public no-arg constructor
+	c)it should implement equals() and hashCode() methods
+-	@EmbeddedId
+-	To define an id using @EmbeddedId, first we need a primary key class annotated with @Embeddable:
+
+@Embeddable
+public class OrderEntryPK implements Serializable {
+ 
+    private long orderId;
+    private long productId;
+ 
+    // standard constructor, getters, setters
+    // equals() and hashCode() 
+}
+Next, we can add an id of type OrderEntryPK to an entity using @EmbeddedId:
+
+@Entity
+public class OrderEntry {
+ 
+    @EmbeddedId
+    private OrderEntryPK entryId;
+ 
+    // ...
+}
+
+@IdClass
+-	The @IdClass annotation is similar to the @EmbeddedId, except the attributes are defined in the main entity class using @Id for each one.
+@Entity
+@IdClass(OrderEntryPK.class)
+public class OrderEntry {
+    @Id
+    private long orderId;
+    @Id
+    private long productId;
+     
+    // ...
+}
+
+Primary key generation
+
+-	Identifiers in Hibernate represent the primary key of an entity.
+-	This implies the values are unique so that they can identify a specific entity, that they aren’t null and that they won’t be modified.
+-	Hibernate provides a few different ways to define identifiers. In this article, we’ll review each method of mapping entity ids using the library.
+
+Simple Identifiers
+-	The most straightforward way to define an identifier is by using the @Id annotation.
+-	Simple ids are mapped using @Id to a single property of one of these types: Java primitive and primitive wrapper types, String, Date, BigDecimal, BigInteger.
+
+@Entity
+public class Student {
+ 
+    @Id
+    private long studentId;
+     
+    // standard constructor, getters, setters
+}
+Generated Identifiers
+If we want the primary key value to be generated automatically for us, we can add the @GeneratedValue annotation.
+This can use 4 generation types: AUTO, IDENTITY, SEQUENCE, TABLE.
+If we don’t specify a value explicitly, the generation type defaults to AUTO.
+
+-	AUTO Generation
+-	AUTO Indicates that the persistence provider should pick an appropriate strategy for the particular database.
+
+@Entity
+public class Student {
+ 
+    @Id
+    @GeneratedValue
+    private long studentId;
+ 
+    // ...
+}
+-	In this case, the primary key values will be unique at the database level.
+-	An interesting feature introduced in Hibernate 5 is the UUIDGenerator. To use this, all we need to do is declare an id of type UUID with @GeneratedValue annotation:
+
+@Entity
+public class Course {
+ 
+    @Id
+    @GeneratedValue
+    private UUID courseId;
+ 
+    // ...
+}
+Hibernate will generate an id of the form “8dd5f315-9788-4d00-87bb-10eed9eff566”.
+
+IDENTITY Generation
+This type of generation relies on the IdentityGenerator which expects values generated by an identity column in the database, meaning they are auto-incremented.
+To use this generation type, we only need to set the strategy parameter:
+
+@Entity
+public class Student {
+ 
+    @Id
+    @GeneratedValue (strategy = GenerationType.IDENTITY)
+    private long studentId;
+ 
+    // ...
+}
+One thing to note is that IDENTITY generation disables batch updates.
+
+3.3. SEQUENCE Generation
+-	To use a sequence-based id, Hibernate provides the SequenceStyleGenerator class.
+-	This generator uses sequences if they’re supported by our database, and switches to table generation if they aren’t.
+-	To customize the sequence name, we can use the @GenericGenerator annotation with SequenceStyleGenerator strategy:
+
+@Entity
+public class User {
+    @Id
+    @GeneratedValue(generator = "sequence-generator")
+    @GenericGenerator(
+      name = "sequence-generator",
+      strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
+      parameters = {
+        @Parameter(name = "sequence_name", value = "user_sequence"),
+        @Parameter(name = "initial_value", value = "4"),
+        @Parameter(name = "increment_size", value = "1")
+        }
+    )
+    private long userId;
+     
+    // ...
+}
+In this example, we’ve also set an initial value for the sequence, which means the primary key generation will start at 4.
+-	The generated values are unique per sequence. If you don’t specify a sequence name, Hibernate will re-use the same hibernate_sequence for different types.
+
+3.4. TABLE Generation
+The TableGenerator uses an underlying database table that holds segments of identifier generation values.
+
+Let’s customize the table name using the @TableGenerator annotation:
+
+@Entity
+public class Department {
+    @Id
+    @GeneratedValue(strategy = GenerationType.TABLE, 
+      generator = "table-generator")
+    @TableGenerator(name = "table-generator", 
+      table = "dep_ids", 
+      pkColumnName = "seq_id", 
+      valueColumnName = "seq_value",
+	  allocationSize = 1)
+    private long depId;
+ 
+    // ...
+}
+In this example, we can see that other attributes such as the pkColumnName and valueColumnName can also be customized.
+
+Custom Generator
+-	If we don’t want to use any of the out-of-the-box strategies, we can define our custom generator by implementing the IdentifierGenerator interface.
+
+public class MyGenerator 
+  implements IdentifierGenerator, Configurable {
+ 
+    private String prefix;
+ 
+    @Override
+    public Serializable generate(
+      SharedSessionContractImplementor session, Object obj) 
+      throws HibernateException {
+ 
+        String query = String.format("select %s from %s", 
+            session.getEntityPersister(obj.getClass().getName(), obj)
+              .getIdentifierPropertyName(),
+            obj.getClass().getSimpleName());
+ 
+        Stream ids = session.createQuery(query).stream();
+ 
+        Long max = ids.map(o -> o.replace(prefix + "-", ""))
+          .mapToLong(Long::parseLong)
+          .max()
+          .orElse(0L);
+ 
+        return prefix + "-" + (max + 1);
+    }
+ 
+    @Override
+    public void configure(Type type, Properties properties, 
+      ServiceRegistry serviceRegistry) throws MappingException {
+        prefix = properties.getProperty("prefix");
+    }
+}
+In this example, we override the generate() method from the IdentifierGenerator interface. 
+
+Cardinalities in hibernate_sequence
+
+-	In RDBMS, 2 tables are related with each other if primary key column of one table is foreign key into another.
+-	The table with primary key is parent table or owned table.
+-	The table with foreign key is child table or owner table.
+-	Hibernate ORM maps java classes to database tables.
+-	Hence developer needs to define the relation between these tables in java classes itself.
+-	Hibernate supports 2 kinds of mapping,
+	a)	Uni-directional mapping
+	b)	Bi-directional mapping
+
+-	In unidirectional mapping we can access pojo A object from another pojo B, but vice a versa is not true.
+-	This means pojo B encapsulates pojo A object, but pojo A do not encapsulate pojo B object.
+
+-	In bi-directional mapping we can access pojo A object from another pojo B and pojo B object from pojo A.
+-	This means pojo B encapsulates pojo A object, and pojo A encapsulates pojo B object.
+
+MappingAnnotation						Points								Uni-directional						Bi-directional
+
+1)	@OneToOne							-	Default joining structure 		-	Column							-	Column
+										-	Foreign key location			-	Pojo with @OneToOne will		-	Pojo with mappedBy will
+																				hold foreign key					not hold the foreign key
+											Foreign key name				-	Defined By @JoinColumn used		-	Defined By @JoinColumn cannot
+																				with @OneToOne						be used with mappedBy
+
+
+2)	@OneToMany							-	Default joining structure 		-	Table, use @JoinColumn for 		-	Column
+																				column							
+										-	Foreign key location			-	Pojo with many cardinality. 	-	Pojo with mappedBy will
+																													not hold the foreign key
+											Foreign key name				-	Defined By @JoinColumn used		-	Defined By @JoinColumn cannot
+																				with @OneToMany						be used with mappedBy
+
+
+3)	@ManyToOne							-	Default joining structure 		-	Table, use @JoinColumn for 		-	Column
+																				column							
+										-	Foreign key location			-	Pojo with many cardinality. 	-	Pojo with mappedBy will
+																													not hold the foreign key
+											Foreign key name				-	Defined By @JoinColumn used		-	Defined By @JoinColumn cannot
+																				with @ManyToOne						be used with mappedBy
+
+4)	@ManyToMany							-	Default joining structure 		-	Table, @JoinColumn is ignored  	-	Table, @JoinColumn is ignored 
+																				if used								if used
+										-	Foreign key location			-	Table 							-	Table
+											Foreign key name				-	Defined By @JoinTable used		-	Defined By @JoinTable cannot
+																				with @ManyToMany					be used with mappedBy
+
+
+Cascading in hibernate
+
+-	Cascading means operation to be performed on child entity through parent entity.
+-	Consider scenario 1 person can have many account but 1 account belongs to 1 person.
+-	In java representation, person class will have list of accounts as data member.
+-	Hibernate supports 6 cascading rules as follows:-
+	
+	a)	PERSIST =  When new account is added to list data member of person object.
+	
+	b)	MERGE = When existing account is updated from list data member of person object.
+	
+	c)	REMOVE = When existing account is removed from list data member of person object.
+	
+	d)	REFRESH	= When person object is reloaded also reload all related accounts from database.
+	
+	e)	DETACH = When person object is moved to detached from transient also detach all related account objects.
+	
+	f)	ALL = All of the above.
+	
+Common Exceptions in Hibernate
+
+	ConstraintViolationException
+-	Object is present with id database(Employee emp id = 1).
+-	Another object of same type and same primary key is created(Employee emp id = 1) and added to database by calling persist(Object obj).
+-	If we delete parent object(Department dept id = 2) and child object (Employee emp id = 1 and deptid = 2 where deptit is not nullable)
+	is still present in database.
+
+	EntityExistsException/ NonUniqueObjectException
+-	Object is present with id entity manager(Employee emp id = 1).
+-	Another object of same type and same primary key is created(Employee emp id = 1) and added to entity manager by calling persist(Object obj).
+-	Note : If any entity is already loaded in entity manager (Employee emp) and we call persist(emp), the entity is not saved and no Exception is thrown.
+
+	TransientPropertyValueException
+-	Object to be persisted (Employee emp) holds reference to another object (Department dept).
+-	But another object (Department dept) is not a persisted object i.e its Transient.
+-	Solution is to set cascade property in Employee class as below,
+	class Employee {
+		@OneToOne(cascade = CascadeType.PERSIST) 
+		private Department dept;
+	}	
+
+	PersistentObjectException
+-	Passing a detached to persist(Object) method. 
+-	JPA considers an entity as detached if its primary key is set and passed to persist(Object).
+-	But primary key of that entity should be auto generated. 
+-	Object to be persisted (Employee emp) holds reference to another object (Department dept) 
+	which was previously retrieved in different session(detached).
+-	Solution is to remove cascade property in Employee class as below,
+	class Employee {
+		@OneToOne
+		private Department dept;
+	}	
+ 
+	StaleStateException
+-	Object(Employee emp id = 10) do not exist into database.
+-	An attempt is made to update the object by using session.update(emp). 
+-	Solution is to use session.merge(emp) which saves the object if it does not exist in database.
+
+	ObjectDeletedException
+-	The merge(Object) method throws this exception if object passed is not @Entity annotated
+	or is removed within same entity manager.
+
+	TransactionRequiredException 
+-	persist(Object), remove(Object), merge(Object) method require transactional context for working.
+
+	SchemaManagementException
+-	Pojo structure cannot be validated(hbm2ddl.auto = validate) against table.

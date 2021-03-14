@@ -1,0 +1,120 @@
+core java - log4j
+
+What are problems with System.out.println() method call and why is it not suitable for logging?
+
+-	Logging is the process of writing message statement during execution of program into repository that will help in debugging the java program flow.
+
+-	In java System.out.println() method call can to be used to write message statement.
+
+-	But System.out.println() method call can write message statement only into single repository called console it cannot write message statement inside
+	file and database.
+
+-	Also this method is thread-safe and allow execution by single thread at a time.
+
+-	It is not possible to hide all or specific message statement like debug, info, warning, error and other without changing the underlying java code.
+
+-	To include additional detail like method-name, thread-name and time-stamp developer must explicitly write code for it.
+	
+-	It is not possible to change pattern of message statement without changing the underlying java code. 
+
+What is the alternative System.out.println() method call and how is it efficient?
+
+-	In java logging can be managed using log4j framework called as logging for java.
+
+-	But log4j can write message statement to multiple repository which include console, file and database.
+
+-	Also it allow multiple thread execution without creating data inconsistency problem.
+
+-	It is possible to hide all or specific message statement like debug, info, warning, error and other without changing the underlying java code.
+
+-	It also allow to include additional detail like method-name, thread-name and time-stamp developer must explicitly write code for it.
+	
+-	It is possible to change pattern of message statement without changing the underlying java code. 
+
+-	It also support internationalization.
+
+-	We can change the behaviour of log4j at runtime by changing its configuration file.
+
+What are different key components of log4j framework?
+
+-	Following are different key components of log4j framework,
+
+	-	Logger
+	-	Appender
+	-	Filter
+	-	Layout
+	-	Object Renderer
+	-	Level
+	-	LogManager
+
+-	The logger object is responsible to write message statement to one or more repository.	
+
+-	Appender is associated with one or more repository and it is responsible to read message statement for logger object and write it to repository.
+
+-	Filter will analyze the message statement and will take decision whether the message statement must be written to repository or not.
+
+-	Layout will decide the format of message statement.
+
+-	Object Renderer will provide string representation of object that is part of message statement.
+
+-	Level decide the priority of message statement. The log4j framework provide level like ALL, TRACE, DEBUG, INFO, WARN, ERROR, FATAL.
+
+-	These level are priority where ALL > TRACE > DEBUG > INFO > WARN < ERROR > FATAL > OFF, when we enable a INFO level for logger object then all the level below
+	INFO level like WARN, ERROR AND FATAL will be enabled.   
+
+-	The LogManager will read log4j framework configuration file and for each logger object information present inside the file it will create new logger object.
+
+-	LogManager will store this logger object with unique name which is defined inside log4j framework configuration file.	
+
+How does the log4j framework component work?
+
+-	When we create logger object inside java application then LogManager will search for log4j framework configuration file in classpath.
+
+-	Then log4j framework will load and parse log4j configuration file and it will create logger object.
+
+-	When we access any logger method using logger object then appender object will recognize all the filter for that logger object.
+
+-	The appender object will execute all the filter in sequence where filters will analyze the message statement and will take decision whether the
+	message statement must be written to repository or not.
+
+- 	The appender object will now call layout object which will apply the formatting on the message statement.
+
+- 	The appender object will now call Object Renderer to create string representation of object that is part of message statement.
+
+-	Finally the appender object will write the message statement to respective repository.
+
+Explain the log4j framework logger inheritance?
+
+-	Inside log4j framework configuration file a logger configuration with name com.durgasoft is child of logger configuration with name com.
+
+-	The child logger configuration inherit appender information from parent logger configuration and because of this child logger can have its own appender
+	and appender it inherit from parent logger configuration.
+
+-	This is called appender additivity and we can prevent appender additivity by adding configuration inside child logger configuration with additivity value 	
+	set to no.
+
+-	But each logger configuration can have only one level information which mean level information is not inherited from parent logger configuration to child
+	logger configuration.
+
+-	All logger configuration is inherited from root logger configuration.
+
+	Example:
+	
+	log4j.properties
+	
+	log4j.appender.stdout=org.apache.log4j.ConsoleAppender
+	log4j.appender.stdout.layout=org.apache.log4j.PatternLayout
+	log4j.appender.stdout.layout.ConversionPattern=%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %m%n
+	 
+	log4j.appender.fileout=org.apache.log4j.DailyRollingFileAppender
+	log4j.appender.fileout.layout=org.apache.log4j.PatternLayout
+	log4j.appender.fileout.layout.ConversionPattern=%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %m%n
+	log4j.appender.fileout.DatePattern='.' yyyy-MM-dd-HH-mm
+	
+	log4j.rootLogger=DEBUG, stdout
+	 
+	log4j.logger.com.p1=INFO, fileout				/**message statement will be written to file only**/
+	log4j.additivity.p1=false
+	 
+	log4j.logger.com.p2=INFO, fileout				/**message statement will be written to console and file both**/
+	

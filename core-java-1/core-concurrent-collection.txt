@@ -1,0 +1,89 @@
+core java - concurrent collection in java
+
+What are concurrent collections?
+
+-	The collections defined in java.util package are not thread safe by default expect few (Hashtable and Vectors).
+
+-	In synchronized thread safe collection(Hashtable and Vectors) until completion of one thread another thread has to wait and entire collection object remains 
+	locked by one thread hence performance is detoriated. 
+
+-	While in non thread safe collection any number of threads can concurrently read the collection but during the same if any one thread tries to update collection
+	then we will get runtime exception saying ConcurrentModificationException.
+	
+-	Also in single thread scenario when a collection is updated when it is being iterated then we will get runtime exception saying ConcurrentModificationException.
+
+What are the reason for runtime exception saying ConcurrentModificationException?
+
+-	The iterator for non thread safe collection in java is called fail-fast iterator and iterator for thread safe collection in java are called fail-slow iterator.
+
+-	When fail-fast iterator is iterating over a collection object and the collection object is updated within same or different thread we will get runtime exception
+	saying ConcurrentModificationException.
+		
+-	A non-thread-safe collections has a property called modCount which indicates the number of times the collection has been structurally modified.
+
+-	A structural modification can be an operation that changes the number of entries in a map or an operation that changes the size of list.
+
+-	In such case, if the value of the modCount is incremented and iterator identifies this modCount variable value change and throws runtime exception saying 
+	ConcurrentModificationException.
+
+How ConcurrentModificationException can be avoided by concurrent collection?
+
+-	A concurrent collections are thread safe and it avoids ConcurrentModificationException by using segment level locking or cloning the collection object.
+
+Explain how ConcurrentHashMap avoids ConcurrentModificationException?
+
+-	ConcurrentHashMap is subclass in java.util.concurrent package of ConcurrentMap interface which is further subinterface of Map interface.
+
+-	When we read entries from a map we do not require to lock map object but to update entry within a map we require to lock the map object.
+
+-	But in ConcurrentHashMap instead of locking entire map object we can only lock the bucket within the map object and it is called segment or bucket level locking. 
+
+-	ConcurrentHashMap defines a integer field for concurrency-level specifies how many buckets can be locked at a given time by single thread.
+
+-	A ConcurrentHashMap does not allow null key and null value.
+
+
+Explain how CopyOnWriteArrayList and CopyOnWriteArraySet avoids ConcurrentModificationException?
+
+-	CopyOnWriteArrayList is subclass in java.util.concurrent package of List interface and CopyOnWriteArraySet is subclass in java.util.concurrent package
+	of Set interface. 
+
+-	In case of CopyOnWriteArrayList or CopyOnWriteArraySet when an iterator is requested on collection object an iterator to current immutable state of collection 
+	object is created.
+-	Hence iterator cannot insert, update, delete object from collection otherwise we will get runtime exception saying UnSupportedOperationException.
+
+-	In this case if multiple threads are executing on collection object	there is no chance of ConcurrentModificationException as no thread will be able to
+	update collection object using iterator.
+	
+-	Whenever any add or update or remove operations are performed using reference to collection object the orignal collection object is updated and not the cloned
+	object available with iterator.
+
+Why concurrent collections does not allow null keys and null values ?
+
+-	Assume concurrent collection is allowed to have null value then collection.get(key) when returns null it is ambigous to know whether the actual key is 
+	mapped to null value or key is missing from collection.
+-	To solve this issue we use following code before retrieving value from collection,
+	
+	if(collection.containsKey(key)) {
+		Object ans = collection.get(key);
+	} else {
+		/**some other logic**/	
+	}
+
+-	Assume that thread t1 checks if condition and finds key present inside collection and so it enters if block. But JVM switches to thread t2 which removes
+	key from collection.
+-	Now when thread t1 calls collection.get(key) it returns null value but as per the code it must execute else block.
+	
+-	Assume concurrent collection is allowed to have null key then collection.get(null) when returns null it is ambigous to know whether the actual null key is 
+	mapped to null value or null key is missing from collection.
+-	To solve this issue we use following code before retrieving value from collection,
+	
+	if(collection.containsKey(null)) {
+		Object ans = collection.get(null);
+	} else {
+		/**some other logic**/	
+	}
+
+-	Assume that thread t1 checks if condition and finds null key present inside collection and so it enters if block. But JVM switches to thread t2 which removes
+	null key from collection.
+-	Now when thread t1 calls collection.get(null) it returns null value but as per the code it must execute else block.

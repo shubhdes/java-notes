@@ -1,0 +1,357 @@
+spring boot - rest
+
+What is the difference between @RestController and @Controller annotation?
+
+-	When any method of @Controller annotated class returns a response then that response object is a wrapper for next view page name.
+
+-	But when any method of @RestController annotated class returns a response then response object is added to HttpResponse body directly. 
+ 
+-	@Controller annotation is used to process request from web-pages and return response web-page but @RestController is used to process restful request and 
+	return response is required media-type format. 
+
+For spring rest application how does spring rest framework convert response into appropriate media format?
+
+-	In spring boot every request from client to server contains four special information in request header namely request-path, request-method, content-type
+	and accept.
+	
+-	Based on this information request handler identifies which method of controller class is needed to process this request i.e. every method in controller
+	class will have above four parameters combination as unique combination.	
+	
+-	Within the controller these four parameters are defined using annotation @RequestMapping which has four attributes called path, method, consumes and produces.
+
+	Example:
+	
+	@RequestMapping(path = "/employee", method = HttpMethod.POST, produces = {"application/json"}, consumes = {"application/json"})
+
+-	For a given request when the request url does not match any request handler url then we get HTTP 404 error message as resource not found.
+
+-	Also when the request url matches but request method does not match we get runtime exception saying HttpRequestMethodNotSupportedException.	
+
+-	Again for a given request when the content type parameter in request header does not match with the produces annotation parameter media-type then we get 
+	runtime exception saying HttpMediaTypeNotAcceptableException.
+
+-	Again for a given request when the accept parameter in request header does not match with the consumes annotation parameter media-type then we get runtime
+	exception saying HttpMediaTypeNotSupportedException.
+
+-	Once the request handler identifies the method the dispatcher-servlet is responsible to call that method and pass request body information to that method.
+
+-	The dispatcher-servlet call http-message-converter to perform conversion to required media-type format based on content type header using following rules,
+
+	a)	For method parameter of type string and content-type header of type plain/text, application/json or application/xml string object is initialized with
+		required conversion to media-type format.
+
+	b)	For method parameter of type collection or java object and content-type header of type application/json or application/xml request object is initialized 
+		by performing required conversion to media-type format.
+
+	c)	For request object of type collection or java object and content-type header of type plain/text conversion will fail with runtime exception saying
+		HttpMediaTypeNotSupportedException.
+	
+-	Once the required method execution is completed then http-message-converter will convert the returned object is converted to required media-type format based 
+	on accept header in request using following rules,
+	
+	a)	For response object of type string and accept header of type plain/text, application/json or application/xml string object is returned with	required
+		conversion to media-type format.
+		
+	b)	For response object of type collection or java object and accept header of type application/json or application/xml response object is converted into 
+		required media-type format.
+		
+	c)	For response object of type collection or java object and accept header of type plain/text response object conversion will fail with runtime exception saying
+		HttpMessageNotWritableException.
+
+-	The spring rest framework automatically manages json to java object and java object to json conversion but it cannot do the same conversion for xml to java 
+	object and java object to xml.
+
+-	This conversion will require jackson-dataformat-xml dependency to be present inside the classpath.
+
+	Example:
+
+	<dependency>
+		<groupId>com.fasterxml.jackson.dataformat</groupId>
+		<artifactId>jackson-dataformat-xml</artifactId>
+	</dependency>
+
+Explain class and annotation used for exception handling in spring rest framework?
+
+-	The spring rest framework provide annotation like @ResponseStatus, @ControllerAdvice and @ExceptionHandler and abstract class ResponseEntityExceptionHandler 
+	for exception handling.
+
+-	The @ResponseStatus annotation can be used at an exception class level. This annotation accept integer attribute called status to define the web-response
+	http-status code when the exception is raised.
+
+	Example:
+	
+	@ResponseStatus(status = HttpStatus.NOT_FOUND)
+	public class EmployeeNotFoundException extends RuntimeException {
+	
+	}
+
+-	We can also define user-defined exception handler class that will handle exception and return user-defined web-response.
+
+-	The spring rest framework allow defining one common class to handle all the exception that are raised from @RequestMapping annotated method present inside 
+	all @Controller or @RestController annotated class.
+
+-	This one common class must be annotated with @ControllerAdvice annotation and this annotation accept string arguement to define the @Controller or @RestController
+	annotated class for exception handling.
+
+-	The @ControllerAdvice annotation is internally marked with @Component annotation and it is identified during the process of component-scan.
+
+-	This class can define different method to handle each exception and must use @ExceptionHandler annotation and this annotation accept Class attribute to define 
+	one or more exception each method will handle.
+
+-	The spring rest framework provide an abstract class ResponseEntityExceptionHandler that define following final and non-abstract method to handle rest and mvc 
+	related exception.
+
+	public final ResponseEntity<Object> handleException(Exception ex, WebRequest request) throws Exception
+
+-	The above method first identify the type of exception and depending upon the type of exception it will call other non-abstract method present inside 
+	ResponseEntityExceptionHandler abstract class. 
+	
+-	The user-defined exception handler class can inherit ResponseEntityExceptionHandler class and override its non-final method to provide user-defined exception handling.	
+	
+	Example:
+	
+	@ControllerAdvice
+	class MyExceptionHandler extends ResponseEntityExceptionHandler {
+	
+		@ExceptionHandler(value = {EmployeeNotFoundException.class})
+		public ResponseEntity<MyResponse> handleException(EmployeeNotFoundException ex, WebRequest request)  {
+		
+		}
+	}
+
+How to implement server side data validation using spring framework?
+
+-	To implement server side data validation using spring framework we need to implement Validator interface and override the following methods,
+
+	public boolean supports(Class type)
+	
+	public void validate(Object obj, Errors errors)
+
+-	The implementation class must be spring bean class and hence we must use @Component annotation at class level.
+
+-	To enable this validation we must add @Valid annotation at method parameter level.
+
+	Example:
+	
+	@Component
+	class EmployeeValidation implements Validator {
+	
+		public boolean supports(Class class) {
+		
+			return this.getClass().equals(class);
+		}
+		
+		public void validate(Object obj, Errors errors) {
+		
+			 ValidationUtils.rejectIfEmpty(errors, "empId", "Employee identifier is required");
+		}
+	}
+
+	@PostMapping(path = "/employee", consumes = {"application/json"}, produces = {"application/json"})
+	public Employee getEmployee(@Valid Employee employee) {
+	
+	}
+	
+-	Also java provide validation specification to which third party vendor hibernate provide implementation.
+
+-	This implementation provide us with validation annotation which can be used at field level or at getter method level directly.
+
+-	These annotation accept string arguement called message to define the exception message when validation fail.
+
+-	When the validation fail a runtime exception is raised saying MethodArguementInvalidException.
+
+	Example:
+	
+	class Employee {
+	
+		@NotBlank(message = "Employee identifier is required")
+		private String empId;
+	}
+	
+Explain internationalization in spring rest framework?
+
+-	To design java application with respect to local user is called as internationalization.
+
+-	Inside java application to represent a group of local users java has provided a predefined class called Locale which can be used for number formatting,
+	date formatting and message formatting.
+
+-	Spring allow message formatting using the present locale using ResourceBundleMessageSource class.
+
+-	ResourceBundleMessageSource class can be used to read message from properties file using the present locale and this will require the properties file name
+	to be in baseName_country.properties format.
+
+	Example:
+	
+	message_us.properties
+	message_fr.properties
+	
+	@Bean
+	public MessageSource messageSource() {
+		
+		ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
+		
+		messageSource.setBasename("message");
+		
+		messageSource.setDefaultEncoding("UTF-8");
+		
+		return messageSource;
+	}
+
+-	In spring internationalization we require an interceptor and locale resolver spring bean object.
+
+-	The purpose of interceptor is to bypass web-request before it reach the controller and then find special parameter inside the web-request that will define
+	the locale.	
+
+-	Based on this special parameter interceptor will create locale object and put it inside locale resolver spring bean object.
+
+-	But when special parameter does not	exist then locale resolver will either use previously set locale object or default locale object available to it based on
+	the implementation.
+
+-	The spring framework provide an interceptor class called LocaleChangeInterceptor also implementation of locale resolver called SessionLocaleResolver and
+	CookieLocaleResolver.
+
+-	The SessionLocaleResolver will allow locale object to be put inside session object and CookieLocaleResolver will allow the locale object to be put inside
+	the cookie object.
+
+-	The purpose of putting locale object inside session object or cookie object is to allow re-using the same locale object without expecting the special parameter
+	inside every web-request.
+
+	Example:
+	
+	@Bean
+	public LocaleResolver localeResolver() {
+		
+		SessionLocaleResolver localeResolver = new SessionLocaleResolver();
+		
+		localeResolver.setDefaultLocale(Locale.ENGLISH);
+		
+		return localeResolver;
+	}
+
+What is filtering in spring rest framework?
+
+-	Filtering means suppressing field present inside web-response.
+
+-	The spring rest framework allow filtering by using @JsonIgnore annotation at field level.
+
+	Example:
+	
+	class Employee {
+	
+		@JsonIgnore
+		private String empId;
+	}
+
+-	We can also use @JsonIgnoreProperties annotation at class level. This annotation accept string array arguement called value that define one or more field
+	which must be supressed inside web-response.
+
+	Example:
+	
+	@JsonIgnoreProperties(value = {"empId", "empSal"})
+	class Employee {
+
+	}
+
+-	It is also possible to supress field present inside web-response at runtime.
+
+-	The spring rest framework provide annotation called @JsonFilter at class level that accept one string arguement called name that will define the filter name.
+
+-	Also SimpleBeanPropertyFilter class allow creating filter that will contain information about field to suppress present inside web-response
+
+-	The MappingJacksonValue class will encapsulate both the web-response and the filter and then will suppress field present inside web-response using filter.
+
+	Example:
+	
+	@JsonFilter(name = "employeeFilter")
+	class Employee {
+	
+	}
+	
+	@GetMapping(path = "/employee/{id}", consumes = {"application/json"}, produces = {"application/json"})
+	public MappingJacksonValue getEmployee(@PathVariable(name = "id") int id) {
+
+		Employee employee = service.getEmployee(id);
+		
+		SimpleBeanPropertyFilter filter = SimpleBeanPropertyFilter.filterOutAllExcept("empId", "empSal");
+
+		FilterProvider filterProvider = new SimpleFilterProvider().addFilter("employeeFilter", filter);  
+
+		MappingJacksonValue mapping = new MappingJacksonValue(employee);  
+		
+		mapping.setFilters(filterProvider); 
+		
+		return mapping;  
+	}
+
+Explain the purpose and working of HATEOAS api in spring rest framework?
+
+-	The spring rest framework provide HATEOAS api which stand for Hypertext as the Engine of Application State api.
+
+-	The HATEOAS api allow spring rest framework to add hyperlink inside web-response and this link will guide user through the web-application.
+
+	Example:
+	
+	<dependency>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-hateoas</artifactId>
+	</dependency>
+
+	@GetMapping(path = "/employee/{id}", consumes = {"application/json"}, produces = {"application/json"})
+	public Resource<Employee> getEmployee(@PathVariable(name = "id") int id) {
+
+		Employee employee = service.getEmployee(id);
+		
+		Resource<Employee> resource = new Resource<Employee>(employee);
+
+		ControllerLinkBuilder link = linkTo(methodOn(this.getClass()).getAllEmployees());
+		
+		resource.add(link.withRel("all-employees"));
+	}
+       
+Explain the purpose and working of swagger api in spring rest framework?
+
+-	The spring rest framework provide swagger api for defining the service definition of rest web-service.
+
+-	The swagger api will generate json contract which the rest web-service provider will share with rest web-service consumer.
+
+	Example:
+	
+	<dependency>
+		<groupId>io.springfox</groupId>
+		<artifactId>springfox-swagger2</artifactId>
+	</dependency>
+
+-	Also the api provide service definition information in form of web page.
+
+	Example:
+	
+	<dependency>
+		<groupId>io.springfox</groupId>
+		<artifactId>springfox-swagger-ui</artifactId>
+	</dependency>
+		
+	Example:	
+		
+	@EnableSwagger2
+	class SwaggerConfiguration {
+	
+		@Bean
+		public Docket docket() {
+			
+			ApiInfo apiInfo = new ApiInfoBuilder()
+								.title("durgasoftware solutions")
+								.description("durgasoftware solutions API reference for developers")
+								.termsOfServiceUrl("http://durgasoftware.com")
+								.contact("durgasoftware@gmail.com")
+								.license("durgasoftware solutions license")
+								.licenseUrl("durgasoftware@gmail.com")
+								.version("1.0")
+								.build();
+			
+			return new Docket(DocumentationType.SWAGGER_2).apiInfo(apiInfo).build();
+		}
+	}
+	
+-	The swagger api provide annotation for @RestController class, @RequestMapping method, model class and model class property.
+
+-	These annotations allow to provide description which will be added inside the swagger documentation.

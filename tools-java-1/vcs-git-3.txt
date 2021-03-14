@@ -1,0 +1,326 @@
+core java -	version control system tool - 3
+
+Explain branching in git?
+
+-	Master branch is the default main branch in git.
+
+-	Generally main source code we will place in master branch.
+
+-	Branching allows parallel development.
+
+-	Very clean code base organization.
+
+-	Bug fixing becomes easier.
+
+-	Implementing new features becomes easier.
+
+-	Testing new ideas or technologies becomes easier.
+
+-	Git does not create new directory for each branch i.e. there is no physical duplication of files but there is logical duplication of files.
+
+-	Once we create a branch all files and commits will be inherited from child branch to parent branch.
+
+-	In child branch we can create new files and we can perform any changes in existing files and commit it.
+
+-	Once child branch is created it is isolated from parent branch, the changes performed in one branch is not available to another branch.
+
+-	Once we complete our work in child branch we can merge child branch with parent branch or we can push child branch to remote repository.
+
+Explain all branching related commands in git?
+
+-	To view available branches inside repository we need to use following command.
+
+	example:
+
+	#git branch
+	
+-	The branch name marked with * is the current active branch.	
+
+-	To create new branch inside repository we need to use following command.
+	
+	syntax:
+	
+	#git branch [branch_name]
+	
+	example:
+
+	#git branch
+
+-	To switch from one branch to another branch we need to use following command.
+
+	syntax:
+	
+	#git checkout [branch_name]
+	
+	example:
+
+	#git checkout ios_branch
+
+-	We can create branch and switch	to new branch using shortcut command.
+
+	syntax:
+	
+	#git checkout -b [branch_name]
+	
+	example:
+
+	#git checkout -b ios_branch
+	
+-	When we switch from one branch to another branch then git changes head reference to new branch.
+
+
+What is merging?
+
+-	Whatever changes are there in child branch when combined with changes in parent branch is called merging.
+
+-	To merge the child branch changes to parent branch we need to use following command from parent branch.
+
+	syntax:
+
+	#git merge [child_branch]
+	
+	example:
+
+	#git merge durga
+
+-	There are two types of merge fast forward merge and three way merge or recursive strategy.
+
+-	After creating child branch if we are not doing any changes in parent branch in that case git will perform fast forward merge.
+
+-	In fast forward merge git simply moves parent branch pointer to last commit of child branch.
+
+-	There is no chance of merge conflict.
+
+-	Everything is handled by git.
+
+	example:
+
+	=========================================================================================
+	| time | master | durga |
+	=========================================================================================
+	| 1 | c1m -	myfile.txt created | |
+	|---------------------------------------------------------------------------------------|
+	| 2 | | branch created |
+	|---------------------------------------------------------------------------------------|
+	| 3 | | c1d -	myfile.txt updated |
+	|---------------------------------------------------------------------------------------|
+	| 4 | git merge durga -	no conflict | |
+	=========================================================================================
+
+-	After creating child branch if parent branch also contains some changes then git will perform three way merge.
+
+-	In three way merge a new commit will be created called merge commit.
+
+-	This new commit will contain the latest changes from both parent and child branch.
+
+-	In three way merge git simply moves parent branch pointer to merge commit.
+
+-	There may be chance of merge conflict.
+
+-	If conflict occurs then it needs to be handled manually.
+
+What is git conflict?
+
+-	If same file is modified by both parent and child branches the git halts merge process and raise git conflict message.
+
+-	Git will markup both contents in the file to resolve the conflict very easily.
+
+-	We need to resolve this conflict manually by editing the file manually.
+
+-	After editing we need to add to staging area and then we have to perform commit.
+
+	example:
+
+	=========================================================================================
+	| time | master | durga |
+	=========================================================================================
+	| 1 | c1m -	myfile.txt created | |
+	|---------------------------------------------------------------------------------------|
+	| 2 | | branch created |
+	|---------------------------------------------------------------------------------------|
+	| 3 | | c1d -	myfile.txt updated |
+	|---------------------------------------------------------------------------------------|
+	| 4 | c2m -	myfile.txt updated | |
+	|---------------------------------------------------------------------------------------|
+	| 5 | git merge durga -	conflict | |
+	=========================================================================================
+
+How to delete a branch?
+
+-	Deletion of branch is optional.
+
+-	However branch can be deleted to keep our repository clean.
+
+-	We need to use following command to delete branch.
+
+	syntax:
+
+	#git branch -d [branch_name]
+
+	example:
+
+	#git branch -d durga
+
+What is rebase operation?
+
+-	Rebase is alternative to merge operation.
+
+-	Rebase stands for rearranging base or parent commit.
+
+-	The commit graph is always linear i.e. every commit has only one parent or base commit.
+
+-	There is no merge commit.
+
+-	There is no chance of merge conflict.
+
+-	It is two step process.
+
+-	First step is rebase child branch on top of parent branch.
+
+-	Next step is merge child branch into parent branch.
+
+Explain rebase operation?
+
+-	It is two step process.
+
+-	First step is rebase child branch on top of parent branch.
+
+-	Whatever new commits are there in child branch will be duplicated by git.
+
+-	Here everything is same except commit id.
+
+-	The base commit of child branch will be updated to last commit of parent branch.
+
+-	Then git deletes the orignal commit from child branch.  
+
+-	We need to use following command to rebase child branch on top of parent branch.
+
+	syntax:
+
+	#git rebase [parent_branch]
+
+	example:
+
+	#git rebase master
+
+-	If same file is modified by both last commit of parent branch and child branches the git halts rebase process and raise git conflict message.
+
+-	Next step is merge child branch into parent branch.
+
+-	This will be fast forward merge.
+
+	example:
+
+	=========================================================================================
+	| time | master | durga |
+	=========================================================================================
+	| 1 | c1m -	myfile1.txt created | |
+	|---------------------------------------------------------------------------------------|
+	| 2 | | branch created |
+	|---------------------------------------------------------------------------------------|
+	| 3 | | c1d -	myfile1.txt updated |--------
+	|---------------------------------------------------------------------------------------| |
+	| 4 | c2m -	myfile2.txt created | | |
+	|---------------------------------------------------------------------------------------| |
+	| 5 | | git rebase master | |
+	|---------------------------------------------------------------------------------------| |
+	| 3 | | c2d -	myfile1.txt updated |<-------
+	|---------------------------------------------------------------------------------------|
+	| 7 | git merge durga -	no conflict | |
+	=========================================================================================
+
+What is stash?
+
+-	We have to save uncommitted changes from working directory and staging area in temporary location, this is called stash.
+
+-	We need to use following command for this.
+
+	example:
+
+	#git stash
+
+-	Git stash is applicable only for tracked files.
+
+-	Also there must be atleast one commit in local repository for the files to be stashed.
+
+-	We can stash multiple times.
+
+-	The following command we show all the stash available.
+
+	example:
+
+	#git stash list
+
+-	We can use the following command to show what changes are present inside a stash.
+
+	syntax:
+
+	#git stash [stash_id]
+
+	example:
+
+	#git stash stash@{0}
+
+-	Working tree will become clean, then we can do our urgent work and commit the urgent work.
+
+-	We have to bring the saved changes and then we can continue to work, this is called unstash.
+
+-	This can be done in two ways called pop and apply ways.
+
+-	The stash details are maintained in stack data structure.
+
+-	Pop will bring stashed changes from temporary location to working directory and staging area, corresponding entry from stack will be deleted.
+
+-	Apply will bring stashed changes from temporary location to working directory and staging area, corresponding entry from stack will not be deleted.
+
+	syntax:
+
+	#git stash pop [stash_id]
+	
+	syntax:
+
+	#git stash apply [stash_id]
+	
+	example:
+
+	#git stash pop stash@{0}
+	
+	example:
+
+	#git stash apply stash@{0}
+
+What is partial stash?
+
+-	When multiple files have uncommitted changes from working directory and staging area.
+
+-	But we want to stash only specific files, this is called partial stash.
+
+-	We need to use following command for this.
+
+	example:
+
+	#git stash -p
+
+-	Git will one by one ask whether you want to stash a file or not.
+
+How to delete stash?
+
+-	To make repository clean we can delete stash.
+
+-	We can delete all stashes or a particular stash.
+
+-	To delete all available stashes we need to use following command.
+
+	example:
+
+	#git stash clear
+
+-	To delete a paticular stash we need to use following command.
+
+	syntax:
+
+	#git stash drop [stash_id]
+
+	example:
+
+	#git stash drop stash@{0}

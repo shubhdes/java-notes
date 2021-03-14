@@ -1,0 +1,304 @@
+core java - multi-threading
+
+What is ReentrantLock lock?
+
+-	The ReentrantLock is a class in java.util.concurrent.locks package and this class is subclass of java.util.concurrent.locks.Lock interface.
+-	ReentrantLock provides all advantages of synchronized keyword but additional advantages are also provided by ReentrantLock where synchronized keyword
+	fails to work.
+-	The term reentrantLock means locking same object multiple times within single flow of execution.
+	
+What are differences between synchronized and ReentrantLock?
+
+		synchronized											ReentrantLock
+	
+-	synchronized is a keyword to				-	It is a class in java.util.concurrent.lock package.
+	be used at method level or class
+	level.	
+
+-	When used at method level it locks			-	The lock is always held on ReentrantLock object.
+	the object that invokes the method.
+	
+	When used at block level programmer
+	explicitly must specify object to lock.
+	
+	In case of static method lock can
+	only be held on class object of that
+	class.
+	
+-	It provides no API to list down number		-	It provides API to list down number of threads waiting
+	of threads waiting to acquire lock on 			to acquire lock on object.
+	object.	
+	
+-	If current thread request lock on object	-	It provides API for a thread to request lock on object and if object is locked by another
+	already locked by another thread, then 			thread current thread can perform alternative task.
+	current thread has to wait until other 
+	thread releases the lock.	
+	
+-	synchronized can cause starvation.			-	ReentrantLock can avoid starvation by assigning lock fairly basis.	
+
+-	Flexibility of acquiring and releasing		-	Full flexibility of acquiring and releasing lock is with programmer.
+	lock is not with programmer.					
+
+What are different API methods for ReentrantLock class?
+
+-	Following are different API methods for ReentrantLock class,
+
+	public void lock()
+	-	It locks the ReentrantLock object if lock is available but if lock is not available wait till lock becomes available and in case of thread interrupted 
+		while waiting thread will not raise runtime exception saying InterruptedException.
+
+	public void lockInterruptibly() throws InterruptedException
+	-	It locks the ReentrantLock object if lock is available but if lock is not available wait till lock becomes available or till thread is interrupted and
+		in case of thread interrupted while waiting thread will raise runtime exception saying InterruptedException.
+
+	public boolean tryLock() 
+	-	It checks if lock is available on ReentrantLock object, if lock is available then acquire lock on the object otherwise continue alternative execution
+		without lock.
+
+	public boolean tryLock(long time, TimeUnit) throws InterruptedException 
+	-	It checks if lock is available on ReentrantLock object, if lock is available then acquire lock on the object otherwise wait for lock till specified time
+		interval expires. If lock becomes available before time expires then acquire lock otherwise continue alternative execution without lock and in case of 
+		thread interrupted while waiting thread will not raise runtime exception saying InterruptedException.
+	
+	public void unlock()
+	-	It unlocks the locked ReentrantLock object.
+
+	public final int getHoldCount()
+	-	It returns total locks held on ReentrantLock object.
+
+How does ReentrantLock achieve fairness?
+
+-	The ReentrantLock class provides parameterized constructor as follows,
+	public ReentrantLock(boolean fair)
+
+-	The default value for the fair flag is false and if we explicitly set value of fair flag to true then lock is assigned to longest waiting thread first.	
+
+What are disadvantages of ReentrantLock?
+
+-	The disadvantages of  ReentrantLock is full flexibility of acquiring and releasing lock is with programmer.
+-	In poor programming failing to unlock ReentrantLock can cause long thread wait also additional try catch finally blocks are required to support unlock before
+	method exit even in case of exceptions.
+
+What are differences between Runnable and Callable<T>?
+
+	Runnable								Callable<T>
+
+-	Runnable is an interface in 		-	Callable is an interface in 
+	java.lang package.						java.util.concurrent package.
+
+-	It is not generic type class.		-	It is generic type class.
+
+-	Implemented to provide thread-		-	Implemented to provide thread-
+	job where thread does not return		job where thread return value
+	any value.								in form of Future<T> object.
+	
+-	Provides below abstract method to	-	Provides below abstract method to
+	override								override
+	public void run()						public T call() throws Exception
+	
+	
+What is a thread pool?
+
+-	A thread pool is collection of thread objects waiting for job to be assigned to them from queue of thread jobs.
+
+-	Whenever a thread object is created we require to assign job to thread and start the thread also kill thread after job is completed. These thread mechanics
+	are overhead activities to be performed for every single thread.
+
+-	In case of a thread pool thread objects creation is responsibility of the pool and we need to just assign job to pool and when the task given to the 
+	thread object is completed new job from queue is assigned to same thread this means thread in thread pool are reusable.
+
+How to create a thread pool in java?
+
+-	Java provides executor framework to create pool of thread objects, all classes and interfaces related to executor framework are in java.util.concurrent 
+	package.
+
+-	For example,
+	ExecutorsService es = Executors.newFixedSizedThreadPool(n); 
+
+-	ExecutorsService is an sub interface java.util.concurrent.Executor interface and ExecutorsService is super interface to all different types of thread pool.
+-	Executors is class that provides factory methods to create different types of thread pool.
+
+-	Every thread pool maintains a queue of jobs assigned to it, when a job from the queue is assigned to thread from the pool, thread leaves the pool and 
+	job is also removed from the queue and after completion of job thread returns back to pool.
+	
+-	Once thread pool is created we can assign job to thread pool using one of the following methods,
+	
+	public Future<T> submit(Runnable r)	
+	-	This method is defined in ExecutorsService class and is used when job is implemented as subclass of java.lang.Runnable. In this case when uncaught 
+		exception occurs in thread job execution it is wrapped java.util.concurrent.ExecutionException and upon calling future.get() the ExecutionException is
+		raised again due to this thread is not destroyed by JVM and it returns back to pool.
+	
+	public Future<T> submit(Callable<T>)	
+	-	This method is defined in ExecutorsService class and is used when job is implemented as subclass of java.util.concurrent.Callable<T> where job must return result.
+		In this case when uncaught exception occurs in thread job execution it is wrapped java.util.concurrent.ExecutionException and upon calling future.get()
+		the ExecutionException is raised again due to this thread is not destroyed by JVM and it returns back to pool.
+
+	public void execute(Runnable r)
+	-	This method is defined in Executor interface and is used when job is implemented as subclass of java.lang.Runnable. In this case when uncaught exception 
+		occurs it is handled by JVM and thread is destroyed by JVM.
+	
+-	Once all required jobs are submitted to thread pool the thread pool must be shutdown using following method,
+	public void shutdown()
+	
+-	If the pool is shutdown no new job can be added to queue in the pool otherwise we will get runtime exception saying java.util.concurrent.RejectedExecutionException.		
+
+-	We can also verify task assigned to threads in pool is completed or not using following methods,
+	
+	public boolean isTerminated()	
+	-	This method return true if all threads have returned to pool after completing their job otherwise it return false.
+	
+	public boolean awaitTermination(long timeout, TimeUnit unit) throws InterruptedException
+	-	This method return true if all threads have returned to pool after completing otherwise it waits for specified time interval for threads to return back
+		to pool and if thread return back to pool within time interval it returns true otherwise returns false.
+
+What are different types of thread pools in java?
+
+-	Following are different types of thread pools in java and methods provided by java.util.concurrent.Executors to create each one,
+
+FixedThreadPool					newFixedThreadPool(int)           Creates a fixed size thread pool.
+																  If thread is free it is assigned job
+																  from queue.
+																  If all threads are already assigned jobs,
+																  unassigned jobs wait in queue till busy threads
+																  return back to pool.
+
+CachedThreadPool				newCachedThreadPool()             Creates a thread pool that creates new 
+																  threads as needed.
+																  If thread is free it is assigned job
+																  from queue.
+																  If all threads are already assigned jobs,
+																  then new thread is spawned for unassigned jobs. 
+
+SingleThreadExecutor			newSingleThreadExecutor()         Creates a single thread in pool. 
+																  If thread is free it is assigned job
+																  from queue.
+																  If thread is already assigned job,
+																  unassigned jobs wait in queue till busy thread
+																  return back to pool.
+
+
+What is Future<T>? What purpose does it serve?	
+
+-	Future<T> is an interface in java.util.concurrent package and the interface is generic type, this interface is used to encapsulate the state of thread-job 
+	executed by running thread.
+
+-	When thread-job is implemented using Callable<T> interface then thread is supposed to return object after complete execution of job. This object is wrapped
+	within the Future<T> object and can be retrieved on calling future.get().
+
+-	When thread job is implemented using Callable<T> interface and thread encounters uncaught exception while execution of job then thread exits job 
+	execution also the exception is wrapped within java.util.concurrent.ExecutionException and raised on calling future.get().
+
+-	Following are different API methods of Future<T> interface,
+
+	public T get() throws InterruptedException, ExecutionException	
+	-	If thread execution is complete and thread job returns object then this method returns object returned by thread but if thread execution is incomplete
+		and thread job is expected to return object this method pause further execution till thread returned object is obtained. During this blocking if the
+		thread is interrupted then runtime exception saying InterruptedException is raised. Also in case of uncaught exception in thread job the exception is
+		wrapped within java.util.concurrent.ExecutionException and raised on calling future.get().
+																					
+	public T get(long timeout, TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException	
+	-	If thread execution is complete and thread job returns object then this method returns object returned by thread but if thread execution is incomplete
+		and thread job is expected to return object this method pause further execution till specificied time interval. During this blocking if the thread is
+		interrupted then runtime exception saying InterruptedException is raised. After time interval expires and thread job returned object is not available
+		then runtime exception saying TimeoutException is raised. Also in case of uncaught exception in thread job the exception is wrapped within 
+		java.util.concurrent.ExecutionException and raised on calling future.get().
+
+	public boolean isDone()																							
+	- 	This method returns true if thread execution is complete else return false.
+
+	public boolean cancel(boolean mayInterruptIfRunning)													
+	- 	When mayInterruptIfRunning = true and if task is not started then this method will prevent task from starting and set isCancelled = true 
+		also return true.
+	- 	When mayInterruptIfRunning = true and if task is running then this method will interrupt task which will raise runtime exception saying 
+		InterruptedException and this method will set isCancelled = true return true.
+	- 	When mayInterruptIfRunning = true and if task is completed then this method will do nothing and set isCancelled = false also return false.
+	
+	- 	When mayInterruptIfRunning = false and if task is not started then this method will prevent task from starting and set isCancelled = true 
+		also return true.
+	- 	When mayInterruptIfRunning = false and if task is running then this method will do nothing and this method set isCancelled = true also return true.
+	- 	When mayInterruptIfRunning = false and if task is completed then this method will do nothing and set isCancelled = false also return false.
+
+	public boolean isCancelled()																					
+	- 	It returns true if thread execution is cancelled else return false.
+	
+What is BlockingQueue<T>? What purpose does it serve?
+
+-	BlockingQueue<T> is an interface in the java.util.concurrent package represents a queue which is thread safe and this queue allows duplicate insertion and 
+	does not allow null insertion and also maintains insertion order.
+
+-	The internal data structure is queue working on first-in-first-out principle i.e. entity added to queue first is entity that leaves the queue first.
+
+-	BlockingQueue<T> is used to solve producer-consumer problem where producing threads produces large amount to data at faster rate but consumer thread cannot
+	consumes data at same rate which might cause data loss.
+
+-	BlockingQueue<T> behaves as buffer where producer thread add data in buffer mean while consumer thread remove data from buffer.	
+
+-	When buffer is full subsequent calls to add data in buffer gets blocked until consumer thread remove the data from buffer also if consumer thread tries to
+	remove data from empty queue call gets blocked until new data is added in the queue.
+
+What is CountDownLatch? How does CountDownLatch work?
+
+-	CountDownLatch class enables a single thread to wait until another one or more threads complete their thread-job.
+
+-	This works by having a counter initialized with number of threads which is decremented each time a thread complete its thread-job and when the count reaches
+	to zero this means all threads have completed their execution and thread waiting on latch resume the execution.
+
+-	CountDownLatch class in java.util.concurrent package defines one constructor as following,
+	public CountDownLatch(int count)
+	
+-	This count is the number of threads for which main thread should wait and this value can be set only once as CountDownLatch provides no other mechanism to reset 
+	this count.
+	
+-	The main thread which is waiting for one or more threads then main thread must call following method immediately after starting other threads,
+	
+	public void await() throws InterruptedException
+	-	The execution will pause on await() method till the time other threads complete their execution during this blocking if the thread is interrupted
+		then runtime exception is raised saying InterruptedException.
+
+	public void await(long time, TimeUnit) throws InterruptedException	
+	-	If waiting time is specificied then main thread will pause execution for specified time only during this blocking if the thread is interrupted
+		then runtime exception is raised saying InterruptedException, also after waiting time is over main thread will continues to execute irrespective of
+		the latch counter being 0 or not.
+
+-	Other threads must decrement the latch value using the following method if they have completed the execution of thread-job.
+	public void countDown()
+
+-	When all threads have called this method the count reaches to zero and main thread is allowed to resume its execution.
+	
+What is CyclicBarrier? How does CyclicBarrier work?
+
+-	CyclicBarrier class enables a thread to wait until one or more threads to reach a barrier it works by having a counter initialized with number of threads 
+	which is decremented each time a thread reaches barrier.
+-	When count reaches to zero it means all threads are at barrier and thread waiting on barrier resume the execution.
+
+-	CyclicBarrier class in java.util.concurrent package defines constructor as following,
+	public CyclicBarrier(int count)
+	public CyclicBarrier(int count, Runnable r) 
+	
+-	This count is the number of threads that must reach the barrier also CyclicBarrier provides mechanism to reset this count.
+
+-	When a thread is waiting at barrier and another thread resets value of barrier then waiting thread will raise runtime exception saying BrokenBarrierException
+	to reset value of barrier use following method,
+	public void reset() throws BrokenBarrierException	
+
+-	This r is job to be performed once all threads have reached barrier and this job is executed before barrier is opened for threads which have reached it but
+	when BrokenBarrierException is raised then this job is never executed.
+	
+-	The waiting thread must call following method to indicate it has reached the barrier,
+	
+	public int await() throws InterruptedException, BrokenBarrierException
+	-	This method pauses execution till other threads have reached barrier during this pause if thread is interrupted then it will raise runtime exception
+		saying InterruptedException also if barrier value is reset a runtime exception saying BrokenBarrierException is raised.
+	
+	public int await(long time, TimeUnit) throws InterruptedException, BrokenBarrierException, TimeoutException
+	-	This method pauses execution till specified time interval but during this pause if thread is interrupted then it will raise runtime exception
+		saying InterruptedException also if barrier value is reset a runtime exception saying BrokenBarrierException is raised. Also after specificied time
+		interval is over if all threads have not reached barrier then runtime exception saying TimeoutException is raised.
+		
+-	This method decreases the initial count set in constructor by 1 so when all threads have called this method the count reaches to zero and waiting thread 
+	is allowed to resume its execution.	
+	
+What is the difference between CountDownLatch and CyclicBarrier?
+
+-	In CountDownLatch once count is set it cannot be reset but in CyclicBarrier once count is set it can be reset and this makes CyclicBarrier reusable.
+-	In CyclicBarrier we can specify additional thread-job to be executed once all waiting threads reach the barrier and before waiting thread execution is resumed.

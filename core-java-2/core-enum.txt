@@ -1,0 +1,116 @@
+core java - enum
+
+What is enum in java?
+
+-	An enum is a data-type defined with named constant of enum data-type.
+
+Example:
+
+enum Month {
+
+	JAN, FEB, ..., DEC;
+}
+
+-	In java enum internally is implemented as java class which is final and every enum constant represent public final static object of type enum only. 
+
+-	In java enum can have constructor but only private constructor this will not allow enum object creation outside enum.
+
+Example:
+
+final class Month {
+
+	public static final JAN = new Month();
+	
+	public static final FEB = new Month();
+	...
+	public static final DEC = new Month();
+
+}
+
+-	Named constant in enum is accessed using syntax EnumName.ConstantName;
+
+Example:
+
+Month.FEB;
+
+-	Inside enum toString() method is implemented to return name of named constant.
+
+Example:
+
+System.out.println(Month.FEB);	//FEB
+
+-	Enum can be declared inside a class or outside a class but cannot be declared inside method and enum can be public outside class inside class it can be 
+	public, private, protected and static.
+
+-	Like java class enum can have methods, constructor and other member variable too also we can add public static void main(String[] args) method inside enum
+	and run java program.
+
+-	The semicolon at end of last named constant is optional if these constant is not followed by method or constructor or member variable.
+
+-	When enum contains methods or constructor and other member variable then enum constants should be declared before these members and end with semicolon but
+	when enum contains methods or constructor and other member variable but no enum constants then first line within enum should be semicolon. 
+
+Explain enum and inheritance?
+
+-	In java every enum extends java.lang.Enum class hence cannot extend another enum or class also enum explicitly otherwise we will get compile time error 
+	saying enum cannot explicitly extend class.
+-	But enum can implement any number of interfaces.
+	
+-	As enum is final hence it cannot be extended by another enum or class.
+
+Explain java.lang.Enum class?
+
+-	In java every enum extends java.lang.Enum class also java.lang.Enum is abstract class and direct child class of java.lang.Object it implements 
+	java.io.Serializable and java.lang.Comparabale interfaces.
+
+Explain methods in enum?
+
+-	Following are methods applicable on enum,
+
+public static Enum[] values()
+-	returns all named constants of enum into Enum[] and this method is not part of any super class but added by compiler when it detects keyword enum.
+	
+public int ordinal()
+-	returns order named constants from enum and this method is inherited from java.lang.Enum class.
+
+public int compareTo(Enum e)
+-	returns positive integer if invoking enum ordinal > parameter enum ordinal, returns negative integer if invoking enum ordinal < parameter enum ordinal
+	and returns 0 if invoking enum ordinal == parameter enum ordinal and this method is inherited from java.lang.Enum class.
+
+Explain enum and constructor?
+
+-	Every enum in java can have its own constructor with name same as enum name and enum constructor is called every time when named constants are created 
+	in enum but named constants being static are created when enum class is loaded for first time.
+-	Hence when enum class is loaded for first the number of times constructor is called is same as number of named constants. 
+
+-	An enum object cannot be created outside enum and hence enum must have private constructor otherwise we will get compile time error saying enum constructor
+	must be private.
+
+-	Enum in java can have parameterized constructor and to invoke such constructor declare enum constant with syntax enumConstant(param).
+
+Explain enum and methods?
+
+-	Every enum in java can have methods but enum cannot be abstract and cannot have abstract method as no subclass of enum can override and provide implementation
+	to enum's abstract methods because enum is final and cannot be inherited.
+
+Explain enum and anonymous inner class?
+
+-	We can override enum method for specific enum named constant using anonymous inner class.
+
+
+enum Color {
+
+	BLUE,RED{
+	
+		public String info() {
+			
+			return "Danger color";
+		}
+		
+	},GREEN;
+
+	public String info() {
+			
+		return "Universal color";
+	}
+}

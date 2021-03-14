@@ -1,0 +1,484 @@
+spring boot - micro-service
+
+What is micro-service?
+
+-	A micro-service is a web-application that is developed as collection web-service.
+
+-	Each web-service communicate with another using rest web-service communication.
+
+-	Every web-service can be developed independently using different programming language.
+
+-	We can deploy each web-service independently and this make it possible to scale web-service up and down without affecting another.
+
+What are challenges for micro-service?
+
+-	What will be the logical boundary for each micro-service?
+
+-	How to manage and maintain the configuration for micro-service?			=	config server and config client
+
+-	How to dynamically scale up or scale down micro-service?				=	eureka
+
+-	How to trace flow of each request inside micro-service architecture?	=	zipkin
+
+-	How to implement fault-tolerance inside micro-service architecture?		=	hystrix
+
+What is spring cloud?
+
+-	The spring cloud is collection of spring boot project.
+
+-	One such project is spring-cloud-netflix project that allow easy integration of spring boot project with micro-service components provided by netflix.
+
+How to read properties file inside spring boot application?
+
+-	The spring boot application provide annotation @ConfigurationProperties at class level.
+
+-	This annotation accept string arguement called prefix.
+
+-	The annotation read all properties from spring boot environment having property key in format {prefix}.{suffix}.
+
+-	The prefix value is defined by annotation arguement.
+
+-	The value for this environment properties is set inside field of spring bean class object having field name as suffix.
+
+-	This annotation can read primitive and non primitive properties both.
+
+	Example:
+	
+	@ConfigurationProperties(prefix = "my.configuration")
+	class MyConfiguration {
+	
+		private int id;
+	
+		private List<String> lst;
+		
+		private Map<Integer, String> map;
+		
+		private Employee emp;
+	}
+
+	my.configuration.id = 100
+
+	my.configuration.lst[0] = spring boot
+	
+	my.configuration.lst[1] = micro-service
+	
+	my.configuration.map.1 = java
+	
+	my.configuration.map.2 = python
+	
+	my.configuration.emp.id = 121121
+	
+	my.configuration.emp.name = john
+	
+What is a spring cloud config server?
+
+-	Inside micro-service architecture the configuration information of each micro-service is maintained in central location called GIT repository.
+
+-	This configuration information is present inside properties file and the name of properties file must be in format {spring.application.name}-{spring.profiles.active}.properties.
+
+-	The use of {spring.profiles.active} in the name of properties file is optional.
+
+	Example:
+	
+	limits-service-dev.properties
+	
+	limits-service-stage.properties
+	
+	limits-service.properties
+
+-	The spring cloud config server is responsible to read the GIT repository and provide configuration information to each micro-service.
+
+-	To convert spring boot application into spring cloud config server we need to use @EnableConfigServer annotation.
+
+	Example:
+	
+	@EnableConfigServer
+	@SpringBootApplication
+	class MyConfigurationServer {
+	
+	}
+
+-	The above annotation will require following maven dependency to be present inside pom.xml file.
+
+	Example:
+	
+	<dependency>
+		<groupId>org.springframework.cloud</groupId>
+		<artifactId>spring-cloud-config-server</artifactId>
+	</dependency>
+
+-	The spring cloud config server must know the location of GIT repository and this detail we must provide as configuration inside	application.properties file.
+
+	Example:
+	
+	spring.cloud.config.server.git.uri=file:///local-git-repo
+
+What is a spring cloud config client?
+	
+-	Inside micro-service architecture the configuration information of each micro-service is maintained in central location called GIT repository.
+	
+-	The spring cloud config client is responsible to request spring cloud config server to read the GIT repository and provide configuration information to it.	
+	
+-	To convert spring boot application into spring cloud config client we need to use @EnableConfigClient annotation.
+
+	Example:
+	
+	@EnableConfigClient
+	@SpringBootApplication
+	class MyConfigurationClient {
+	
+	}
+
+-	The above annotation will require following maven dependency to be present inside pom.xml file.
+
+	Example:
+	
+	<dependency>
+		<groupId>org.springframework.cloud</groupId>
+		<artifactId>spring-cloud-config-client</artifactId>
+	</dependency>	
+
+-	The spring cloud config client must know the location of the spring cloud config server, spring application name, profile information and these detail we must
+	provide as configuration inside bootstrap.properties file.
+	
+	Example:
+	
+	spring.cloud.config.uri = http://10.10.10.10:8080
+	
+	spring.application.name = limits-service
+	
+	spring.profiles.active = dev
+	
+-	When the profile information is not present inside bootstrap.properties file then spring cloud config server will read default configuration from file present
+	inside GIT repository with name format as {spring.application.name}.properties.	
+	
+How to call one micro-service from another micro-service?
+
+-	One micro-service can call another micro-service using rest web-service call.
+
+-	The spring boot framework provide RestTemplate class that allow calling one micro-service from another micro-service.
+
+	Example:
+
+	new RestTemplate()
+		.getEntity("http://10.10.10.10:8080/currency-exchange-service/from/{from}/to/{to}", MyResponse.class, urlParameterMap);	
+	
+-	Alternative to RestTemplate class is using Feign for calling one micro-service to another.
+
+-	Feign work on principle of runtime proxy class.
+
+-	To convert spring boot application into feign client we need to use @EnableFeignClient annotation.
+
+	Example:
+	
+	@EnableFeignClients
+	@SpringBootApplication
+	class MyFeignClient {
+	
+	}
+
+-	The above annotation will require following maven dependency to be present inside pom.xml file.
+
+	Example:
+	
+	<dependency>
+		<groupId>org.springframework.cloud</groupId>
+		<artifactId>spring-cloud-starter-openfeign</artifactId>
+	</dependency>
+	
+-	The runtime proxy class must know the spring application name and location of another micro-service this detail is provided using @FeignClient annotation.	
+
+-	This runtime proxy class will implement an interface and override all abstract method present inside that interface
+
+-	As part of this implementation the proxy class will be responsible to call one micro-service from another micro-service.
+	
+	Example:
+	
+	@FeignClient(name = "currency-exchange-service", url = "10.10.10.10:8080")
+	public interface MyFeignClient {
+	
+		@GetMapping(path = "/currency-exchange-service/from/{from}/to/{to}")
+		public abstract CurrencyConversion currencyConversion(@PathVariable(name = "from") String from,
+			@PathVariable(name = "to") String to);
+	}
+	
+What is load balancing and how to implement it?	
+
+-	When one micro-service call another micro-service the rest web-service call must be equally distributed amongst all instance of called micro-service.
+
+-	This balancing is called load balancing and when the calling micro-service does load balancing then such balancing is called client side load balancing.	
+	
+-	The feign client use ribbon client for client side load balancing.	
+	
+-	The ribbon client must know the spring application name of micro-service to be called and this detail is provided using @RibbonClient annotation.	
+	
+	Example:
+	
+	@FeignClient(name = "currency-exchange-service")
+	@RibbonClient(name = "currency-exchange-service")
+	public interface MyFeignClient {
+	
+		@GetMapping(path = "/currency-exchange-service/from/{from}/to/{to}")
+		public abstract CurrencyConversion currencyConversion(@PathVariable(name = "from") String from,
+			@PathVariable(name = "to") String to);
+	}
+
+-	The above annotation will require following maven dependency to be present inside pom.xml file.
+
+	Example:
+	
+	<dependency>
+		<groupId>org.springframework.cloud</groupId>
+		<artifactId>spring-cloud-starter-netflix-ribbon</artifactId>
+	</dependency>
+	
+What is a naming server and how and how to implement it?
+
+-	Inside micro-service architecture it must be possible to add and remove number of instance for any micro-service at runtime.
+
+-	When the number of instance of one micro-service change then other micro-service should be aware about this change before they call that micro-service.	
+	
+-	The naming server maintain information about the all the instance for a particular micro-service.
+
+-	When any spring boot micro-service application is started it must register itself with naming server using spring application name, instance address and port.
+	
+-	To convert spring boot application into naming server we need to use @EnableEurekaServer annotation.
+
+	Example:
+	
+	@EnableEurekaServer
+	@SpringBootApplication
+	class MyNamingServer {
+	
+	}
+
+-	The above annotation will require following maven dependency to be present inside pom.xml file.
+
+	Example:
+	
+	<dependency>
+		<groupId>org.springframework.cloud</groupId>
+		<artifactId>spring-cloud-starter-netflix-eureka-server</artifactId>
+	</dependency>
+	
+-	We must also inform naming server that it must not register itself with naming server and must not use registration information for itself and this detail we 
+	must provided inside application.properties.	
+	
+	eureka.client.service-url.defaultZone = http://10.10.10.10:8080/eureka
+	
+	eureka.client.register-with-eureka = false
+	
+	eureka.client.fetch-registry = false
+	
+What is a naming client and how to implement it?	
+	
+-	When any spring boot micro-service application is started it must register itself with naming server using spring application name, instance address and port.
+		
+-	To convert spring boot application into naming client we need to use @EnableDiscoveryClient annotation.
+
+	Example:
+	
+	@EnableDiscoveryClient
+	@SpringBootApplication
+	class MyNamingClient {
+	
+	}
+
+-	The above annotation will require following maven dependency to be present inside pom.xml file.
+
+	Example:
+	
+	<dependency>
+		<groupId>org.springframework.cloud</groupId>
+		<artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+	</dependency>	
+	
+-	The naming client must know the location of naming server and this detail we must provide inside application.properties.	
+
+	eureka.client.service-url.defaultZone = http://10.10.10.10:8080/eureka
+	
+	eureka.client.register-with-eureka = true
+	
+	eureka.client.fetch-registry = true
+	
+How does the naming server, ribbon client and feign client work together?	
+
+-	When we need to call one micro-service from another micro-service then ribbon client will request naming server for instance information of that micro-service.
+
+-	The ribbon client will send spring application name inside the request.
+
+-	The naming server will find all the micro-service instance available for the particular spring application name and send this information to ribbon client.
+	
+-	Now the ribbon client will use load balancing algorithm to pick one instance from multiple and then feign client will call micro-service at that instance.	
+	
+What is api gateway and how to implement it?
+
+-	One micro-service can call another micro-service using rest web-service call.
+
+-	The api gateway will intercept every rest web-service call.	
+	
+-	To convert spring boot application into api gateway we need to use @EnableZuulProxy annotation.
+
+	Example:
+	
+	@EnableDiscoveryClient
+	@EnableZuulProxy
+	@SpringBootApplication
+	class MyNamingClient {
+	
+	}
+
+-	The above annotation will require following maven dependency to be present inside pom.xml file.
+
+	Example:
+	
+	<dependency>
+		<groupId>org.springframework.cloud</groupId>
+		<artifactId>spring-cloud-starter-netflix-zuul</artifactId>
+	</dependency>
+	
+-	The calling micro-service must call api gateway using request url in format http://{api gateway ip}:{api gateway port}/{spring application name}/{request uri}.	
+	
+How to make api gateway perform some operation when it intercept a rest web-service call?	
+	
+-	The spring cloud provide an abstract class called ZuulFilter to implement api gateway operation.
+
+-	This abstract class define following abstract methods which implementing class must override.
+
+	public abstract String filterType();
+	
+	-	The overriding method must return pre when the filter must be called before forwarding rest web-service call to another micro-service.
+	
+	-	It must return post when the filter must be called after forwarding rest web-service call to another micro-service.
+	
+	-	And it must return error when the filter must be called if the rest web-service call fail due to some runtime exception.
+	
+	public abstract int filterOrder();
+	
+	-	The overriding method return an int value to define order in which filter must execute.
+	
+	-	When multiple filter are applicable to intercept rest web-service call then filter are called in ascending order.
+	
+	public abstract boolean shouldFilter();
+	
+	-	The overriding method must return true if filter must be called to intercept the rest web-service call otherwise it must return false.
+	
+	public abstract Object run();
+	
+	-	The overriding method must define the implementation for operation to be executed by the filter when it intercept a rest web-service call.
+	
+	Example:
+	
+	class MyApiGateway extends ZuulFilter {
+	
+		public String filterType() {
+			return "pre";
+		}
+
+		public int filterOrder() {		
+			return 1;
+		}
+
+		public boolean shouldFilter() {
+			return true;
+		}
+
+		public Object run() {
+		
+			Date currentDt = new Date();
+		
+			System.out.println("rest web-service call intercepted : " + currentDt)
+			
+			return currentDt;
+		}	
+	}
+	
+What is distributed tracing?
+
+-	Distributed tracing means debugging flow of single web request inside micro-service architecture where each micro-service run on multiple instance.
+
+-	Inside micro-service architecture to process one web request one micro-service need to call another micro-service using rest web-service call.
+
+-	The next micro-service will call another micro-service and the rest web-service call continue from one micro-service to another.
+
+-	Distributed tracing become difficult with multiple micro-service and each micro-service running on multiple instance.
+	
+How to implement distributed tracing inside micro-service architecture?	
+	
+-	The spring cloud api provide sleuth component for distributed tracing.
+
+-	It will generate unique identifier for every web-request and this identifier is sent in rest web-service call from one micro-service to another micro-service.
+
+-	Every micro-service that process the web-request will append same unique identifier to log statement.	
+	
+-	To convert spring boot application into distributed tracing application following dependency must be present inside pom.xml.	
+	
+	Example:
+	
+	<dependency>
+		<groupId>org.springframework.cloud</groupId>
+		<artifactId>spring-cloud-starter-sleuth</artifactId>
+	</dependency>
+
+What is the use of zipkin distributed tracing server? 	
+	
+-	The zipkin distributed tracing server is a spring boot application.
+
+-	It store micro-service generated log into central location such as database.
+
+-	It is able to show the flow of web request from one micro-service to another in form of rest web-service call.
+
+-	It uses unique identifier generated by sleuth to order log statement generated by different micro-service instance for single web request.
+	
+-	The sleuth must format log statement in zipkin understandable format and this will require following dependency to be present inside pom.xml.	
+	
+	Example:
+	
+	<dependency>
+		<groupId>org.springframework.cloud</groupId>
+		<artifactId>spring-cloud-sleuth-zipkin</artifactId>
+	</dependency>
+	
+What is fault tolerance and how to implement it?
+
+-	Inside micro-service architecture to process one web request one micro-service need to call another micro-service using rest web-service call.
+
+-	The next micro-service will call another micro-service and the rest web-service call continue from one micro-service to another.
+
+-	When any micro-service instance raise runtime exception then entire web request processing will fail.	
+	
+-	Using fault tolerance micro-service can return default response to rest web-service call instead of raising an runtime exception.	
+	
+-	To convert spring boot application into fault tolerance application we need to use @EnableHystrix annotation.
+
+	Example:
+	
+	@EnableHystrix
+	@SpringBootApplication
+	class MyFaultTolerance {
+	
+	}
+	
+-	The above annotation will require following maven dependency to be present inside pom.xml file.
+
+	Example:
+	
+	<dependency>
+		<groupId>org.springframework.cloud</groupId>
+		<artifactId>spring-cloud-starter-hystrix</artifactId>
+	</dependency>	
+	
+-	Inside fault tolerance application when any method raise runtime exception then fallback method is called to return default response to rest web-service call.	
+	
+-	This detail we must provide using @HystrixCommand annotation which accept string arguement called fallback that accept name of fallback method.
+	
+	Example:
+	
+	@HystrixCommand(fallback = "defaultConfiguration")
+	public LimitConfiguration retrieveConfiguration() {
+	
+	}
+	
+	public LimitConfiguration defaultConfiguration() {
+	
+	}

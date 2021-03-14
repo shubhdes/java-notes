@@ -1,0 +1,195 @@
+core java - assertions
+
+What is difference between assertions and System.out.println statements?
+
+-	The main difference between assertions and System.out.println is assertions need not be removed from code after debugging is complete.
+-	This is because assertions can be explicitly enabled or disabled and by default they are disabled.
+
+Explain assert as identifier or keyword?
+
+-	The keyword assert was introduces in java 1.4, hence from java 1.4 we cannot use assert as identifier otherwise we will get compile time error.
+-	Consider the below program,
+	class Test {
+
+		public static void main(String[] args) {
+		
+			int assert  = 10;
+			System.out.println(assert);
+		}
+	}
+	
+	# javac Test.java	/**compile time error assert is keyword cannot be used as identifier**/
+	
+	# javac -source 1.3 Test.java	
+	# java Test		/**10**/
+
+
+Explain different types of assert statements?
+
+-	There are two types of assert statements they are,
+	a)	Simple assert
+	b)	Augmented assert
+
+-	Following is syntax for simpler assert statement,
+	syntax:
+	assert(b);
+	b = boolean
+	
+-	If boolean condition b is true then then our assumption passes and further execution of program is continued and if b is false then our assumption fails
+	the program will be terminated abnormally by raising java.lang.AssertionError.
+	Example:
+	class Test {
+
+		public static void main(String[] args) {
+		
+			int x = 10;
+			
+			assert(x > 10);
+			
+			System.out.println(x);
+		}
+	}
+	# javac Test.java
+	
+	# java Test		/**10**/
+
+-	By default assertions are disabled and hence assert statements will not be executed. We can explicitly enable assertions using option 
+	-ea i.e enable assertions.
+	
+	>java -ea Test	/**java.lang.AssertionError**/
+
+-	By using augmented assert statements we can augment some description to assert statements.
+ 
+	Following is syntax for simpler assert statement,
+	syntax:
+	assert(b):e;
+	where b = boolean and e = Object
+	
+-	If boolean condition b is true then then our assumption passes and further execution of program is continued and if b is false then our assumption fails
+	the program will be terminated abnormally by raising java.lang.AssertionError along with Object e printed on console.
+	Example:
+	class Test {
+
+		public static void main(String[] args) {
+		
+			int x = 10;
+			
+			assert(x > 10):"here x value must be greater than 10 but it is not";
+			
+			System.out.println(x);
+		}
+	}
+	# javac Test.java
+	
+	# java Test		/**10**/
+	# java -ea Test	/**java.lang.AssertionError here x value must be greater than 10 but it is not**/
+
+Explain different conclusions about assertions?
+
+-	By default assertions are disabled.
+	Example:
+	class Test {
+
+		public static void main(String[] args) {
+		
+			int x = 10;
+			
+			assert(x == 10):++x;
+			
+			System.out.println(x);
+		}
+	}
+	# javac Test.java
+	
+	# java Test		/**10**/
+
+-	Assertions if enabled and if first boolean arguement evaluvates to false only then second arguement is evaluvated.
+	Example:
+	class Test {
+
+		public static void main(String[] args) {
+		
+			int x = 10;
+			
+			assert(x == 10):++x;
+			
+			System.out.println(x);
+		}
+	}
+	# javac Test.java
+	
+	# java -ea Test		/**10**/
+
+-	If augmented assert statement is used then second arguement cannot be void otherwise we will get compile time error saying void type not allowed here.
+	Example:
+	class Test {
+
+		public static void main(String[] args) {
+		
+			int x = 10;
+			
+			assert(x > 10):m1();
+			
+			System.out.println(x);
+		}
+		
+		public static void m1()
+		
+		}
+	}
+	# javac Test.java	/**compile time error saying void type not allowed here**/
+
+
+What are different runtime flags for assertions also conclusions about them? 
+
+-	To enable assertions for every class expect system i.e predefined classes use below option,
+	-	-ea\-enableassertions
+-	To disable assertions for every class expect system i.e predefined classes use below option,
+	-	-da\-disableassertions
+-	To enable assertions for every system i.e predefined classes use below option,
+	-	-ea\-enablesystemassertions
+-	To disable assertions for every system i.e predefined classes use below option,
+	-	-da\-disablesystemassertions
+
+-	We can use all these flags together from left to right, then JVM will consider the flags from left to right,
+	Example:
+	>java -ea -esa -da -ea -esa -dsa -ea -dsa Test	
+	
+	system classes		Y	Y	N	N	
+	non-system classes	Y	N	Y	Y
+	At the end assertions is enabled in non-system classes and disabled for system classes.
+
+-	Consider the following package structure,
+	p1
+	|
+	|-A.class
+	|
+	|-B.class
+	|
+	|-p2
+	  |
+	  |-C.class
+	  |
+	  |-D.class
+
+-	To enable assertions only in B class of p1,
+	# java -ea:p1.B Test
+
+-	To enable assertions only in B class of p1 and class D of p2,
+	# java -ea:p1.B -ea:p2.D Test
+
+-	To enable assertions in all classes under p1,
+	# java -ea:p1... Test
+
+-	To enable assertions in all classes under p1 expect class B,
+	# java -ea:p1... -da:p1.B Test
+
+-	To enable assertions in all classes under p1 expect classes in p2,
+	# java -ea:p1... -da:p2... Test
+
+
+Write a not on java.lang.AssertionError?
+
+-	java.lang.AssertionError is a child class of java.lang.Error hence it is unchecked exception.
+-	If assert condition is true then then our assumption passes and further execution of program is continued and if assert condition is false 
+	then our assumption fails the program will be terminated abnormally by raising java.lang.AssertionError.

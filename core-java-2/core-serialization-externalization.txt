@@ -1,0 +1,86 @@
+core java - serialization
+
+What is serialization?
+
+-	The process of converting java object to network or file understandable format (binary) is called serialization and object of class that implements 
+	java.io.Serializable marker interface can only be serialized otherwise we will get runtime exception saying NotSerializableException.	
+
+What is de-serialization?
+
+-	The process of converting network or file understandable format (binary) to java object is called de-serialization and object of class that implements 
+	java.io.Serializable marker interface can only be de-serialized otherwise we will get runtime exception saying NotSerializableException.	
+
+-	We can serialize multiple objects together but we must de-serialize in same order as serialized.
+
+Explain serialization behavior with modifiers in java?
+
+-	Following modifiers introduce change in serialization behavior in java,
+
+transient
+
+-	To avoid sensitive data to be serialized to file declare variable holding data as transient and for all transient variables JVM will serialize default value
+	to file an not sensitive data and hence on de-serialization we will get default value.
+
+static
+
+-	A static variable will not take part in serialization because they are not part of object and hence for static variables JVM will not serialize any 
+	value to file but the de-serialized object contains static value this is because it gets the value from class.
+
+final
+
+-	At run time there is no concept of final variable as at run time final variable are replaced by value and hence final variable participate in serialization 
+	by value due to which static and transient modifier do not have impact on final variable serialization.
+	
+Explain encapsulation and serialization?
+
+-	Whenever an object is serialized all the objects that are directly or indirectly encapsulated by that object also participate in serialization.
+
+Explain inheritance and serialization?
+
+	Example:
+
+	class Animal {
+		int a = 10;
+	}
+
+	class Dog extends Animal implements Serializable {
+		int d = 20;
+	}
+
+-	During serialization JVM will write a = 0 i.e default value to file and during de-serialization JVM will do instance control flow and hence during 
+	de-serialization value of a = 10 in object.
+
+What is externalization?
+
+-	In serialization JVM writes every property of java object to file either with its orignal value or default value (transient keyword) but in externalization 
+	programmer is responsible to write property of java object to file and hence can write only selected property to file.
+
+-	To make java object externalizable it must implement java.io.Externalizable interface which is child interface of java.io.Serializable interface and it is
+	not marker interface but provides following method 
+	
+	public void writeExternal(ObjectOutput out) throws IOException
+	
+	-	If java class implements java.io.Externalizable then JVM call this method at time of serialization and this method must have code that specifies selected
+		properties of java object to be saved to file.
+		
+	public Object readExternal(ObjectInput in) throws IOException, ClassNotFoundException
+	
+	-	If java class implements java.io.Externalizable then JVM will create separate new java object by calling no argument constructor on the new object call 
+		this method at time of de-serialization and this method must have code that specifies selected properties of java object to be read from file.
+	-	Every Externalizable implemented class must have default no argument constructor if not present InvalidClassException is thrown during de-serialization.
+	
+What is serial version UID?	
+
+-	At time of serialization JVM generates unique identifier based on class file of java object and internally JVM saves this unique identifier to file along 
+	with java object and this unique identifier is called serial version UID.
+
+-	At time of de-serialization JVM generates unique identifier based on class file of java object and compare this unique identifier with identifier present
+	in file and JVM performs de-serialization only when computed unique identifier match with unique identifier in file otherwise we will get runtime exception
+	saying InvalidClassException.
+
+-	This serial version UID may fail to match because of different version JVM at sender and reciever results into different algorithm usage for serial version 
+	id creation or different class file of java object at sender and reciever.
+
+-	The above problem can be solved by removing usage of JVM generated serial version id and every java class we can specify serial version id as follows,
+
+	private static final long serialVersionUID = 10l; /**use of variable name as serialVersionUID is mandatory**/

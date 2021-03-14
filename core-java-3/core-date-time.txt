@@ -1,0 +1,144 @@
+core java - date and time
+
+What is joda date and time API?
+
+-	Prior to java 1.8 version for date and time related operations we have classes like java.util.Date, java.util.Calendar, java.util.Timestamp, etc.
+-	These API classes though meet the requirement but are inconvinient, most of them are deprecated to use and introduce performance issues.
+-	These API classes were introduces by developers from joda.org hence this API is referred as joda date time API.
+-	All joda date time API classes are part of java.time package.
+
+What are different API classes of joda date time API?
+
+-	Following are different joda date time API classes,
+
+a)	java.time.LocalDate
+	-	LocalDate encapsulate only date object.
+	-	Following are different methods of LocalDate class,
+	
+		public static LocalDate now()
+		-	factory method to create current date object.
+		
+		public int getDayOfMonth()
+		-	returns day of month from date object.
+		
+		public int getMonthValue()
+		-	returns month of year from date object.
+
+		public int getYear()
+		-	returns year from date object.
+		
+
+b)	java.time.LocalTime
+	-	LocalTime encapsulate only time object.
+	-	Following are different methods of LocalTime class,
+	
+		public static LocalTime now()
+		-	factory method to create current time object.
+
+		public int getHour()
+		-	returns hour from time object.
+		
+		public int getMinute()
+		-	returns minute from time object.
+
+		public int getSecond()
+		-	returns seconds from time object.
+		
+		public int getNano()
+		-	returns nano seconds from time object.
+
+c)	java.time.LocalDateTime
+	-	LocalDateTime encapsulate both date and time object.
+	-	Following are different methods of LocalDateTime class,
+	
+		public static LocalDateTime now()
+		-	factory method to create current date and time object.
+
+		public int getDayOfMonth()
+		-	returns day of month from date object.
+		
+		public int getMonthValue()
+		-	returns month of year from date object.
+
+		public int getYear()
+		-	returns year from date object.
+		
+		public int getHour()
+		-	returns hour from time object.
+		
+		public int getMinute()
+		-	returns minute from time object.
+
+		public int getSecond()
+		-	returns seconds from time object.
+		
+		public int getNano()
+		-	returns nano seconds from time object.
+
+		public LocalDateTime of(int yy, int mm, int dd, int hh, int mm, int ss, int nn)
+		-	create custom date time object.
+		
+		public LocalDateTime of(int yy, int mm, int dd, int hh, int mm)
+		-	create custom date time object.
+		
+		public LocalDateTime of(int yy, int mm, int dd, int hh)
+		-	create custom date time object.
+		
+		public LocalDateTime of(int yy, int mm, int dd)
+		-	create custom date time object.
+		
+		public LocalDateTime of(int yy, int mm)
+		-	create custom date time object.
+		
+		public LocalDateTime of(int yy)
+		-	create custom date time object.
+		
+		public LocalDateTime plusMonths(int mm)
+		-	create date time object mm months ahead.
+
+		public LocalDateTime minusMonths(int mm)
+		-	create date time object mm months behind.
+
+d)	java.time.Period
+	-	Period encapsulate time duration between two concrete date.	
+	-	Following are different methods of Period class,
+	
+		public static Period of(LocalDate d1, LocalDate d2)
+		-	factory method to between d1 date and d2 date object.
+	
+		public int getYears()
+		-	returns years from period object.
+		
+		public int getMonths()
+		-	returns months from period object.
+		
+		public int getDays()
+		-	returns days from period object.
+		
+e)	java.time.Year
+	-	Year encapsulate year part within date.	
+	-	Following are different methods of Year class,
+
+		public static Year of(int yy)
+		-	factory method to create Year object for metioned year.
+	
+		public boolean isLeap(int yy)
+		-	checks year object encapsulates a leap year if true returns true else if not a leap year returns false.
+
+f)	java.time.ZoneId
+	-	ZoneId encapsulate time zone for date time.
+	-	Following are different methods of ZoneId class,
+
+		public static ZoneId systemDefault()
+		-	factory method to create ZoneId object for default zone.
+		
+		public static ZoneId of(String zone)
+		-	factory method to create ZoneId object for mentioned zone.
+	
+g)	java.time.ZonedDateTime
+	-	ZonedDateTime encapsulate date and time for mentioned zone.
+	-	Following are different methods of ZonedDateTime class,
+
+		public static ZonedDateTime now(ZoneId zone)
+		-	factory method to create ZonedDateTime object for mentioned zone.
+		

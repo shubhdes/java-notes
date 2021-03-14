@@ -1,0 +1,244 @@
+advance java - jdbc
+
+Explain the query processing system inside database? 
+
+-	query-tokenization 				[select, emp_id, emp_name, emp_sal, from, employee]
+	|
+	|-> query-parsing 				[building query tree and syntax verification]
+		|
+		|-> query-optimization		[optimization of query tree]
+			|
+			|-> query-execution		[bind query-parameters and execute query]
+											
+-	When we use the java.sql.Statement interface for execution of same query multiple time then the query-tokenization, query-parsing, query-optimization and 
+	query-execution is performed for every execution of the query.
+	
+-	When we use the java.sql.PreparedStatement interface for execution of same query multiple time then the query-tokenization, query-parsing, query-optimization is
+	performed only once when the query is executed for the first time and for next execution directly query-execution is performed.
+											
+Explain the type-1 driver used in jdbc application?
+
+-	The type-1 driver is called as jdbc-odbc or bridge driver.
+
+-	The SUN microsystem provided driver class JdbcOdbcDriver inside package sun.jdbc.odbc.driver as an model or reference implementation.
+
+-	JdbcOdbcDriver driver is dependent on Microsoft's product ODBC driver also called as Open Database Connectivity Driver, this driver is designed using
+	native C language implementation.	
+	
+	java-application		 	    jdbc-driver	      			 odbc-driver					database
+	---------------	 java-call	  ---------------	odbc-call 	--------------	 db-call	 --------------
+	|			  |-------------->|			  	|-------------->|			 |-------------->|			  |	
+	|			  |			      |			  	|			 	|			 |				 |			  |
+	|			  |<--------------|			  	|<--------------|			 |<--------------|			  |
+	---------------	 java-call 	  ---------------	odbc-call 	--------------	 db-call	 --------------
+	
+Explain the type-2 driver used in jdbc application?	
+
+-	The type-2 driver is called as partly-java and partly-native driver or native driver because the driver is designed using java based implementation and	native
+	implementation.
+	
+	java-application		 	   native-driver	      		   database
+	---------------	 java-call	  ---------------	db-call	 	--------------
+	|			  |-------------->|			  	|-------------->|			 |	
+	|			  |			      |			  	|			 	|			 |
+	|			  |<--------------|			  	|<--------------|			 |
+	---------------	 java-call 	  ---------------	db-call	 	--------------
+	
+Explain the type-3 driver used in jdbc application?	
+
+
+Explain the type-4 driver used in jdbc application?	
+
+-	The type-4 driver is called as pure-java or thin driver because the driver is designed using pure java based implementation.
+	
+	java-application		 	    java-driver	      			   database
+	---------------	 java-call	  ---------------	db-call	 	--------------
+	|			  |-------------->|			  	|-------------->|			 |	
+	|			  |			      |			  	|			 	|			 |
+	|			  |<--------------|			  	|<--------------|			 |
+	---------------	 java-call 	  ---------------	db-call	 	--------------
+
+Explain the process to load and register driver class inside jdbc-application?
+
+-	Class.forName("MyDriverClass");
+		|
+		|->	JVM will identify the MyDriverClass.class file from class-path
+			|
+			|-> When MyDriverClass.class file exist in class-path then JVM will load byte code into memory and execute 
+			    the static block otherwise give runtime exception saying ClassNotFoundException.
+			    |
+			    |-> JVM will execute DriverManager.registerDriver() method present inside static block to register driver for jdbc-application.
+				    |
+				    |-> JVM will create Class<MyDriverClass> object inside the heap-memory.
+						|
+						|->JVM will execute DriverManager.getConnection() method
+							|
+							|->JVM will execute Driver.connect() to create a virtual socket connection between java-application and database.
+							
+What are ACID properties of jdbc-transaction?
+
+-	The term ACID means Atomicity, Consistency, Isolation and Durability principles.
+
+-	Atomicity means either perform all operation or perform none of the operation.
+
+	bank-account-1							bank-account-2
+	--------------							--------------
+	balance : 20000			5000			balance : 10000
+					--------------------->	
+	1. read bank-account-1 					3. read bank-account-2
+	   balance								   balance
+	2. subtract 5000 from bank-account-1	4. add 5000 from bank-account-2
+	   balance								   balance
+	
+-	Consistency means the state of database must be stable before transaction and even after transaction.
+
+	bank-account-1							bank-account-2							total-balance
+	--------------							--------------							--------------
+	balance : 20000	  before transaction	balance : 10000	  after transaction		balance : 30000
+	balance : 15000	  before transaction	balance : 15000	  after transaction		balance : 30000
+
+-	Isolation means each transaction must be executed independently. 
+
+-	Durability means when the transaction is commit the result of transaction must be preseved inside database also if the transaction is rollback
+	the result exist before the transaction must be preseved inside database. 
+
+What are the problems caused by concurrent transaction?
+
+-	When more than one transaction are working simultaneously on same data-set then those transaction are called concurrent transaction.
+-	Concurrent transaction cause problem like dirty read, non-repeatable read and phantom read.
+
+-	Before committing the transaction if its intermediate results used by any other transaction then there may be a chance of data inconsistency problems and
+	this is called dirty read problem or uncommitted dependency problem.
+
+-	For the same read operation in the same transaction if we get different result at different times then such type of problem is called non-repeatable 
+	read problem.
+
+-	A phantom read occurs when one transaction read all the rows that satisfy a where condition and second transaction insert a new row that satisfy same 
+	where condition.
+
+What is a savepoint and what purpose does it serve?
+
+-	The purpose of savepoint is to determine at runtime whether a set of operation will be included or excluded from a transaction.
+
+	public void updateSalary(float salary) {
+	
+		connection.setAutoCommit(false);	
+	
+		Statement stat1 = connection.createStatement();
+		stat1.executeUpdate("UPDATE emp_sal set sal = " + salary + " WHERE emp_id = 'e100'");
+		
+		Savepoint savepoint = connection.setSavepoint();
+	
+		Statement stat2 = connection.createStatement();
+		stat2.executeUpdate("UPDATE emp_sal set sal = sal - 500 WHERE emp_id = 'e100'");
+	
+		if(salary > 10000) {				/**deduct tax of 500 only when salary is greater than 10000**/		
+		
+			connection.releaseSavepoint();		
+		
+		} else {
+			
+			connection.rollback(savepoint);
+		}
+	
+		connection.commit();
+	}
+
+Explain the execution of PreparedStatement based SQL query?
+
+	public void insertEmployee(float salary) {
+		
+		PreparedStatement pst = connection.prepareStatement("INSERT INTO emp (emp_id, emp_name, emp_sal) VALUES (?, ?, ?)");	/**Step-I**/
+		
+		pst.setString(1, "e001");
+		pst.setString(2, "john");
+		pst.setFloat(3, 12300.57f);			/**Step-II**/
+		
+		pst.executeUpdate();				/**Step-III**/	
+		
+		pst.setString(1, "e002");
+		pst.setString(2, "jack");
+		pst.setFloat(3, 32370.47f);			/**Step-IV**/
+		
+		pst.executeUpdate();				/**Step-V**/	
+	}
+
+
+	   java-application																				  	  						  database
+	---------------------															   Ie									---------------------
+	|					|	 PreparedStatement									database-buffer								|					|				
+	|					|	------------------------------					   ------------------------------				|					|
+	|					|	| Ia   ?, ?, ?				 |	 synchronization   | If   ?, ?, ?				|				|					|
+	|					|	| IIa  e001, john, 12300.57f |<------------------->| IIb  e001, john, 12300.57f |				|					|	
+	|					|	| IVa  e002, jack, 32370.47f |					   | IVb  e002, jack, 32370.47f	|				|					|
+	|					|	------------------------------					   ------------------------------				|					|	
+	|					|																		 |							|					|	
+	|					|	  jdbc-driver									    database-engine	 | QT, QP, QO Id			|					|
+	|					|	 |-----------|									   |---------------|--							|					|
+	|					|->--|	  		 |<----------------------------------->| 		       |->------------------------>-|					|
+	---------------------	 |-----------|									   |---------------|			QE				---------------------
+						  Ib							  Ic									 		IIIa	Va
+						  
+Explain the difference between Statement and PreparedStatement?
+
+-	In jdbc to execute each query as an individual SQL query we must use Statement interface but to execute same query in next sequence where we must
+	improve performance we must use PreparedStatement interface.	
+
+-	When using Statement interface the SQL query is compiled everytime with user input and then executed but when using PreparedStatement the SQL query
+	is compiled only once and directly executed with user input.
+
+-	The Statement interface does not support BLOB and CLOB data but PreparedStatement interface support both BLOB and CLOB data.
+
+-	Also the Statement interface does not support date manipulation but PreparedStatement interface support date manipulation.
+
+-	The SQL injection attack is possible when using Statement interface but this attack can completely be avoided by using PreparedStatement interface.
+
+Explain the SQL injection attack?
+
+-	End user may provide special characters as the part user input which may change behaviour of sql query and this is called as SQL injection attack.
+
+-	In the case of Simple Statement every time the query will send to the database with user provided input values.
+
+	Example:
+	
+	String uname = "durga\'--";
+	String upass = "durga";
+	
+	Statement stat1 = connection.createStatement();
+	stat1.executeUpdate("SELECT * FROM emp WHERE uname = " + uname + " AND upass = '" + upass + "'");
+	
+	SQL:
+	SELECT * FROM emp WHERE uname = 'durga';
+	
+-	But in the case of PreparedStatement query will be compiled at the beginning only without considering end user input, the end user provided data will be
+	considered at the time of execution only.
+	
+	Example:
+	
+	String uname = "durga\'--";
+	String upass = "durga";
+	
+	PreparedStatement pst = connection.prepareStatement("SELECT * FROM emp WHERE uname = ? AND upass = ?");	
+	
+	pst.setString(1, uname);
+	pst.setString(2, upass);
+	
+	SQL:
+	SELECT * FROM emp WHERE uname = 'durga''--' AND upass = 'durga';
+	
+Explain the purpose of batch operation?
+
+-	When we submit multiple SQL Queries to the database one by one then lot of time will be wasted in request and response.
+
+-	We can group all related SQL queries into a single batch and we can send that batch at a time to the database.
+
+		 jdbc-driver									    database-engine	QT, QP, QO 			
+		|-----------|									   |---------------|							
+	->--|	  		|<------------------------------------>| 		       |->------------------------>
+		|-----------|									   |---------------|			QE				
+
+
+-	We can use Batch Updates concept only for non-select queries and if we are trying to use for select queries then we will get runtime exception saying 
+	BatchUpdateException.
+	
+-	In batch if one SQL query execution fail then remaining SQL queries wont be executed.	

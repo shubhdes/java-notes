@@ -1,0 +1,520 @@
+core java -	version control system tool - 1
+
+What is the need of version control system tool?
+
+-	Maintaining multiple versions of each file manually is difficult task.
+
+-	Every change must be tracked i.e who did the change, when the change was done and at which line of file the change was done.
+
+-	Overwriting of the code should not be happen.
+
+-	Developers have to share their code to peer developers, so that multiple developers will work in collabrative way.
+
+-	Parallel development must be required.
+
+How does version control system tool work?
+
+-	The version control system tool always talk about files which contain source code.
+
+-	Working directory is local directory where developers are allowed to create or modify source code inside file.
+
+-	Working directory is also called as workspace.
+
+-	Here version control is not applicable.
+
+-	Repository is where we have to store files and metadata.
+
+-	Here version control is applicable.
+
+-	The process of sending files from working directory to repository is called as commit.
+
+-	For each commit a new unique id is created inside repository which is called as commit id.
+
+-	The process of sending files from repository to working directory is called checkout.
+
+-	A client program must be present on local machine for commit and checkout.
+
+What are benefits of version control system tool?
+
+-	We can maintain different versions of file and we can choose any version based on client's requirement.
+
+-	With every commit we can maintain metadata like who commit changes, when commit happened, what changes were made and commit message.
+
+-	Provide environment to share code to the peer developers in very easy way.
+
+-	Multiple developers can work in collabrative way.
+
+-	It enables parallel development.
+
+-	It is possible to provide access control to restrict create or modification of source code.
+
+What are types of version control system tool?
+
+-	There are two types of version control system and they are centralized and distributed version control system tool.
+
+Explain what is centralized version control system?
+
+-	Centralized version control system tool contains only one repository.
+
+-	Every developer is required to connect with that to continue his or her work.
+
+-	The total project code will be stored in central repository.
+
+-	Examples of centralized version system tool are CVS, SVN, Perforce and Clearcase.
+
+What are the limitations of centralized version control system?
+
+-	The total code stored at single place and if something goes wrong with this centralized repository then recovery is very difficult i.e single point of failure.
+
+-	All developers should be connected to central repository always and if there is network outage then no version control is available.
+
+-	All operations are network operations and not local operations and hence the performance is low.
+
+-	When the number of developers or number of files increases then organization of central repository is difficult.
+
+Explain what is distributed version control system?	
+
+-	Distributed version control system tool contains multiple repositories i.e. one repository for each developer.
+
+-	Every working directory contain local repository.
+
+-	Both checkout and commit operations are local operations and not network operations hence performance is better.
+
+-	Even network outage stil version control is available.
+
+-	There is no question of single point of failure.
+
+-	Examples of distributed version system tool are GIT, Mercurial nad Fossil.
+
+How developer share their code with other developers in distributed version control system tool?
+
+-	The process of sending file from our repository to other repository is called push operation.
+
+-	The process of getting file from other repository to our repository is called pull operation.
+
+-	Both push and pull operation are network operations.
+
+What is distributed version control system with remote repository?
+
+-	In this model each developer has own local repository also there is one remote repository shared by all developers.
+
+-	Both commit and checkout operations are local operations and will run on local repository.
+
+-	But push and pull operations are network operation and will run on remote repository.
+
+-	Examples of distributed version system with remote repository tool are Github, Gitlab, Bitbucket and Cloud platform.
+
+What is Git?
+
+-	Git is distributed version control system tool.
+
+-	Git was developed by Linus Torvalds.
+
+Explain commit process in Git?
+
+-	In Git commit is two step process.
+
+-	First we have to add file to staging area and then we have to commit file from that staging area to local repository.
+
+-	Staging area is not physical directory but it is virtual directory in between working directory and local repository.
+
+-	We can doubly check our changes before commit and if everything is fine we can commit.
+
+-	Git performs hashing in staging area to store file in cryptographic and compressed format in local repository.
+
+-	We can create and work on multiple branches simultaneously and all these branches are isolated from each other, it enables multiple workflows.
+
+-	It is freeware and open source.
+
+-	It provides support for multiple platforms.
+
+Explain Git architecture?
+
+-	Git has two types of repository called as local repository and remote repository.
+
+-	Usually the total project code is present inside remote repository.
+
+-	The current work of developer will be stord inside local repository.
+
+-	New files will be created inside working directory.
+
+-	Once the work is done we need to add these files to staging area we need to use following command.
+
+	syntax:
+
+	#git add [.|*|file_name|*.extension|file_name1 filename2 filename3]
+
+	example:
+
+	#git add .
+
+	example:
+
+	#git add durga.txt
+
+	example:
+
+	#git add *.txt
+
+	example:
+
+	#git add durga1.txt durga2.txt durga3.txt			
+	
+-	To send the staged files to local repository we need to use following command.
+
+	example:
+
+	#git commit
+
+-	To move files from local repository to remote repository we need to use following command.
+
+	example:
+
+	#git push
+
+-	To bring files from remote repository to local repository we need to use one of the following command.
+
+	example:
+
+	#git clone
+
+	example:
+
+	#git pull
+
+-	The command git clone will create new copy of complete remote repository inside local repository.
+
+-	But the command git pull will bring only changed files from remote repository to local repository.
+
+Explain the life cycle of every file in Git?
+
+-	Every file in Git has one from the four states called untracked, staged, modified and in repository.
+
+-	To find the states of all files within working directory we need to use following command.
+	
+	example:
+
+	#git status
+
+-	Git is not aware about new files created in working directory such files are in untracked state.
+
+-	The files which we add to staging area are in staged state.
+
+-	Once the work is done we need to add these files to staging area we need to use following command.
+
+	syntax:
+
+	#git add [.|*|file_name|*.extension|file_name1 filename2 filename3]
+
+	example:
+
+	#git add .
+
+	example:
+
+	#git add *
+	
+	example:
+
+	#git add durga.txt
+
+	example:
+
+	#git add *.txt
+
+	example:
+
+	#git add durga1.txt durga2.txt durga3.txt
+
+-	To find files from working directory which are tracked by Git we need to use following command.
+
+	example:
+
+	#git ls-files
+
+-	Any file which is committed is said to be in repository or comitted state.	
+
+-	To commit staged changes to local repository we need to use following command.
+
+	syntax:
+
+	#git commit -m ["commit message"]
+	
+	example:
+
+	#git commit -m "first commit"
+	
+-	Any file which is already tracked by Git but it is modified in working directory is said to be modified state.
+
+-	We can use single command to add modified files to staging area and then commit those files to local repository.
+
+	syntax:
+
+	#git commit -a -m ['commit message']
+	
+	example"
+	#git commit -a -m "first commit"
+
+How to create local repository in Git?
+
+-	To create empty local repository we need to use following command.
+
+	example:
+
+	#git init
+
+-	The default name for empty local repository is .git which is hidden directory.
+
+-	When the same git init command is called again then existing local repository is not changed and no new local repository will not be created.
+
+Explain the git status command?
+
+-	The command git status provide current status of each file in all areas.
+
+	example:
+
+	#git status
+
+-	The above command will give complete verbose output.
+
+-	To get concise output we need to use -s option with the command.
+
+	example:
+
+	git status -s 
+	
+Explain git commit command?
+	
+-	To commit staged changes to local repository we need to use following command.
+
+	syntax:
+
+	#git commit -m ["commit message"]
+	
+	example:
+
+	#git commit -m "first commit"
+	
+-	Every commit git records author name, email address, timestamp and commit message.	
+	
+-	The commit message is required for every commit.
+
+-	For every commit a new commit id is generated called as hash which is hexadecimal number of fourty characters.
+
+-	Though entire hash is unique but its first seven characters are also unique.
+
+-	When the file is comitted first time inside local repository we get output message as 100644.
+
+-	100 means the file contain ascii data and 644 means the file has -rw-r--r--	permission (r = 4, w = 2, x =1).
+
+-	Owner has read write permission on file, other users have only read permission and all groups have only read permission.
+
+Explain the git log command?
+
+-	The git command shows history of all commits.
+
+-	This command provide information such as author name, email address, timestamp and commit message.
+
+Explain the git config command?
+
+-	The git config command can be used to set git configurations like author name, email address, etc..
+
+	syntax:
+
+	#git config [parameter] ["value"]
+	
+	example:
+
+	#git config user.name "durga"	
+
+-	To list out all git configurations we need to use following command.
+
+	example:
+
+	#git config --list	
+
+-	This command when used with option global indicate same configurations is applicable for all local repositories available.
+
+	syntax:
+
+	#git config --global [parameter] ["value"]
+	
+	example:
+
+	#git config --global user.name "durga"	
+
+-	But when this command is used without option global then configurations is applicable only to current local repository.
+
+Explain the git log command?
+
+-	If we want to see history of all commits in local repository we need to use git log command.
+
+	syntax:
+
+	#git log [.|*|file_name|*.extension|file_name1 filename2 filename3]
+
+	example:
+
+	#git log
+
+	example:
+
+	#git log .
+
+	example:
+
+	#git log *
+
+	example:
+
+	#git log durga.txt
+
+	example:
+
+	#git log *.txt
+
+	example:
+
+	#git log durga1.txt durga2.txt durga3.txt
+
+-	The result of this command is verbose which contains commit id, author name, author email address, timestamp and commit message.
+
+-	To get concise result which contains onle first seven characters of commit id and commit message we need to use following command.	
+
+	syntax:
+
+	#git log --oneline [.|*|file_name|*.extension|file_name1 filename2 filename3]
+	
+	example:
+
+	#git log --oneline durga.txt
+	
+-	This option is very useful if we have lot of commits and to identify particular commit using commit message.
+
+-	To limit the number of commit to display we need to use -n or --max-count options with git log command.
+
+	syntax:
+
+	#git log -n [value] [.|*|file_name|*.extension|file_name1 filename2 filename3]
+	
+	#git log --max-count=[value] [.|*|file_name|*.extension|file_name1 filename2 filename3]
+	
+	#git log -[value] [.|*|file_name|*.extension|file_name1 filename2 filename3]
+
+	example:
+
+	#git log -n 2 durga.txt
+
+	example:
+
+	#git log --max-count=2 durga.txt
+	
+	example:
+
+	#git log -2 durga.txt
+
+-	This option will show latest value number of commits.
+
+-	We can use option --grep to search commit based on given pattern in commit message.	
+
+	example:
+
+	#git log --grep=["value"] [.|*|file_name|*.extension|file_name1 filename2 filename3]
+	
+	example:
+
+	#git log --grep="durga commit message"
+	
+-	We can use option --since to find commit more recent than specific date and time.
+
+	syntax:
+
+	#git log --since=["value"] [.|*|file_name|*.extension|file_name1 filename2 filename3]
+
+	example:
+
+	#git log --since="2020-12-31"	
+	
+	example:
+
+	#git log --since="10 hours ago"
+	
+	example:
+
+	#git log --since="5 minutes ago"
+
+-	Also we can use option --after to find commit done after than specific date and time.
+
+	syntax:
+
+	#git log --after=["value"] [.|*|file_name|*.extension|file_name1 filename2 filename3]
+
+	example:
+
+	#git log --after="2020-12-31"
+
+	example:
+
+	#git log --after="5 minutes ago"
+	
+	example:
+
+	#git log --after="10 hours ago"
+	
+-	We can use option --until to find commit older than specific date and time.	
+
+	syntax:
+
+	#git log --until=["value"] [.|*|file_name|*.extension|file_name1 filename2 filename3]
+
+	example:
+
+	#git log --until="2020-12-31"	
+	
+	example:
+
+	#git log --until="10 hours ago"
+	
+	example:
+
+	#git log --until="5 minutes ago"
+
+-	Also we can use option --before to find commit done before specific date and time.
+
+	syntax:
+
+	#git log --before=["value"] [.|*|file_name|*.extension|file_name1 filename2 filename3]
+
+	example:
+
+	#git log --before="2020-12-31"
+
+	example:
+
+	#git log --before="5 minutes ago"
+	
+	example:
+
+	#git log --before="10 hours ago"
+
+-	The date format for all options must be yyyy-MM-dd format only.
+
+-	We can use option --author to find commit based on author.
+
+	syntax:
+
+	#git log --author=["pattern"] [.|*|file_name|*.extension|file_name1 filename2 filename3]
+	
+	example:
+
+	#git log --author="durga"
+	
+	example:
+
+	#git log --author=*rga
+
+-	We can use option --decorate to display extra information.
+
+	syntax:
+
+	#git log --decorate [.|*|file_name|*.extension|file_name1 filename2 filename3]

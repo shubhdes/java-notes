@@ -1,0 +1,236 @@
+core java - generics
+
+What is generic and why is it required?
+
+-	Within an array datatype of all elements is same but collection can store a group of elements of same or different datatype in a single entity.
+-	While iterating a collection object we require to perform explicit type casting and wrong type-casting will give runtime exception saying ClassCastException.
+
+	Example:
+
+	class Test {
+	
+		public static void main(String[] args) {
+		
+			List arr = new ArrayList();
+			
+			Integer i1 = 10;
+			String s1 = "java";
+			
+			arr.add(i1);
+			arr.add(i2);
+			
+			Integer i1 = (Integer) arr.get(0);	
+			Integer i2 = (Integer) arr.get(1);	/**runtime exception saying ClassCastException as String object cannot be casted to Integer*/
+		}
+	}
+
+-	But when generic is used with collection object then collection object must strictly have all elements of same datatype and hence no explicit type-casting
+	is needed.  
+
+	Example:
+
+	class Test {
+	
+		public static void main(String[] args) {
+		
+			List<Integer> arr = new ArrayList<Integer>();
+			
+			Integer i1 = 10;
+			String s1 = "java";
+			
+			arr.add(i1);
+			arr.add(i2);	/**compile time error saying cannot find symbol add(String)**/
+			
+			Integer i1 = arr.get(0);	/**explicit casting is required**/
+			
+		}
+	}
+	
+How does type parameter	introduces type-safety?
+
+-	When a java class is declared with type-parameter such that datatype for type-parameter is determined at runtime such java class is called template 
+	class or generic class.
+-	With the help of generic we can bind our collection object with a type parameter such that explicit casting is not required and this will also remove the 
+	chance of wrong type-casting and hence we will never get runtime exception saying ClassCastException.
+
+	Example:
+	
+	class ArrayList<T> {
+	
+		public void add(T o) { }
+
+		public T get() { }
+	}
+
+-	When we create an object of ArrayList using type parameter as below all type-parameter in above class declaration gets replaced with Integer.
+	ArrayList<Integer> arr = new ArrayList<Integer>();
+	
+-	The type-parameter can be declared at class level and method level also, when type-parameter exist at class level the that type-parameter is available 
+	within the entire class i.e. to all fields and method of that class but when type-parameter is declared at method level it is available to only specific
+	method.
+	
+	Example:
+	
+	class Test {
+		
+		public <T> void m1(T t) { }
+	}
+	
+-	Always the type parameter on left hand side of expression is responsible to make collection type-safe i.e a non-type-safe collection reference to a 
+	type-safe collection object is of no use.
+
+	class Test {
+	
+		public static void main(String[] args) {
+			
+			List l = new ArrayList<Integer>();
+			l.add("java");	/**no compile time error as collection reference is not type-safe**/
+		}
+	}
+
+Explain why generics do not support polymorphism with respect to type parameter?
+
+-	In java a parent class variable can hold reference to a child class object but a child class variable cannot hold reference to parent class object.
+-	But this rule is not applicable for type parameters i.e the below declaration will give compile time error saying cannot convert type parameter Parent 
+	to Child.
+	
+	Example:
+	
+	List<Parent> p = new ArrayList<Child>();
+
+	Example:
+	
+	class Test {
+	
+		public static void main(String[] args) {
+			
+			List<Parent> pl = new ArrayList<Child1>();
+			m1(pl);
+			Child1 c = (Child1) pl.get(0);	/**explicit type casing required also runtime exception will be raised saying ClassCastException**/
+		}
+		
+		public static void m1(List<Parent> pl) {
+			Child2 c = new Child2();
+			pl.add(c);
+		}
+	}
+	
+-	When polymorphism rule works for type-parameter in collection then to collection of Child1 object we can also add Child2 object and now while iterating
+	the collection object we must perform explicit type-casting and purpose of generic is lost.	
+
+-	But when we have collection object for with type-parameter as parent class we can add elements of type child to it.
+	
+	Example:
+	
+	class Test {
+	
+		public static void main(String[] args) {
+			
+			List<Parent> pl = new ArrayList<Parent>();
+			m1(pl);
+			Parent p = pl.get(0);
+		}
+		
+		public static void m1(List<Parent> pl) {
+			Child2 c = new Child2();
+			pl.add(c);
+		}
+	}
+	
+What is bounding type-parameter?	
+
+-	In a generic class or template class we can allow only few possible values for type parameter this is called bounding type parameter.
+-	The type parameter can be bounded using two keywords i.e extends and super keyword.
+
+-	The extends keyword indicate that type parameter must strictly be child class of the menioned class and super keyword indicates the type-parameter must 
+	strictly be parent class of menioned class.
+	
+	Example:
+	
+	class Test<T extends Number> {
+	
+		public static void main(String[] args) {
+		
+			Test<Integer> t = new Test<Integer>();
+		
+			Test<String> t = new Test<String>(); /** compile time error saying type arguement String is not bound with type parameter**/
+		}
+	}
+
+-	We can also have complex bounding conditions using bitwise and operator i.e. &.
+	
+	Example:
+	
+	class Test<T extends Number & Runnable> { }
+	
+What is wild-card character?
+
+What is erasure in generics?
+
+-	At compile time compiler erases all type-parameter in class or method declaration and replace them with immediate bounded parameter or java.lang.Object 
+	if type-parameter is not bounded.
+-	This is called erasure and because erasure happens during compilation type-parameter does not exist at runtime.
+	
+	Example:
+
+	/**class declaration before erasure happens**/
+	class Test {
+		T t;
+	}
+	
+	/**class declaration after erasure happens**/
+	class Test {
+		Object t;
+	}
+	
+	Example:
+
+	/**class declaration before erasure happens**/
+	class Test<T extends Number> {
+		T t;
+	}
+	
+	/**class declaration after erasure happens**/
+	class Test {
+		Number t;
+	}
+
+	Example:
+	
+	/**class declaration before erasure happens**/
+	class Test<T extends Number & Runnable> {
+		T t;
+	}
+	
+	/**class declaration after erasure happens**/
+	class Test {
+		Object t;
+	}
+
+What is bridge method in generics?
+
+-	A bridge method is special method added by compiler in generic or template class to avoid violation of method overriding rule due to erasure.
+	
+	Example:
+	class Parent<T> {
+		public void accept(T t) { }
+	}
+
+	class Child extends Parent<Integer>{
+		public void accept(Integer t) { }
+	}
+
+-	In the above example due to erasure type-parameter in parent class will get replaced by java.lang.Object i.e. method declaration in parent class will be,
+	public void accept(Object t) { }
+
+-	But the available overriden method in child class is ,
+	public void accept(Integer t) { }
+
+-	This violates the method overriding rules saying signature of overriden and overriding method must be same and to avoid this issue compiler will add extra
+	method in child class that will actually behave as overriding method.
+	
+	Example:
+	
+	public void accept(Object t) { 
+		accept((Integer) t);	
+	}

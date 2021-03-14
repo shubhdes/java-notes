@@ -1,0 +1,207 @@
+core java - regular expression
+
+What is regular expression?
+
+-	In java string object can be represented in a particular pattern or format using regular expression.
+	Example: string object representing an email address or mobile number will have fixed pattern.
+
+-	Consider below java program to find occurences of a fixed pattern in given string,	
+Example: 
+
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
+
+class Test {
+
+	public static void main(String[] args) {
+	
+		Pattern p = Pattern.compile("ab");
+		Matcher m = p.matcher("abbbabbaabba");
+	
+		while(m.find()) {
+		
+			System.out.print(m.start() + "  ");
+			
+			System.out.print(m.end() + "  ");
+		
+			System.out.println(m.group());
+		}
+	}
+
+}
+
+Output:
+0  2  ab
+4  6  ab
+8  10  ab
+
+
+What is use of Pattern in java.util.regex package?
+
+-	Pattern class in java.util.regex package represent compiled version of regular expression.
+-	It is a java equivalent object of regular expression pattern.
+-	We can create pattern object using following method of Pattern class,
+
+	public static Pattern compile(String regularExpression) 
+
+-	Pattern class provides following method,
+
+	public String[] split(String target)
+	-	It splits target string into token strings based on regular expression.
+	
+What is use of Matcher in java.util.regex package?
+
+-	Matcher class in java.util.regex package used to check whether given pattern is part of target string object or not.
+-	We can create matcher object using following method of Pattern class,
+
+	public Matcher matcher(String target) 
+
+-	Matcher class provides following method,
+
+	public boolean find()
+	- returns true if next match found in target string if not found returns false
+
+	public int start()
+	-returns start index of current match else if no match found it throws IllegalStateException.
+	
+	public int end()
+	-returns last index + 1 of current match else if no match found it throws IllegalStateException.
+
+	public String group()
+	-returns match found in target string if no match found it throws IllegalStateException.
+	
+What are different character classes in regular expression?
+
+-	Following are different ways of defining regular expression also called as character classes,
+
+	a) [abc]			=	any symbol from "a" or "b" or "c"
+	b) [^abc]			=	any symbol expect "a" or "b" or "c"
+	
+	c) [a-z]			=	any lowercase symbol from "a" to "z"
+	d) [A-Z]			=	any uppercase symbol from "A" to "Z"
+	e) [a-zA-Z]			=	any lowercase or uppercase symbol from "a" to "z" or "A" to "Z"
+	
+	f) [0-9]			=	any digit from 0 to 9
+	g) \d				= 	any digit from 0 to 9
+	h) \D				= 	any symbol expect digit from 0 to 9
+	
+	i) [a-zA-Z0-9] 		= 	any alphanumeric symbol	
+	j)	\w 				= 	any alphanumeric symbol	
+	
+	k) [^a-zA-Z0-9] 	= 	special symbols	
+	l)	\W				= 	special symbols	
+	
+	m) \s				=	space
+	n) \S				=	any symbol expect space 
+	
+	o) .				=	any symbol
+	
+What are different quantifiers in regular expression?
+
+-	Quantifiers used to define number of occurences of regular expression in target string object.
+-	Following are different ways of specifying quantifiers in regular expression,
+
+	a) a	=	exact one occurence of "a"
+	b) a+	=	atleast one occurence of "a"
+	c) a*	=	any number of occurence of "a" including 0 occurence
+	d) a?	=	atmost one occurence of "a" or 0 occurence of "a"
+	
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
+
+class Test {
+
+	public static void main(String[] args) {
+	
+		Pattern p = Pattern.compile(args[0]);
+		Matcher m = p.matcher("abaaba");
+	
+		while(m.find()) {
+		
+			System.out.print(m.start() + "  ");
+			
+			System.out.println(m.group());
+		}
+	}
+}
+Output:
+
+args[0] = "a"	/**only "a"**/
+0	a
+2	a
+3	a
+5	a
+7,
+args[0] = "a+"	/**starting from "a"**/
+0	a
+2	aa
+5	a
+
+args[0] = "a*" /**starting from "a" or not starting from "a"**/
+0  a
+1  
+2  aa
+4  
+5  a
+6  				/**end + 1 is not "a"**/
+
+
+args[0] = "a?"	/**only one "a" or not starting from "a"**/	
+0  a
+1  
+2  a
+3  a
+4  
+5  a
+6  				/**end + 1 is not "a"**/
+
+
+Write a regular expression to represent 10 digit mobile number starting with 7 or 8 or 9?
+
+-	Following is a regular expression to represent 9 digit mobile number starting with 7 or 8 or 9,
+	[7-9]
+	[0-9]{9}
+
+Write a regular expression to represent 10 or 11 digit mobile number starting with 7 or 8 or 9 if 10 digit and starting with 0 if 11 digit?
+
+-	Following is a regular expression to represent 9 digit mobile number starting with 7 or 8 or 9,
+	0?
+	[7-9]
+	[0-9]{9}
+
+Write a regular expression to represent 10 or 11 or 12 digit mobile number starting with 7 or 8 or 9 if 10 digit and starting with 0 if 11 digit
+and starting with 91 if 12 digit?
+
+-	Following is a regular expression to represent 9 digit mobile number starting with 7 or 8 or 9,
+	(0|91)?
+	[7-9]
+	[0-9]{9}
+
+Example:
+
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
+
+class Test {
+
+	public static void main(String[] args) {
+	
+		Pattern p = Pattern.compile("(0|91)?[7-9][0-9]{9}[0]");
+		Matcher m = p.matcher("92929292929292929292");
+	
+		if(m.find() && "92929292929292929292".equals(m.group())) { //2nd condition is mandatory as first 12 digit of target string follow regular expression
+		
+			System.out.println("valid mobile number");
+		}
+	}
+}
+Output:
+valid mobile number
+	
+Write a regular expression to represent email address?
+
+-	Following is a regular expression to represent email address,
+	[a-zA-Z0-9][a-zA-Z0-9_.]*
+	@
+	[a-zA-Z0-9]+
+	([.][a-zA-Z]+)+

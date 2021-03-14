@@ -1,0 +1,123 @@
+spring boot - mvc
+
+What is model, view and controller?
+
+-	The model, view and controller is an architecture used to develop web-application where model, view and controller are different components of architecture.
+
+-	The view component represents the presentation layer of a web-application, the view layer can be developed using HTML, CSS, JavaScript, JQuery and JSP.
+
+-	It is the model component that represents the business logic and persistence logic.
+
+-	The controller component represents interceptor that accepts all the requests coming to web-application and identifies which model it must forward.
+
+-	Also controller identifies next view page to be returned based on response recieved from model.
+	
+How does the spring mvc framework work?
+	
+-	The web container will recognize load-on-startup configuration for dispatcher servlet and container will search for dispatcher servlet under classes folder.
+
+-	If it is not existed then container will search for dispatcher servlet under web application lib folder.
+
+-	When the dispatcher servlet is identified then container will perform servlet loading, instantiation and initialization at the time of server startup.
+	
+-	As part of dispatcher servlet initialization IOC container object will be created and to this IOC container object.
+
+-	Once IOC container identify entire configuration from stereotype annotation then IOC container will create spring bean object.
+
+-	The IOC container will also create spring bean object for HandlerMapping, HandlerAdapter and ViewResolver.
+	
+-	When web request is coming to the web container then web container will take url pattern value from web request.
+
+-	It will compare it with the url pattern of the dispatcher servlet if the url pattern is match then container will forward request to dispatcher servlet.
+
+-	Now dispatcher servlet will keep spring bean object for HandlerMapping, HandlerAdapter and ViewResolver inside request scope.
+
+-	It will call following method on spring bean object of HandlerMapping to get all interceptor and controller spring bean object required to handle that web request.
+	
+	public HandlerExecutionChain getHandler(HttpServletRequest request) throws Exception
+	
+-	Now dispatcher servlet will use spring bean object for HandlerAdapter to first call all interceptor method for pre-processing operation.
+
+-	Then it will call actual controller method for request processing operation and call interceptor method in reverse order for post-processing operation.	
+
+	public ModelAndView handle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception
+
+-	The request handler method present inside controller class will return ModelAndView object to HandlerAdapter which it will return to dispatcher servlet.
+
+-	The dispatcher servlet will read view name from ModelAndView object and use spring bean object for ViewResolver to identify view JSP page URL.
+
+-	The dispatcher servlet will put entire ModelAndView data inside request object attribute.
+
+-	Using forward mechanism will forward the web request to next JSP page.
+
+List the purpose of different annotations provided by spring mvc framework?
+
+-	The spring mvc framework provide following different annotations.
+
+-	@GetMapping annotation is used to handle web request with request method as GET.
+
+-	This annotation also provides attributes to define request path, content-type and accept information.
+	
+	Example:
+	
+	@GetMapping(value = "/findAllEmployees", produces = {MediaType.APPLICATION_JSON_VALUE})
+	public Employee findAllEmployees() {
+	
+	}
+
+-	@PostMapping annotation is used to handle web request with request method as POST.
+
+-	This annotation also provides attributes to define request path, content-type and accept information.
+	
+	Example:
+	
+	@PostMapping(value = "/saveAllEmployees", produces = {MediaType.APPLICATION_JSON_VALUE})
+	public void findAllEmployees(List<Employee> employee) {
+	
+	}
+	
+-	@RequestBody annotation is used to read web request body and initialize method parameter using it.
+	
+	Example:
+	
+	@PostMapping(value = "/saveEmployee", produces = {MediaType.APPLICATION_JSON_VALUE}, consumes = {MediaType.APPLICATION_JSON_VALUE})
+	public Employee saveEmployee(@RequestBody Employee employee) {
+	
+	}
+	
+-	@RequestParam annotation is used to read parameter passed query string and assign this value to method parameter.
+
+-	Also this annotation provides attribute to define parameter name and configure whether parameter in request path is mandatory or optional.
+
+	Example:
+	/employee?id=10
+
+	@GetMapping(value = "/findEmployee", produces = {MediaType.APPLICATION_JSON_VALUE})
+	public Employee findEmployee(@RequestParam(name = "id", required = true) int id) {
+
+	}
+
+-	@PathVariable annotation is used to read parameter passed as part of request url and assign this value to method parameter.
+ 
+-	Also this annotation provides attribute to define parameter name and configure whether parameter in request path is mandatory or optional.
+
+	Example:
+	
+	/employee/10
+
+	@GetMapping(value = "/findEmployee/{id}", produces = {MediaType.APPLICATION_JSON_VALUE})
+	public Employee findEmployee(@PathVariable(name = "id", required = true) int id) {
+		
+	}
+	
+What is the helper class which spring mvc framework provide to manage web response?
+
+-	The spring mvc framework provide predefined class called ResponseEntity helper class.
+
+-	This class is generic class with type parameter as web response body.
+
+-	It allows to define status code for the web response.
+
+	Example:
+	
+	new ResponseEntity<Employee>(HttpStatus.OK, Employee);

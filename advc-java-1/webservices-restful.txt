@@ -1,0 +1,205 @@
+Restful web services
+
+-	REST stands for REpresentational State Transfer.
+-	Transferring representations of resource between client and server.
+-	These representations can be in XML, json, plain text or other formats.
+-	REST is used to build Web services that are lightweight, maintainable and scalable in nature.
+-	A service which is built on the REST architecture is called a RESTful service. 
+-	Restful web services was introduced by Roy Fielding.
+-	Restful web services is entirely based on HTTP protocol.
+-	It completely removed use of SOAP protocol.
+-	REST is not a protocol it is an architecture style.
+-	It supports not only XML but other media types like json.
+-	REST is a way to access resources which lie in a particular environment.
+-	For example, you could have a server that could be hosting important documents or pictures or videos.
+-	All of these are an example of resources. If a client, say a web browser needs any of these resources.
+-	It has to send a request to the server to access these resources. Now REST defines a way on how these resources can be accessed.
+
+Key elements of RESTful service
+
+Resources
+–	The first key element is the resource itself.
+-	Let assume that a web application on a server has records of several employees.
+-	Now in order to access an employee record resource via REST, one can issue the command http://demo.guru99.com/employee/1 -
+-	This command tells the web server to please provide the details of the employee whose employee number is 1.
+-	Here resource will always be pojo object.
+
+Methods
+- 	These describe what you want to do with the resource. Following are those methods,
+-	POST – This would be used to create a new employee using the RESTful web service
+-	GET - This would be used to get a list of all employee using the RESTful web service
+-	PUT - This would be used to update all employee using the RESTful web service
+-	DELETE - This would be used to delete all employee using the RESTful web service
+
+Request Headers
+–	These are additional instructions sent with the request.
+-	These might define the type of response required, content type, http method used, content length and the authorization details.
+
+Request Body 
+-	Data is sent with the request.
+-	Data is normally sent in the request when a POST request is made to the REST web service.
+
+Response Body 
+– This is the main body of the response.
+
+Response Status codes 
+– These codes are the general codes which are returned along with the response from the web server.
+
+Why RESTful is a architecture style?
+-	REST defines certain constraints.
+-	Any web service that meets this constraint is a RESTful web service.
+-	Following are those constraints,
+
+RESTFul Client-Server
+-	This is the most fundamental requirement of a REST based architecture.
+-	It means that the server will have a RESTful web service which would provide the required functionality to the client.
+-	The client send's a request to the web service on the server.
+-	The server would either reject the request or comply and provide an adequate response to the client.
+
+Stateless
+-	The concept of stateless means that it's up to the client to ensure that all the required information is provided to the server. 
+-	This is required so that server can process the response appropriately.
+-	The server should not maintain any sort of information between requests from the client. It's a very simple independent question-answer sequence. 
+-	The client asks a question, the server answers it appropriately. The client will ask another question.
+-	The server will not remember the previous question-answer scenario and will need to answer the new question independently.
+
+Cache
+-	The Cache concept is to help with the problem of stateless.
+-	Since each server client request is independent in nature, sometimes the client might ask the server for the same request again.
+-	This is even though it had already asked for it in the past. This request will go to the server, and the server will give a response.
+-	This increases the traffic across the network. The cache is a concept implemented on the client to store requests which have already been sent to the server.
+-	So if the same request is given by the client, instead of going to the server, it would go to the cache and get the required information.
+-	This saves the amount of to and fro network traffic from the client to the server.
+
+Layered System
+-	The concept of a layered system is that any additional layer such as a middleware layer can be inserted between the client and the 
+	actual server hosting the RESTFul web service (The middleware layer is where all the business logic is created. 
+-	This can be an extra service created with which the client could interact with before it makes a call to the web service.).
+-	But the introduction of this layer needs to be transparent so that it does not disturb the interaction between the client and the server.
+-	A client cannot ordinarily tell whether it is connected directly to the end server, or to an intermediary along the way. 
+-	Intermediary servers can improve system scalability by enabling load balancing and by providing shared caches.
+
+Interface/Uniform Contract
+-	This includes use a standardized cycle for REST request response
+-	Identification of resources - Use the URI (IRI) standard to identify a resource. In this case a resource is a web document.
+-	Manipulation of resources through these representations - You use the HTTP standard to describe communication. So for example GET means that you want to retrieve data about the URI identified resource. You can describe an operation with a HTTP method and an URI.
+-	Self-descriptive messages - You use standard MIME types and (standard) RDF vocabs to make messages self-descriptive. So the client can find the data by checking the semantics, and it don't have to know the application specific data structure the service uses.
+-	Hypermedia as the engine of application state - You use hyperlinks and possibly URI templates to decouple the client from the application specific URI structure.
+
+Practical approach
+
+-	Restful can be implemented use spring and non spring.
+
+-	Flow for Spring	
+-	Maven requirement for spring MVC?
+<dependency>
+    <groupId>org.springframework</groupId>
+    <artifactId>spring-webmvc</artifactId>
+    <version>${org.springframework.version}</version>
+</dependency>
+
+-	In spring mvc configuration there are collection of HttpMessageConverters that convert POJO object to/from other format like json/XML.
+-	XML HttpMessageConverters for XML requires JAX-B support. XML HTTPMessageConverters is by default registered in spring MVC.
+-	Maven requirement for JSON conversion,
+<dependency>
+	<groupId>com.fasterxml.jackson.core</groupId>
+	<artifactId>jackson-databind</artifactId>
+	<version>2.9.4</version>
+</dependency>
+-	If XML and JSON message converter both are enabled and JAX-B support is available then preference is given to XML.
+-	We can explicitly demand an JSON response by setting Accept Header in request to application/json.
+
+
+-	HTTP Request(Header + Body) -------> @RestController -------> find method matching the url in request -------->
+-	@RequestBody --------> read ContentType from HTTP Request header ---------> use appropriate HttpMessageConverters to convert incoming media type to POJO object
+-	---------------------------------------------------->PROCESSING-------------------------------------------------------------->
+-	@ResponseBody --------> read Accept from HTTP Request header -------> use appropriate HttpMessageConverters from MVC configuration to convert POJO object to media type required.
+
+
+What is @RequestBody, how does it work?
+-	@RequestBody annotation is used for data binding. This annotation is used in spring @Controller + @ResponseBody or @RestController annotated classes.
+-	This annotation can be used at method level only. This annotation is similar to @ModelAttribute, but it is not optional.
+-	@ModelAttribute can be used to bind data that is recieved from view form (application/x-www-form-urlencoded). It cannot be used to bind data recieved in message formats like XML and JSON.
+-	@RequestBody can be used to bind data from different message formats like XML(application/XML) or JSON(application/json) using spring HTTPMessageConverters. 
+-	It cannot work for binding data recieved from UI form.
+
+What is RequestEntity in spring?
+-	RequestEntity is a class in org.springframework.http package. RequestEntity is generic type where Type parameter represent the request body.
+-	It represent entire HTTP Request.
+-	It includes request header, request body, request method and request URL.
+
+What is ResponseEntity in spring?
+-	ResponseEntity is a class in org.springframework.http package. ResponseEntity is generic type where Type parameter represent the response body.
+-	It represent entire HTTP Response.
+-	It includes response header, response body and response status.
+-	This gives flexibility to developer to change response status as per the request.
+
+-	Flow for non Spring	
+
+-	Maven dependency
+		<!-- for jersey-->
+		<dependency>
+			<groupId>com.sun.jersey</groupId>
+			<artifactId>jersey-core</artifactId>
+			<version>1.8</version>
+		</dependency>
+		<dependency>
+			<groupId>com.sun.jersey</groupId>
+			<artifactId>jersey-client</artifactId>
+			<version>1.8</version>
+		</dependency>
+		<dependency>
+			<groupId>com.sun.jersey</groupId>
+			<artifactId>jersey-server</artifactId>
+			<version>1.8</version>
+		</dependency>
+		<!-- for annotations-->
+		<dependency>
+			<groupId>javax.ws.rs</groupId>
+			<artifactId>jsr311-api</artifactId>
+			<version>1.1.1</version>
+		</dependency>
+		<!-- for json conversion-->
+		<dependency>
+			<groupId>com.sun.jersey</groupId>
+			<artifactId>jersey-json</artifactId>
+			<version>1.8</version>
+		</dependency>
+
+
+-	In non spring we will look for jersey implementation.
+-	Annotations used,
+	@Path("/person") - url of web service
+	@POST,@GET,@PUT,@DELETE - request specific methods
+	@Consumes(MediaType.APPLICATION_JSON) - what webservice inputs
+	@Produces(MediaType.TEXT_PLAIN) - what webservice outputs
+	
+	<servlet>
+		<servlet-name>Jersey REST Service</servlet-name>
+		<servlet-class>com.sun.jersey.spi.container.servlet.ServletContainer</servlet-class>
+		<init-param>
+			<param-name>com.sun.jersey.config.property.packages</param-name>
+			<param-value>test.rest</param-value>
+		</init-param>
+		<init-param>
+			<param-name>com.sun.jersey.api.json.POJOMappingFeature</param-name>
+			<param-value>true</param-value>
+		</init-param>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>Jersey REST Service</servlet-name>
+		<url-pattern>/rest/*</url-pattern>
+	</servlet-mapping>
+
+-	The above entry is must in web.XML. com.sun.jersey.spi.container.servlet.ServletContainer takes init-param com.sun.jersey.config.property.packages.
+-	This parameter holds value packages that contain restful webservice with annotations.
+-	Another parameter com.sun.jersey.api.json.POJOMappingFeature indicates support for json to POJO object and vice a versa conversion.
+
+	
+-	HTTP Request(Header + Body) -------> ServletContainer -------> map Content-Type header with @Consumes and Accept header with @Produces -------->
+-	read ContentType from HTTP Request header ---------> use appropriate jaxb api or jersey-json api to convert incoming media type to POJO object
+-	---------------------------------------------------->PROCESSING-------------------------------------------------------------->
+-	If returned values is String return it as plain text. If value returned is java object that can be converted to required @Produces type, do the conversion. 
+	If conversion fails throw exception com.sun.jersey.api.MessageException.
+

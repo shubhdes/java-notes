@@ -1,0 +1,436 @@
+core java - streams
+
+What is a stream?
+
+-	A stream is a sequence of elements from a collection or array that supports sequential processing on each element.	
+-	A stream has capability of internally iterating over elements present within collection or array object and processing each element while iterating.
+
+-	Use of stream for processing elements of collection is similar to using an sql query like 'select max(salary) from employee'. 
+-	In this query programmer expresses what result is required. But programmer is not responsible to implement logic by using loops and variables to 
+	track the highest salary. 
+-	In the same manner stream allows programmer to express what processing is required on collection element without actually iterating over element and
+	perfoming processing.
+
+What is difference between collection and stream?
+
+-	Collection is internal data structure that holds group of individual objects as a single entity.
+-	Each element within collection is to be computed before stoing the element within collection hence collections are eagerly initialized.
+-	To access elements of collection programmer is required to perform explicit iteration over collection i.e. external iteration.
+
+-	Each element within stream computes data on demand hence streams are lazily initialized.
+-	It performs internal iteration over elements present in collection or array.
+ 	
+What is difference between IO streams and collection or array streams?
+
+-	IO streams are used to read or write data with respect to a file in binary or character format.
+-	IO stream are present inside package java.io.
+
+-	Collection or array stream are used to support sequential processing of data present inside collection or array.
+-	Collection or array stream are present inside package java.util.stream.
+
+What are different ways of creating stream?
+
+-	Stream<T> is an interface in java.util.stream package used to process individual elements of collection or array or group of values.
+-	Following are different ways of creating stream object,
+
+	a)	Using following static method of Stream<T> interface,
+	
+		public static Stream<T> of()
+		Example: 
+		Stream<Integer> s = Stream.of();
+		
+	b)	Using following static method of Stream<T> interface,
+	
+		public static Stream<T> of(T... t)
+		Example: 
+		Stream<Integer> s = Stream.of(10, 20, 30, 40, 50);
+
+	c)	Using following static method of Stream<T> interface,
+	
+		public static Stream<T> of(Object[] t)
+		Integer[] arr = {10, 20, 30, 40};
+	    Example: 
+		Stream<Integer> s = Stream.of(arr);
+
+
+	d)	Using following default method of Collection<T> interface,
+	
+		public Stream<T> stream()
+		Example: 
+		ArrayList<Integer> al = new ArrayList<Integer>();
+		al.add(10);
+		al.add(20);
+		al.add(30);
+		al.add(40);
+		al.add(50);
+		Stream<Integer> s = al.stream();
+
+What are non-terminal and terminal stream operation?	
+
+-	The non-terminal stream operations are operations that take input from existing stream and produce another stream, they are used
+	for intermediate processing. 
+-	Whereas terminal stream operations are operations that take input from existing stream and produce final result.
+
+-	It is mandatory that non-terminal operations are performed on stream before terminal operation.
+
+-	As stream computes data on demand, non-terminal operation on a stream executed if and only if they are followed terminal operation.
+-	Hence non-terminal operations are used to configure a stream whereas terminal operation are used to process a stream.
+
+-	Terminal operation do not generate another stream whereas non-terminal operation always generate a new stream.
+
+-	Terminal operation cannot be followed by non-terminal operation but non-terminal operation can be followed by terminal or non-terminal operation.
+	
+What is statefull stream operation?
+
+-	Processing a stream is sequential such that for each element from input stream one by one flows through non-terminal operation and finally
+	the terminal operation is executed on it.
+
+-	But for some processing a operation requires to remember previously processed element such operations are statefull operation.
+
+-	These statefull operation are never performed sequentially but executed once for all elements within the collection or array i.e. a statefull operation
+	will require input stream to be completely initialized and will fill output stream once execution is complete.
+	Example:
+	Stream<Integer> stream = Stream.of(20, -10, -30, 50);
+		stream.sorted((i1, i2) -> {
+
+			System.out.println("sorting:" + i1 + " " + i2);
+			if (i1 > i2) {
+				return 1;
+			}
+			return -1;
+		}).filter((n) -> {
+			System.out.println("filter:" + n);
+			return n > 0;
+		}).forEach(System.out::println);
+
+	Output:
+	sorting:-10 20
+	sorting:-30 -10
+	sorting:50 -30
+	sorting:50 -10
+	sorting:50 20
+	filter:-30
+	filter:-10
+	filter:20
+	20
+	filter:50
+	50
+
+
+What are different non-terminal operations on stream?
+
+-	The Stream<T> interface in java.util.stream package provides following methods to perform non-terminal operation on elements of collection or array,
+	
+	public Stream<T> filter(Predicate<T> p)
+	-	This stateless operation filter elements from collection based on boolean condition mention in predicate i.e. checks whether input stream element 
+		statisfy  predicate if true it adds element to output stream else if false it discards the element.
+	Example:
+	{
+		Stream<Integer> stream = Stream.of(10, 20, -10, -30, -40, 50);
+		stream.filter(
+			(i) -> {
+				return i > 0;	/**[10, 20, 50]**/
+			}
+		);
+	}
+	
+	public Stream<R> map(Function<T, R> f)
+	-	This stateless operation creates new separate object by processing existing object from input stream element using function.
+	Example:
+	{
+		Stream<Integer> stream = Stream.of(10, 20, -10, -30, -40, 50);
+		stream.map(
+			(i) -> {
+				return i * 2;	/**[-80, -60, -20, 20, 40, 100]**/
+			}
+		);
+	}
+	
+	public Stream<R> flatMap(Function<T, Stream<R>> f)
+	-	This stateless operation converts that take input object and generate another output stream for each.		
+	Example:
+	{
+		Stream<Integer> stream = Stream.of(2, 4, 5, 1);
+		stream.flatMap((n) -> {
+			return Stream.of(n * n, n * n * n);
+		}).forEach(System.out::println);	/**[4, 8, 16, 64, 25, 125, 1, 1]**/ 	
+	}
+	
+	public Stream<T> sorted()
+	-	This statefull operation returns new output stream of sorted elements using the elements of input stream in ascending order. The element must strictly 
+		be subclass of java.lang.Comparable interface otherwise we will get ClassCastException.
+	Example:
+	{
+		Stream<Integer> stream = Stream.of(10, 20, -10, -30, -40, 50);
+		stream.sorted();	/**[-40, -30, -10, 10, 20, 50]**/
+	}
+		
+	public Stream<T> sorted(Comparator<T> c)
+	-	This statefull operation returns new output stream of sorted elements using the elements of input stream in custom order.
+	Example:
+	{
+		Stream<Integer> stream = Stream.of(10, 20, -10, -30, -40, 50);
+		stream.sorted((i1, i2) -> {
+			return (i1 > i2) ? -1 : (i1 < i2) ? 1 : 0;	/**[50, 20, 10, -10, -30, -40]**/
+		});
+	}
+	
+	public Stream<T> distinct()
+	-	This statefull operation returns new output stream of only unique elements from input stream, this method uses public boolean equals(Object o) for
+		uniqueness checking. 
+	Example:
+	{
+		Stream<Integer> stream = Stream.of(10, 20, 10, -30, -40, 50);
+		stream.distinct();	/**[10, 20, -30, -40, 50]**/
+	}
+	
+	
+	public Stream<T> skip(int n)
+	-	This statefull operation returns new output stream of by skipping first n elements from input stream. If n is more than elements in source then
+		return empty stream.
+	Example:
+	{
+		Stream<Integer> stream = Stream.of(10, 20, 10, -30, -40, 50);
+		stream.skip(2);	/**[-30, -40, 50]**/
+	}
+	
+	public Stream<T> limit(int n)
+	-	This statefull operation returns new output stream of n elements from input stream. If n is less than total elements within stream then return all
+		elements of stream.
+	Example:
+	{
+		Stream<Integer> stream = Stream.of(10, 20, 10, -30, -40, 50);
+		stream.limit(3);	/**[10, 20, 10]**/
+	}
+	
+What are different terminal operations on stream?
+
+-	The Stream<T> interface in java.util.stream package provides following methods to perform terminal operation on elements of collection,
+
+	public <R,A> R collect(Collector<? super T,A,R> collector)
+	-	To collect input stream elements into collection object configured by collector object and return new collection object.
+	Example:
+	{
+		Stream<Integer> stream = Stream.of(10, 20, -10, -30, -40, 50);
+		List<Integer> l = stream.filter(
+			(i) -> {
+				return i > 0;
+			}
+		).collect(Collectors.toList());	 /**[10, 20, 50]**/
+	}
+	
+	public long count()
+	-	 This statefull operation returns count of elements within the stream.
+	Example:
+	{
+		Stream<Integer> stream = Stream.of(10, 20, -10, -30, -40, 50);
+		long c = stream.filter(
+			(i) -> {
+				return i > 0;
+			}
+		).count();	/**3**/
+	}
+	
+	public Optional<T> min(Comparator<T> c)
+	-	This statefull operation returns first element by sorting element of stream using custom sorting.
+	Example:
+	{
+		Stream<Integer> stream = Stream.of(10, 20, -10, -30, -40, 50);
+		Integer m = stream.min((i1, i2) -> {
+			return (i1 > i2) ? -1 : (i1 < i2) ? 1 : 0;	/**[50]**/
+		});
+	}
+	
+	public Optional<T> max(Comparator<T> c)
+	-	This statefull operation returns last element by sorting element of stream using custom sorting.
+	Example:
+	{
+		Stream<Integer> stream = Stream.of(10, 20, -10, -30, -40, 50);
+		Integer m = stream.max((i1, i2) -> {
+			return (i1 > i2) ? -1 : (i1 < i2) ? 1 : 0;	/**[-40]**/
+		});
+	}
+	
+	public boolean allMatch(Predicate<T> p)
+	-	This stateless operation checks if input stream all element statisfy predicate if yes it return true else it return false, it continues to process
+		till it encounters first non-matching or till the last element.
+	Example:
+	{
+		Stream<Integer> stream = Stream.of(10, 20, -10, -30, -40, 50);
+		boolean b = stream.allMatch(
+			(i) -> {
+				return i > 0;	/**false**/
+			}
+		);
+	}
+	
+	public boolean anyMatch(Predicate<T> p)
+	-	This stateless operation checks if input stream atleast any one element statisfy predicate if yes it return true else it return false, it continues to
+		process till it encounters first matching or till the last element.
+	Example:
+	{
+		Stream<Integer> stream = Stream.of(10, 20, -10, -30, -40, 50);
+		boolean b = stream.anyMatch(
+			(i) -> {
+				return i > 0;	/**true**/
+			}
+		);
+	}
+	
+	public boolean noneMatch(Predicate<T> p)
+	-	This stateless operation checks if input stream no element statisfy predicate if yes it return true else it return false, it continues to process till 
+		it encounters first matching or till the last element.
+	Example:
+	{
+		Stream<Integer> stream = Stream.of(10, 20, -10, -30, -40, 50);
+		boolean b = stream.noneMatch(
+			(i) -> {
+				return i > 0;	/**false**/
+			}
+		);
+	}
+	
+	public Optional<T> findFirst()
+	-	This stateless operation checks if input stream and return first element from stream if stream is non-empty else return null.
+	Example:
+	{
+		Stream<Integer> stream = Stream.of(10, 20, -10, -30, -40, 50);
+		Optional<Integer> o = stream.findFirst();	/**10**/
+	}
+	
+	public Optional<T> findAny()
+	-	This stateless operation checks if input stream and return any element from stream if stream is non-empty else return null.
+	Example:
+	{
+		Stream<Integer> stream = Stream.of(10, 20, -10, -30, -40, 50);
+		Optional<Integer> o = stream.findAny();		/**unpredictable output**/
+	}
+	
+	public void forEach(Consumer<T> f)
+	-	This stateless operation process each individual element of input stream using consumer.
+	
+	Example:
+	{
+		Stream<Integer> stream = Stream.of(10, 20, -10, -30, -40, 50);
+		stream.forEach(System.out::print);	/**10 20 -10 -30 -40 50**/
+	}
+	
+	public T[] toArray(IntFunction<A[]> i)
+	-	This statefull operation converts input stream elements to array.
+	Example:
+	{
+		Stream.of(10, 20, -10, -30, -40, 50).toArray(Integer[]::new);
+	}
+
+What is stream pipelining?
+
+-	Non-terminal operations on stream generate another stream by returning stream object, this allows us to join one stream with another called as
+	stream pipelining.
+
+What are parallel streams?
+
+-	By default all non-terminal and terminal stream operation are executed sequentially by single thread.
+-	But we can explicitly cause these operations to be executed by simultaneously by multiple threads using parallel streams.
+
+-	Parallel streams must be used only when operations on collection or array elements is stateless.
+
+-	To create parallel streams we have two ways,
+
+	a) By invoking following method on collection object,
+	
+		public Stream<R> parallelStream()
+	
+	b) By invoking following method on stream object;
+		
+		public Stream<R> parallel()
+	
+	Example:	
+	{
+		List<String> l1 = new ArrayList<String>();
+		l1.add("java");l1.add("c++");l1.add("python");
+		l1.add("html");l1.add("css");l1.add("js");
+		
+		l1.parallelStream().forEach(System.out::println);	/**css html c++ java js python**/
+	}
+
+What are infinite streams?
+
+-	Terminal operation that can perform never ending data computation and add computed data to output stream, such streams are called infinite streams.
+-	To create infinite streams we have two ways,
+	
+	a) By invoking following method of Stream class,
+	
+		public static Stream<R> generate(Supplier<R> s)
+		-	Here stream will have same data repeatedly returned by supplier.
+	
+	Example:
+	{
+		Stream.generate(() -> 10)
+		.forEach(System.out::println);		/**10 10 10 10 10...**/
+	}		
+	
+	b) By invoking following method of Stream class,
+	
+	   public static Stream<R> iterate(T t, UnaryOperator<R> s)
+	   -	Here stream will compute data with initial value t and unary operator.
+	  
+	Example:
+	{
+		Stream.iterate(10, i -> i + 10)
+		.forEach(System.out::println);		/**10 20 30 40 50...**/
+	}
+
+What is stream reduction?
+
+-	Reducing a stream means combining data elements computed by non-terminal operations to single element at terminal.
+-	To reduce stream we have one ways,
+	
+	a) By invoking following method on stream object,
+	
+		public Stream<R> reduce(T t, BinaryOperator<R> s)
+		-	Here stream will compute single data with initial value t and binary operator.
+	  
+	Example:
+	{
+		Stream.of(10, 20, 30, 40, 50).reduce(0, (a, b) -> a + b);		/**150**/
+	}		
+
+What are primitive streams?
+
+-	To avoid frequent boxing and unboxing primitive streams are available in java.
+-	Following are different primitive streams in java,
+
+	a) java.util.stream.IntStream
+	-	IntStream is a stream of primitive int elements.	
+	-	IntStream primitive interfaces provides following static methods for creating stream,
+
+		public static IntStream range(int s, int e)
+		-	It returns a stream from s to e - 1, if s >= e then returns empty stream.  	
+		
+		public static IntStream rangeClosed(int s, int e)
+		-	It returns a stream from s to e, if s > e then returns empty stream.  	
+
+	b) java.util.stream.LongStream
+	-	LongStream is a stream of primitive long elements.
+	-	LongStream primitive interfaces provides following static methods for creating stream,
+
+		public static LongStream range(int s, int e)
+		-	It returns a stream from s to e - 1, if s >= e then returns empty stream.  	
+		
+		public static LongStream rangeClosed(int s, int e)
+		-	It returns a stream from s to e, if s > e then returns empty stream.  	
+
+	c) java.util.stream.DoubleStream
+	-	DoubleStream is a stream of primitive double elements.
+	-	DoubleStream primitive interfaces provides following static methods for creating stream,
+
+		public static DoubleStream range(int s, int e)
+		-	It returns a stream from s to e - 1, if s >= e then returns empty stream.  	
+		
+		public static DoubleStream rangeClosed(int s, int e)
+		-	It returns a stream from s to e, if s > e then returns empty stream.  	
+
+	Example:
+	{
+		IntStream.rangeClosed(10, 15);	/**10 11 12 13 14 15**/
+	}

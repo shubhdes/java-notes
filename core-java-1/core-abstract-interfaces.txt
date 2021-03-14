@@ -1,0 +1,155 @@
+core java - abstract classes and interfaces
+
+Explain constructors in inheritance?
+
+-	In java new operator is responsible to create java object but constructor is responsible to initialize an java object and hence constructor is executed 
+	immediately after memory is allocated to java object.
+
+-	Whenever sub class object is created the subclass constructor calls super class default constructor from sub class constructor.
+-	But super class has parameterized constructor and no default constructor then sub class must have its own constructor from where super class parameterized 
+	constructor should be called explicitly otherwise we will get compile time error saying parameterized constructor of parent class must be called from child
+	class constructor.
+
+-	The super class constructor is called  from sub class for inherited instance variable intialization and does not mean super class object is created.
+
+	Example:
+
+	class Parent {
+		
+		public Parent() {
+			
+			System.out.print(this.hashCode() + " ");
+		}
+	}
+
+	class Child extends Parent {
+		
+		public Child() {
+			
+			System.out.print(this.hashCode());
+		}
+	}
+
+	class Test  {
+		
+		public static void main(String[] args) {
+		
+			Child c = new Child(); /**100 100 same hash code indicate parent constructor executed for child class object**/
+			
+		}
+	}
+
+Explain constructors in abstract class?
+
+-	An abstract class's object cannot be created but abstract classes can have constructor this constructor is invoked from sub class constructor for inherited 
+	instance variable intialization.
+
+Why interfaces cannot have constructor? 
+
+-	An abstract class's object cannot be created but abstract classes can have constructor this constructor is invoked from sub class constructor for inherited 
+	instance variable intialization.
+-	But every variable present inside interface is always public, static and final they are not instance variable and associated with any object and for this
+	reason interfaces in java cannot have constructor.
+
+Why abstract classes are not replacement for interface?
+
+-	An abstract class can have both abstract and non abstract method but interface can have only abstract method.
+
+-	Also any sub class cannot extend more than one super class any sub class can implement one or more interface or extend single class and implement one or
+	more interface.
+
+-	While creating object of sub class extending an abstract class then super class constructor is also invoked and hence object creation become costly, but
+	while creating object of sub class implementing an interface no call to interface constructor as interface cannot have constructor and hence object creation 
+	does not become costly. 
+
+-	Inside interface we cannot declare static and instance blocks but abstract classes can have static and instance blocks.
+
+Explain different scenarios of interfaces inheritance?
+
+-	A class can implement two interface with same method signature and provide common implementation.
+	Example:
+	interface Left {
+	
+		public void m1();
+	}
+	interface Right {
+	
+		public void m1();
+	}
+	class Test implements Left, Right {
+	
+		public void m1() {
+		
+		}
+	}	
+
+-	A class can implement two interface with same method name but different signature and provide separate implementation.
+	Example:
+	interface Left {
+	
+		public void m1();
+	}
+	interface Right {
+	
+		public void m1(int x);
+	}
+	class Test implements Left, Right {
+	
+		public void m1() {
+		
+		}
+		
+		public void m1(int x) {
+		
+		}
+	}
+	
+-	A class cannot implement two interface with same method signature but different return types otherwise we will get compile time error saying methods
+	with same name and same signature cannot exist in single class.
+	Example:
+	interface Left {
+	
+		public void m1();
+	}
+	interface Right {
+	
+		public int m1();
+	}
+	class Test implements Left, Right {
+	
+		public void m1() {
+		
+		}
+		
+		public int m1() {
+		
+		}
+	}
+	
+-	A class can implement two interface with same variable name to resolve ambiguity interface name must be used to access such variables in child class otherwise
+	we will get compile time error saying the variable reference is ambigious.
+	
+	Example:
+	interface Left {
+	
+		int x = 777;
+	}
+	interface Right {
+	
+		int x = 888;
+	}
+	class Test implements Left, Right {
+	
+		int x = Left.x;
+	}
+	
+What are marker interfaces or ability interface or tag interface?
+
+-	A marker interface is an interface without any method but by implementing them class object gets some ability from JVM.	
+	
+	Example:
+	
+	java.io.Serializable, java.lang.Cloneable, java.util.RandomAccess
+
+-	JVM provides additional ability to reduce complexity of programming and to make java language as simple and it is not possible to have custom marker 
+	interface for which JVM will provide some ability.

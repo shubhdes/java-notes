@@ -1,0 +1,101 @@
+spring boot - aop
+
+What are different component of spring aop module?
+
+-	The spring aop module is designed on top of component like aspect, advice, jointpoint, pointcut, target and proxy.
+
+-	The aspect is service which need implementation.
+
+-	The advice is actual implementation for the aspect service.
+
+-	The jointpoint is point when the advice will be applied on target object.
+
+-	An advice is associated with a pointcut expression and is applied to a joinpoint which match the pointcut expression.
+
+-	The target is spring bean object that is advice.
+
+-	The proxy is object of runtime class that will behave as a wrapper for both spring bean object and another aspect class object.
+
+How to implement spring aop module?
+
+-	The spring framework allow implementation of spring aop module using schema based implementation and aspectj implementation.
+
+-	Inside apectj we can use different annotations to implement spring aop module.
+
+-	@Aspect annotation is used to at class-level to mention that the class will contain additional operation which is to be executed before or after or both 
+	actual operation.
+	
+-	@Aspect is not identified during component-scan and hence this annotation must be used with @Component annotation.
+
+-	@Before annotation is used at method-level to mention that the method is an advice and must be called before calling the actual method using spring bean object.
+	
+-	@After annotation is used at method-level to mention that the method is an advice and must be called after calling the actual method using spring bean object.
+
+-	@AfterReturning annotation is used at method-level to mention that the method is an advice and must be called after calling the actual method using spring bean 
+	object and if the actual method execution is complete without any uncaught runtime exception.
+	
+-	@AfterThrowing annotation is used at method-level to mention that the method is an advice and must be called after calling the actual method using spring bean 
+	object and if the actual method execution is terminated because of any uncaught runtime exception.
+	
+-	@Around annotation is used at method-level to mention that the method is an advice and must be called before calling the actual method using spring bean 
+	object and this method is responsible to call the actual method using spring bean instance.
+	
+-	When the actual method execution is complete with or without any uncaught runtime exception then the execution of this method should continue.
+
+-	Also these above annotations accept one string arguement called pointCut to define actual method's method-signature using regular expression.	
+
+How to write a pointcut expression?
+
+-	Inside pointcut expression * will represent any package name, class name, modifier and method name.
+
+-	And . inside pointCut expression represent method parameter.
+
+	Example:
+	
+	* EmployeeService.*(..)
+	
+	This advice can be applied to all method present inside EmployeeService class present inside current package.
+
+	Example:
+	
+	* p1.EmployeeService.*(..)
+	
+	This advice can be applied to all method present inside EmployeeService class present inside p1 package.
+	
+	Example:
+	
+	public * p1.EmployeeService.*(..)
+	
+	This advice can be applied to only public method present inside EmployeeService class present inside p1 package.
+	
+	Example:
+	
+	public Employee p1.EmployeeService.*(..)
+	
+	This advice can be applied to only public method present inside EmployeeService class present inside p1 package and method must return object of type Employee.
+	
+	Example:
+	
+	public Employee p1.EmployeeService.*(Integer, ..)
+	
+	This advice can be applied to only public method present inside EmployeeService class present inside p1 package and method must return object of type Employee
+	and accept any parameter but first parameter must be of type Integer.
+	
+	Example:
+	
+	public Employee p1.EmployeeService.*(Integer, String, ..)
+	
+	This advice can be applied to only public method present inside EmployeeService class present inside p1 package and method must return object of type Employee
+	and accept any parameter but first parameter must be of type Integer and second parameter of type String.
+	
+Explain the working of spring aop module?
+
+-	The spring aop module is used to create an runtime class that will behave as a wrapper for both spring bean object and aspect class object.
+
+-	This wrapper class will implement the same interface which the spring bean class implement and hence it will override all the methods which the
+	spring bean class is overriding.
+	
+-	Inorder to implement the parent interface method the wrapper class will call the implementation available with the spring bean class but before or after
+	calling this implementation it will call the implementation available with aspect class.
+
+-	Then required IOC container will use the wrapper object for dependency injection instead of using the spring bean object.

@@ -1,0 +1,211 @@
+Miscellaneous java
+
+-	Tricky concepts if flow control?
+
+1) 
+	if(b = 10){
+	
+	}//Compile time error: expected boolean found int
+
+	if(b = true){
+	
+	}//no compile time error
+	
+2)
+	if(true);//no compile time error
+
+	if(true)
+		System.out.println("hello world!!");	//This line is part of if block
+		System.out.println("hello world!!");	//This line is not part of if block
+
+	if(true)
+		int x = 10;	//compile time error without curly braces declaration of variable is not allowed as there is no scope defined for x.
+
+3)	if(true)
+		if(true)
+			System.out.println("hello world");	
+			
+	else		
+			System.out.println("hi world");	//else is always related to nearest if statement
+			
+4)	switch(x) { //x can be of type byte, Byte, short, Short, char, Char, int, Integer, String and enum for remaining type we get compile time error		
+	
+		System.out.println(10);	//compile time error requires statement inside case or default block
+	
+	} //curly braces is mandatory in switch statement
+
+5)	int y = 10;
+	switch(x) {
+
+		case y :	//compile time error every case requires constant expression
+	
+	}
+	
+6)	switch(x) {
+
+		case 10  :	
+		case 'a' :	//no compile time error char converted to ascii value int
+		case 97	 :	//compile time error duplicate case label are not allowed
+	}
+
+7)	int x = 10;
+	switch(x) {
+
+		case 10:
+			System.out.println(10 + " ");
+		
+		case 20:
+			System.out.println(20 + " ");
+			break;		
+					
+		case 30:
+			System.out.println(30 + " ");	
+		
+		default:
+			System.out.println(0 + " ");	
+	}//	10 20 fall through in switch if case matches execute all cases below it (including default) till end of swtich or till break
+	//fall through provides advantage by allowing common code for multiple cases (code re-usability)
+	
+8)	int x = 10;
+	switch(x) {
+
+		case 10:
+			System.out.println(10 + " ");
+		
+		default:
+			System.out.println(0 + " ");
+			
+		case 20:
+			System.out.println(20 + " ");
+			break;		
+					
+		case 30:
+			System.out.println(30 + " ");	
+	}// within switch default case should be only one and can be defined anywhere not necessay at the end of switch	
+
+9)	int x = 100;
+	switch(x) {
+
+		default:
+			System.out.println(0 + " ");
+		
+		case 10:
+			System.out.println(10 + " ");
+		
+			
+		case 20:
+			System.out.println(20 + " ");
+			break;		
+					
+		case 30:
+			System.out.println(30 + " ");	
+	}// 0 10 20
+
+10)
+	while(true);//no compile time error
+
+	while(true)
+		System.out.println("hello world!!");	//This line is part of if block
+		System.out.println("hello world!!");	//This line is not part of if block
+
+	while(true)
+		int x = 10;	//compile time error without curly braces declaration of variable is not allowed as there is no scope defined for x.
+
+11)
+	while(true) {
+		
+		System.out.println("hello world!!");
+	}
+	System.out.println("hi world!!");//compile time error unreachable code	
+	
+	int a = 10, b = 20;
+	while(a < b) {
+		
+		System.out.println("hello world!!");
+	}
+	System.out.println("hi world!!");//not compile time error but still unreachable code	
+	
+	final int a = 10, b = 20;
+	while(a < b) {
+		
+		System.out.println("hello world!!");
+	}
+	System.out.println("hi world!!");//compile time error unreachable code	
+	
+
+12)	
+	do
+	while(true);//compile time error atleast one statement is mandatory	in do while without curly braces
+	
+	do;
+	while(true);//no compile time error 
+	
+13)	
+	for(int i = 0; true; i++);//no compile time error
+
+	for(int i = 0; true; i++)
+		int x = 10;	//compile time error without curly braces declaration of variable is not allowed as there is no scope defined for x.
+	
+	for(int i = 0, j = 0; true; i++)//no compile time error
+	for(int i = 0, String s = "durga"; true; i++)//compile time error type of loop all variables must be same
+	
+	int i = 0;
+	for(System.out.println("Hello world"); i < 10; i++){
+	
+	}//no compile time error 
+	
+	for(int i = 0; ; i++);//no compile time error default condition true
+	
+	int i = 0;
+	for(;;i++);//no compile time error default condition true
+	
+	int i = 0;
+	for(;;);//no compile time error default condition true
+	
+	for(System.out.println("Hello world"); i < 10; System.out.println("Hello world")){
+	
+	}//no compile time error 
+	
+14)
+	{
+		int x = 10;
+		l1:{
+		
+			if(x == 10)
+				break;
+		}
+	}// break statement only inside label block, loop and switch statement is allowed.
+	//continue is allowed only within loop.
+
+15)
+		l1:
+		for(;;) {
+		
+			l2:
+			for(;;) {
+				
+				l3:
+				for(;;) {
+		
+					break l1; //no compile time error break loop1 or continue loop1 is valid in nested loops
+			
+				}		
+		
+			}	
+		}
+16)	
+	int x = 1;
+	do {
+
+		if(x < 3){
+			continue;
+		}
+		System.out.print(x + " ");
+		
+	}while(++x < 5)	//3 4 in do while continue takes to condition check and not beginning of loop
+	
+17)
+
+		import java.util.ArrayList;
+		import static java.lang.Math.sqrt; // To access static member without class name use static import. We can use sqrt() without Math class reference.
+		

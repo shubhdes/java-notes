@@ -1,0 +1,1319 @@
+core java - object oriented programming
+
+What is data-hiding in object oriented programming?
+
+-	In object oriented programming data-hiding means preventing class data members (variables) from getting directly accessed outside the class this is achieved 
+	by declaring data members (variables) of class with private access modifier.
+	
+-	These data members should be accessible only using member methods (methods) of class from outside the class due to this data-hiding provides security by 
+	preventing direct access to data members (variables) of the class.
+
+	Example:
+	
+	class BankAccount {
+
+		private float balance;
+		
+		public float getBalance() {
+
+			return balance;
+		}
+	} 	
+
+	class Test {
+
+		public static void main(String[] args) {
+		
+			BankAccount bankAccount = new BankAccount();
+			
+			bankAccount.getBalance();
+			
+			bankAccount.balance;	/**compile time error saying cannot access private members outside the class**/
+		}
+	}
+
+What is abstraction in object oriented programming?
+
+-	In object oriented programming abstraction means hiding internal implementation and providing only necessary information about available services.
+
+	Example: 
+
+	In ATM cash withdrawl process end user interacts with ATM GUI screen and is not aware of how card is authenticated using card number and expiry date.
+
+-	Thus abstraction provides security by hiding internal implementation of the process and allows changing and maintainence of internal implementation without 
+	knowledge of end user also abstraction provides easiness to end user by hiding internal implementation.	
+
+What is encapsulation in object oriented programming?
+
+-	The term encapsulation means binding an entity data and behavior together inside a capsule in object oriented programming encapsulation is achieved by 
+	binding data member (variables) and member methods (methods) inside a class.
+-	Thus encapsulation is combination of data-hiding and abstraction.
+	
+	Example:
+	
+	class BankAccount {
+
+		private float balance;
+		
+		public float getBalance() {
+			
+			/**validation logic**/
+			return balance;
+		}
+		
+		public float setBalance(float balance) {
+
+			/**validation logic**/
+			this.balance = balance;
+		}
+	} 	
+
+What is tightly encapsulated class in object oriented programming?
+
+-	A class that contains all data-members (variables) of its own as private, is called tightly encapsulated class as all data-members (variables) are private 
+	they cannot be accessed outside the class and cannot be inherited to child class.
+-	When parent class is not tightly encapsulated then child class is also not tightly encapsulated.
+
+What is is-a relationship in object oriented programming?
+
+-	In object oriented programming is-a relationship means inheritance and the main advantage of inheritance is code reusability. 
+-	Following are rules of inheritance,
+
+	a)	A child class inherits all protected, public and default (child class within same package) data-members (variables) and member-methods (methods) 
+		from parent class.	
+	b)	No data-members (variables) and member-methods (methods) of child class is available to parent class.
+	c)	A parent class reference can be used for child class object, but using that reference we can call only inherited methods of parent class.
+	d)	A child class reference cannot be used for parent class object.
+
+	Example:
+
+	class Parent {
+
+		public void m1() {
+		
+			System.out.println("Parent class");
+		}
+	}
+
+	class Child extends Parent {
+
+		public void m2() {
+		
+			System.out.println("Child class");
+		}
+	}
+
+
+	class Test {
+
+		public static void main(String[] args) {
+		
+			Parent p1 = new Parent();
+			p1.m1();
+			p1.m2();	/**compile time error saying m2() method is not present in Parent class.**/
+			
+			
+			Child c1 = new Child();
+			c1.m1();	/**no compile time error saying m1() method is inherited in Child class from Parent class.**/
+			c1.m2();	
+		
+			Parent p2 = new Child();
+			p2.m1();
+			p2.m2();	/**compile time error saying m2() method is not present in Parent class and at compile time only reference to object is checked.**/
+		
+			Child c2 = new Parent();	/**compile time error saying child class reference cannot hold parent class object.**/
+		}
+	}
+
+What is inheritance with respect to java.lang.Object class?
+
+-	In java multiple inheritance with respect to classes is not supported, but in java every class is sub-class of java.lang.Object class. 
+-	If a class does not extends any other class then the class is direct sub-class of java.lang.Object class using single-level inheritance.
+	
+	java.lang.Object
+		|
+		|	
+	   Test
+
+-	If a class does extends any other class then the class is indirect sub-class of java.lang.Object class using multi-level inheritance.
+	
+	java.lang.Object
+		|
+		|	
+	  Parent
+		|
+		|
+	  Child
+
+
+Why does java does not support multiple inheritance with respect to class ?
+
+-	In java multiple inheritance with respect to class is not supported to avoid ambiguity issues as the root cause of ambiguity issue is multiple methods with 
+	same signature but different implementation inherited from two different parent classes into same child class.
+-	In java multiple inheritance with respect to interfaces is allowed where ambiguity problem will never arise as in interface only method declaration exist,
+	the child class implementing interfaces provides single implementation to inherited methods.
+-	Now single implementation will exist in child class for methods inherited from multiple interfaces with same signature.
+
+What is cyclic-inheritance in object oriented programming?
+
+-	When a class directly or indirectly extends itself such inheritance is called cyclic-inheritance and we will get compile time error saying cyclic-inheritance
+	with respect to class is not allowed.
+
+	Example:
+
+	class A extends A {}		/**compile time error saying cyclic-inheritance with respect to A**/
+
+	Example:
+
+	class A extends B {}		/**compile time error saying cyclic-inheritance with respect to A**/
+
+	class B extends A {}
+
+What is has-a relationship in object oriented programming?
+
+-	When a class encapsulate object of another class such a relationship is called has-a relationship or composition and this provides the advantage of code
+	reusability.
+
+	Example:
+
+	class Engine{}
+
+	class Car {
+
+		private Engine engine = new Engine(); /**by creating engine object in any class we can call its method support code reusability**/
+	}
+
+What is difference between composition and aggregation?
+
+-	Composition is defined as strong association between two different class object such that without container object there is no chance of existing contained 
+	object then container and contained object are strongly associated.
+
+-	In composition container object holds directly contained object i.e contained class is created inside container class.	
+	
+	Example:
+
+	Univeristy consist of arts, science and commerce departments these departments in an university cannot exist without university.
+	
+-	Aggregation is defined as weak association between two different class object such that without container object there is a chance of existing contained 
+	object then container and contained object are weakly associated.
+
+-	In aggregation container object holds just references of contained object i.e contained class is created outside container class but container class has
+	reference to that object.
+
+	Example:
+
+	Department consist of several professors, these professors in department can exist without department.
+
+When should one use is-a relationship and when should one use has-a relationship?
+
+-	When entire functionality of one class-1 is required in another class-2 use is-a relationship but when some part of functionality of one class-1 is required
+	in another class-2 and not entire functionality use has-a relationship.
+
+What is member method signature in java?
+
+-	In java method name and data type of method parameters and their sequence is part of member method signature.
+
+	Example:
+
+	public static int m1(int i, float f, String s)
+	Method signature =  m1(int, float, String)
+
+What is automatic promotion in method overloading?
+
+-	While resolving overloaded methods if exact matched method is not available then compiler tries to upcast parameters in method call and again try to resolve 
+	overloaded method this upcasting is called automatic promotion.
+-	When matched method is available then it will be considered otherwise again compiler tries to upcast parameters in method call and again try to resolve 
+	overloaded method.
+
+-	When further upcast is not possible then compiler gives compile time error as no method with required signature exist in class.
+
+-	Following are different levels of upcasting or automatic promotion,
+
+																	double
+																	  |
+																	  |
+																	 float 	
+																	  |
+																	  |
+																	 long 	
+																      |
+																	  |
+																	 int 	
+																	  |
+																	  |	
+																-------------
+																|			|
+																|			|	
+															   short 	   char
+																|
+																|
+															   byte 	
+
+Explain different scenario of method overloading?
+	
+-	While resolving	overloaded method compiler will always give first preference to child type arguement when compared to parent type arguement.
+	
+	class Test {
+
+		public void m1(String s) {
+		
+			System.out.println("string version");
+		}
+	
+		public void m1(Object o) {
+		
+			System.out.println("object version");
+		}
+		
+		public static void main(String[] args) {
+		
+			Test t = new Test();
+			t.m1(null);
+		}
+	}	
+	
+	Output:
+	string version
+	
+-	While resolving	overloaded method if compiler finds multiple methods and parameters type of these methods are at same level then we get compile time
+	error saying reference to method is ambiguous.
+	
+	class Test {
+
+		public void m1(String s) {
+		
+			System.out.println("string version");
+		}
+	
+		public void m1(StringBuffer s) {
+		
+			System.out.println("StringBuffer version");
+		}
+		
+		public static void main(String[] args) {
+		
+			Test t = new Test();
+			t.m1(null);		/**there is no parent-child relationship between String and StringBuffer hence compiler cannot understand whether null
+							should be upcasted to String or StringBuffer**/
+		}
+	}	
+	
+-	While resolving	overloaded method if compiler finds multiple methods then we get compile time error saying reference to method is ambiguous.
+	
+	class Test {
+
+		public void m1(int i, float f) {
+		
+			System.out.println("int-float version");
+		}
+	
+		public void m1(float f, int i) {
+		
+			System.out.println("float-int version");
+		}
+		
+		public static void main(String[] args) {
+		
+			Test t = new Test();
+			t.m1(10, 10);
+		}
+	}	
+
+-	While resolving	overloaded method if compiler finds general method and variable arguement method then first preference is always given to general method.
+	
+	class Test {
+
+		public void m1(int i) {
+		
+			System.out.println("int version");
+		}
+	
+		public void m1(int... i) {
+		
+			System.out.println("var-int version");
+		}
+		
+		public static void main(String[] args) {
+		
+			Test t = new Test();
+			t.m1(10, 20);
+			t.m1();
+			t.m1(10);
+		}
+	}	
+	Output:
+	var-int version
+	var-int version
+	int version	
+	
+-	While resolving	overloaded method if compiler always uses reference to object and not object to which memory is allocated.
+	
+	class Animal {}
+	
+	class Monkey extends Animal {}
+	
+	class Test {
+
+		public void m1(Animal i) {
+		
+			System.out.println("Animal version");
+		}
+	
+		public void m1(Monkey i) {
+		
+			System.out.println("Monkey version");
+		}
+		
+		public static void main(String[] args) {
+		
+			Test t = new Test();
+			t.m1(new Animal());
+			t.m1(new Monkey);
+			
+			Animal a = new Monkey();
+			t.m1(a);
+		}
+	}	
+	Output:
+	Animal version
+	Monkey version
+	Animal version	
+
+What are rules for method overloading and method overriding?
+
+-	In method overloading method signature must be different with respect to method parameters but method name must be same
+-	Also return type and access specifier of method does not play any role.
+
+-	In method overriding method signature must be same with respect to method parameters and method name.
+-	When return type is primitive type then return type of overriding method must be same as overriden method but when return type is object type then 
+	return type of overriding method must be same or child class of return type defined for overriden method in parent class.
+-	Also the overriding method access specifier cannot be reduced than the access specifier of overriden method.
+	
+	Example:
+	
+	class Parent {
+	
+		public void m1() {
+		
+		}
+	
+	}
+	
+	class Child extends Parent {
+	
+		private void m1() {
+		
+		}
+	
+	}
+	
+	class Test {
+	
+		public static void main(String[] args) {
+		
+			Parent p = new Child();
+			p.m1();	/**If above rule does not exist, now m1 is accessible for parent reference but at runtime memory is allocated to child object and hence 
+					child class method should be called but that method is not accessible**/
+		
+		}
+	
+	}
+	
+-	When parent class has final method then this method cannot be overriden in child class as final methods but when parent class has non-final method then this 
+	method can be overriden as final method in child class.
+
+-	When parent abstract class has abstract method then this method can be overriden as non-abstract method in child class but when parent class has non-abstract
+	method then this method can be overriden as abstract method in abstract child class.
+
+-	When parent class has synchronized method then this method can be overriden as non-synchronized method in child class but when parent class has non-synchronized
+	method then this method can be overriden as synchronized method in child class.
+
+-	When parent class has native method then this method can be overriden as non-native method in child class but when parent class has non-native method then 
+	this method can be overriden as native method in child class.
+
+-	When parent class has static method then this method cannot be overriden as non-static method in child class but when parent class has non-static method 
+	then this method cannot be overriden as static method in child class.
+
+-	If child class method throws fully checked or partially checked exception, then parent class method must throw same checked exception or its parent exception
+	class but there are no restrictions for unchecked exceptions.
+
+	Example:	
+	
+	class Parent {
+	
+		public void m1() {}
+	}
+	
+	class Child extends Parent {
+	
+		private void m1() throws FileNotFoundException {}
+	}
+	
+	class Test {
+	
+		public static void main(String[] args) {
+		
+			Parent p = new Child();
+			p.m1();	/**If above rule does not exist, now m1 is does not throw FileNotFoundException for parent reference but at runtime memory is allocated to
+					child object and hence caller is required to handle FileNotFoundException **/
+		}
+	
+	}
+	
+What is method hiding?
+
+-	If parent class has static method then this method can be overriden as static method in child class this concept is called method hiding and not method 
+	overriding.
+-	In method hiding method resolving is done on the basis of object reference and not on basis of object to which memory is allocated.
+	
+	Example:
+	
+	class Parent {
+	
+		public static int x = 10; 
+	
+		public static void m1() {
+		
+			System.out.println("parent version");
+		}
+	
+	}
+	
+	class Child extends Parent {
+	
+		private  static void m1() {
+		
+			System.out.println("child version");
+		}
+	
+	}
+	
+	class Test {
+	
+		public static void main(String[] args) {
+		
+			Parent p1 = new Child();
+			p1.m1();	
+			System.out.println(p1.x);
+			
+			p1 = null;
+			
+			p1.m1();					/**method and variable resolution is done using reference variable data-type and not using the object data-type to
+			System.out.println(p1.x);	 which memory is allocated**/
+		}
+	}
+	
+	Output:
+	parent version
+	10
+	
+	parent version
+	10
+
+What is method overriding for variable arguement method?
+
+-	We can override variable arguement method with another variable arguement method only but when variable arguement is overriden by general method then it
+	is considered as method overloading.
+
+	Example:
+	
+	class Parent {
+	
+		public void m1(int... a) {
+		
+			System.out.println("parent version");
+		}
+	
+	}
+	
+	class Child extends Parent {
+	
+		private void m1(int a) {
+		
+			System.out.println("child version");
+		}
+	
+	}
+	
+	class Test {
+	
+		public static void main(String[] args) {
+		
+			Parent p = new Child();
+			p.m1();	/**child class not overriding variable arguement version method hence variable arguement method of parent class
+					inherited to child class is invoked**/
+		}
+	}
+	Output:
+	parent version
+	
+Explain overriding concept for instance variable?
+
+-	In java overriding concept is applicable only for method and not for instance or static variable i.e. instance or static variable are resolved by compiler 
+	at compile time itself using reference.
+
+	Example:
+	class Parent {
+	
+		public int x = 888;
+	}
+	
+	class Child extends Parent {
+	
+		public int x = 999;
+	}
+	
+	class Test {
+	
+		public static void main(String[] args) {
+		
+			Parent p1 = new Parent();
+			System.out.println(p1.x);
+			
+			Child c1 = new Child();
+			System.out.println(c1.x);
+			
+			Parent p2 = new Child();
+			System.out.println(p2.x);
+		}
+	}
+	Output:
+	888
+	999
+	888
+
+
+What is polymorphism?
+
+-	Polymorphism means multiple forms or behavior.
+
+-	A java class can have multiple method with same method name but different method signature with respect to parameters such methods are called overloaded
+	methods and such polymorphism is called compile time or early binding or static binding polymorphism.
+	
+-	A child class can have method with same method signature with respect to method name and parameters as inherited from parent class and provide definition
+	to this method, such method is called overriden method and such polymorphism is called run time or late binding or dynamic binding polymorphism.
+
+-	Usage of parent reference to hold child object is considered as polymorphism.
+	
+	Example:
+	List l = null;
+	l = new ArrayList();
+	l = new LinkedList();
+	l = new Vector();
+	
+What are coupling as advanced features of object oriented programming?
+
+-	The degree of dependency between components is called as coupling. If dependency is more then it is considered as tight coupling and if dependency is less \
+	then it is considered as loose coupling.
+-	Tight coupling is bad programming practise whereas loose coupling is good programming practise.
+
+	Example:	
+
+	class A {
+
+		static int i = B.j;
+	}
+
+	class B {
+
+		static int j = C.k;
+	}
+
+	class C {
+
+		static int k = D.m1();
+	}
+
+	class D {
+		
+		static int m1() {
+		
+			return 10;
+		}
+	}
+
+-	Tight coupling is bad programming practise because without affecting remaining component we cannot modify any component.
+-	This makes enhancement and maintainence difficulty.
+
+-	To re-use a certain component we require its dependent components too which reduces re-usability.
+
+What are cohesion as advanced features of object oriented programming?
+
+-	To define a clear well defined functionality for every component is called cohesion. When a component is designed to achieve only required well
+	defined functionality such component is high cohesion. 
+-	High cohesion is good programming practise whereas low cohesion is bad programming practise.
+
+	Example of low cohesion:
+	Consider a servlet that is responsible for user login validation, fetching inbox mail, sending new mail and recieving mails, etc. 
+
+-	High cohesion makes enhancement and maintainence easy. It promotes reusability of the code.	
+
+What is object casting?
+
+-	The process of converting one object type into another is called object casting.
+-	Syntax : A a = (C) d;
+	
+-	Following are rules for object casting,
+
+-	C and d type must have parent-child or child-parent relationship otherwise we will get compile time error saying incompatible type found d required C 
+	is generated.
+
+-	C must be same or child of A type otherwise we will get compile time error saying incompatible type found C required A is generated.
+
+-	Underlying type of d must be same or child type of C otherwise we will get runtime exception saying ClassCastException.
+	
+	Example:
+	Object o = new String("java");
+	StringBuffer s = (StringBuffer) o; /**ClassCastException:incompatible type expected StringBuffer found underlying String type**/
+
+What are static blocks inside a java class?
+
+-	In a java class static blocks are block that contains code to be executed when class is loaded for the first time.
+
+-	A java class can have multipe static blocks and these static blocks are executed before constructors of class.	
+
+-	Using static block and static member it is possible to run java program without public static void main(String[] args) method.
+
+	Example:
+	
+	class Test {
+		
+		static {
+		
+			System.out.println("static block"); /**java code executed without main method**/
+			System.exit(0);
+		}
+	}
+	Output:
+	static block
+
+	Example:
+	
+	class Test {
+		
+		static int x = m1();
+		
+		public static int m1() {
+		
+			System.out.println("static block"); /**java code executed without main method**/
+			System.exit(0);
+			retun 0;
+		}
+	}
+	Output:
+	static block
+	
+
+	Example:
+	
+	class Test {
+		
+		static Test t = new Test();
+		
+		public Test{)
+		
+			System.out.println("static block"); /**java code executed without main method**/
+			System.exit(0);
+		}
+	}
+	Output:
+	static block	
+
+-	When JVM identifies new keyword used with class name only then JVM will load the required class if it is not already loaded by JVM previously but to load
+	class without using new keyword then we must use the following static method of class Class in java.lang package.	
+	
+	public static Class forName(String cName)
+	
+	Example:
+	
+	class A {
+	
+		static {
+		
+			System.out.println("static block of class A executed");
+		}
+	}
+	
+	class B {
+	
+		static {
+		
+			System.out.println("static block of class B executed");
+		}
+	}
+	
+	class Test {
+		
+		public static void main(String[] args)
+		
+			A a = null;
+			
+			B b = new A();
+		}
+	}
+	
+	Output:
+	static block of class B executed
+	
+-	Whenever a java class is loaded JVM performs static control flow i.e. itdentify static variable and assign default values even if explicit value is supplied,
+	also identify static blocks from top to bottom in java class.
+
+-	Then execute static variable assignment and static blocks from top to bottom in java class and finally execute public static void main(String[] args) method.
+
+	Example:
+	
+	class Test {
+	
+		static int i = 10;
+		
+		static {
+		
+			System.out.println("first static block");	
+			m1();
+		}
+		
+		public static void main(String[] args) {
+			
+			m1();
+		}
+		
+		public static void m1() {
+		
+			System.out.println("j value:" + j);
+			System.out.println("i value:" + i);
+		}
+		
+		static {
+		
+			System.out.println("second static block");
+		}
+	
+		static int j = 20;
+	}
+	Output:
+	first static block
+	j value:0
+	i value:10
+	second static block
+	j value:20
+	i value:10
+	
+What is read indirectly and write only static variable assignment?
+
+-	A static block that directly reads value of declared static variable this read is called direct read but when static block that directly calls static method
+	which directly reads value of declared static variable this read is called indirect read.
+	
+	Example:
+	
+	class Test {
+	
+		static int i = 10;
+		
+		static {
+		
+			System.out.println(i);	
+		}
+	}
+
+-	When static variable is identified by JVM but orignal value mentioned explicitly is not assigned then variable is in read indirect write only state.
+-	When variable is in read indirect write only state then we cannot perform direct read otherwise we will get compile time error saying illegal forward
+	reference but we can perform indirect read.
+-	But when static variable is identified by JVM and its orignal value mentioned explicitly is assigned then variable is in read write state.
+
+	
+	Example:
+	
+	class Test {
+	
+		static {
+		
+			System.out.println(i);	 
+		}
+		static int i = 10;	/**compile time error saying illegal forward reference**/
+	}
+	
+	Example:
+	
+	class Test {
+	
+		static {
+		
+			m1();	
+		}
+		
+		public static void m1() {
+		
+			System.out.println(i);
+		}
+		static int i = 10;
+	}
+	Output:
+	0
+	
+What is static control flow in inheritance?
+
+-	In java parent class members available to child class hence whenever a child class is loaded JVM performs static control flow i.e. it identify static variable
+	inherited from parent class and assign default values even if explicit value is supplied also static blocks inherited from parent class from top to bottom.
+-	Then it identify static variable from child class and assign default values even if explicit value is supplied also static blocks from child class from top 
+	to bottom.
+
+-	Now it will executestatic variable assignment and static blocks from top to bottom in parent class and static variable assignment and static blocks from 
+	top to bottom in child class.
+
+-	Finally it will execute public static void main(String[] args) method of child class.
+
+	Example:
+	
+	class Parent {
+	
+		static int x = 10;
+		
+		static {
+		
+			System.out.println("parent first static block");	
+			m1();
+		}
+		
+		public static void main(String[] args) {
+			
+			m1();
+		}
+		
+		public static void m1() {
+		
+			System.out.println("y value:" + y);
+			System.out.println("x value:" + x);
+		}
+		
+		static {
+		
+			System.out.println("parent second static block");
+		}
+	
+		static int y = 20;
+	}
+	
+	class Child extends Parent {
+	
+		static int i = 10;
+		
+		static {
+		
+			System.out.println("child first static block");	
+			m2();
+		}
+		
+		public static void main(String[] args) {
+			
+			m2();
+		}
+		
+		public static void m2() {
+		
+			System.out.println("j value:" + j);
+			System.out.println("i value:" + i);
+		}
+		
+		static {
+		
+			System.out.println("child second static block");
+		}
+	
+		static int j = 20;
+	}
+	
+	>>java Child
+	
+	Output:
+	parent first static block
+	y value:0
+	x value:10
+	parent second static block
+	child first static block
+	j value:0
+	i value:10
+	parent second static block
+	j value:20
+	i value:10
+	
+	>>java Parent
+	Output:
+	parent first static block
+	y value:0
+	x value:10
+	parent second static block
+	y value:20
+	x value:10
+
+What are instance blocks inside a java class?
+
+-	In a java class instance blocks are block that contains code to be executed when object of a class is created.
+-	A java class can have multipe instance blocks and these instance blocks are executed before constructors of class.
+
+-	Whenever a java class object is created JVM performs instance control flow i.e. it identify instance variable and assign default value even if explicit value
+	is supplied.
+-	Then it execute instance variable assignment and instance blocks from top to bottom in java class.
+-	Finally it execute constructor for object initialization.
+
+-	The static control flow is performed only once when the class is loaded but instance control flow is performed every time when new object is created.	
+
+	Example:	
+
+	class Test {
+	
+		int i = 10;
+		
+		{
+			System.out.println("first instance block");	
+			m1();
+		}
+		
+		public void main(String[] args) {
+			
+			Test t = new Test();
+			System.out.println("main");
+			m1();
+		}
+
+		public Test() {
+	
+			System.out.println("constructor");
+		}
+		
+		public void m1() {
+		
+			System.out.println("j value:" + j);
+			System.out.println("i value:" + i);
+		}
+		
+		{
+			System.out.println("second instance block");
+		}
+	
+		int j = 20;
+	}
+	Output:
+	first instance block
+	j value:0
+	i value:10
+	second instance block
+	constructor
+	main
+	j value:20
+	i value:10
+	
+What is read indirectly and write only instance variable assignment?
+
+-	A instance block that directly reads value of declared variable this read is called direct read but when instance block that directly calls instance method 
+	which directly reads value of declared instance variable this read is called indirect read.
+	
+	Example:
+
+	class Test {
+	
+		int i = 10;
+		
+		{
+			System.out.println(i);	
+		}
+	}
+
+-	When instance variable is identified by JVM but orignal value mentioned explicitly is not assigned then variable is in read indirect write only state.
+-	When instance variable is in read indirect write only state then we cannot perform direct read otherwise we will get compile time error saying illegal forward reference 
+	but we can perform indirect read.
+-	But when instance variable is identified by jvm and its orignal value mentioned explicitly is assigned then variable is in read write state.
+	
+	Example:
+	
+	class Test {
+	
+		{
+			System.out.println(i);	 
+		}
+		int i = 10;	/**compile time error saying illegal forward reference**/
+	}
+	
+	Example:
+	
+	class Test {
+	
+		{
+			m1();	
+		}
+		
+		public void m1() {
+		
+			System.out.println(i);
+		}
+		static int i = 10;
+	}
+	Output:
+	0
+
+	Example:
+	
+	class Test {
+	
+		int i = 10;
+		
+		{
+			System.out.println(i);	
+		}
+	}
+	Output:
+	10
+	
+What is instance control flow in inheritance?
+
+-	In java parent class members available to child class hence whenever a child class object is created JVM performs instance control flow i.e. identify 
+	instance variable inherited from parent class and assign default value even if explicit value is supplied also identify instance blocks inherited from parent 
+	class from top to bottom.
+-	Then identify instance variable from child class and assign default values even if explicit value is supplied also instance blocks from child class from top 
+	to bottom.
+
+-	Then execute instance variable assignment and instance blocks from top to bottom in parent class.
+-	Finally execute parent class constructor.	
+
+-	Then execute instance variable assignment and instance blocks from top to bottom in child class.
+-	Finally execute child class constructor.	
+
+-	Then now execute public static void main(String[] args) method of child class.
+
+	Example:
+
+	class Parent {
+	
+		int x = 10;
+		
+		{
+		
+			System.out.println("parent first instance block");	
+			m1();
+		}
+		
+		public static void main(String[] args) {
+			
+			Parent c = new Parent();
+			System.out.println("main");
+			m1();
+		}
+		
+		public Parent() {
+		
+			System.out.println("parent constructor");
+		}
+		
+		public void m1() {
+		
+			System.out.println("y value:" + y);
+			System.out.println("x value:" + x);
+		}
+		
+		{
+			System.out.println("parent second instance block");
+		}
+	
+		int y = 20;
+	}
+	
+	class Child extends Parent {
+	
+		int i = 10;
+		
+		{
+			System.out.println("child first instance block");	
+			m2();
+		}
+		
+		public void main(String[] args) {
+			
+			Child c = new Child();
+			System.out.println("child main");
+			m2();
+		}
+		
+		public Child() {
+		
+			System.out.println("child constructor");
+		}
+		
+		public void m2() {
+		
+			System.out.println("j value:" + j);
+			System.out.println("i value:" + i);
+		}
+		
+		{
+			System.out.println("child second instance block");
+		}
+	
+		int j = 20;
+	}
+	
+	>>java Child
+	
+	Output:
+	parent first instance block
+	y value:0
+	x value:10
+	parent second instance block
+	parent constructor
+	child first instance block
+	j value:0
+	i value:10
+	parent second instance block
+	child constructor
+	child main
+	j value:20
+	i value:10
+	
+	>>java Parent
+	Output:
+	parent first instance block
+	y value:0
+	x value:10
+	parent second instance block
+	parent constructor
+	parent main
+	y value:20
+	x value:10
+
+What is default constructor generated by compiler?
+
+-	In class if there is no constructor then compiler adds a no arguement constructor to class called default constructor.
+-	But if java class has default or parameterized constructor already defined then compiler will not add any default constructor to java class.
+
+-	This default constructor has same access visibility as that of the class in which it is defined i.e either public or default.
+
+-	This default constructor has single statement in its body that invokes super class no arguement constructor i.e. super().	
+
+-	The only constructor generated by compiler is called default constructor i.e all no arguement constructor are not default constructor but every default 
+	constructor is no arguement constructor.
+
+What is super() or super(params) or this() or this(params)?
+
+-	If constructor is already defined in class then compiler checks whether first line of constructor is super() or super(params) or this() or this(params) and
+	if none of this exist compiler adds statement to invoke super class no arguement constructor i.e. super(). 
+
+-	Within any constructor call to super() or super(params) or this() or this(params) must be first statement otherwise we will get compile time error as call 
+	to super must be first statement in constructor.
+
+-	The statements super() or super(params) or this() or this(params) cannot be used in method body otherwise we will get compile time error saying	call to
+	super must be first statement in constructor i.e we can call constructor only from another constructor.
+
+What is super or this?
+
+-	The keyword super is used to refer parent class instance memebers whereas this is used to refer child class instance member and	these keywords cannot be 
+	used in static methods or static blocks.
+
+What is recursive constructor call?
+
+-	In a java class when constructor calls itself directly or indirectly such call is called recursive constructor call and compiler identifies recursive 
+	constructor call then it generates compile time error saying recursive constructor call.
+
+	Example:
+	
+	public class Test {
+
+		public void Test(){
+			this(10);
+		}
+
+		public void Test(int a){
+			this(10.5);
+		}
+		public void Test(double a){
+			this();
+		}
+	}
+
+What are rules for constructor overloading?
+
+-	In constructor overloading constructor signature must be different with respect to constructor parameters but constructor name must be same.
+-	Also in constructor overloading access specifier does not play any role.
+
+Why interfaces cannot have constructor?
+
+-	Constructor are used for instance member initialization but in interface all member variable are static hence interface cannot have constructor but when
+	constructor is added to interface then we get compile time error saying interface constructor cannot exist in interface.
+
+What are different scenario of constructor and inheritance?
+
+	Example:
+	
+	class Parent {
+		public Parent(int i) {}
+	}	
+	
+	class Child extends Parent {}
+
+-	In the above code compiler will add default constructor in child class and invoke parent class no arguement constructor but in parent class no arguement 
+	constructor do not exist also compiler will not add any no arguement constructor because parameterized constructor already exist in parent class.
+-	This will generate compile time error as cannot find default constructor in parent class.	
+	
+	Example:
+	
+	class Parent {
+		public Parent(int i) {}
+	}	
+	
+	class Child extends Parent {
+		public Child() {}
+	}
+
+-	In the above code no arguement constructor in child class now compiler will invoke parent class no arguement constructor but in parent class no arguement
+	constructor do not exist also compiler will not add any no arguement constructor because parameterized constructor already exist in parent class.
+-	This will generate compile time error as cannot find default constructor in parent class.	
+
+	Example:
+	
+	class Parent {
+		public Parent(int i) {}
+	}	
+	
+	class Child extends Parent {
+		public Child(int i) {}
+	}
+
+-	In the above code parameterized constructor in child class now compiler will invoke parent class no arguement constructor but in parent class no arguement
+	constructor do not exist also compiler will not add any no arguement constructor because parameterized constructor already exist in parent class.
+-	This will generate compile time error as cannot find default constructor in parent class.	
+
+-	Also constructor are never inherited but parent class constructor are explicitly invoked from child class constructor and hence a parent class with all	
+	private constructors cannot have child class that extends parent class.
+
+What are different scenario of constructor and inheritance and exception handling?
+
+	Example:
+	
+	class Parent {
+		public Parent() throws IOException {}
+	}	
+	
+	class Child extends Parent {}
+
+-	In the above code compiler will add default constructor in child class and invoke parent class no arguement constructor but in parent class no arguement 
+	constructor throws IOException which must be handled by caller.
+-	This will generate compile time error as default constructor cannot handle exception type IOException thrown by implicit super constructor and hence 
+	child class must define an explicit constructor
+
+	Example:
+	
+	class Parent {
+		public Parent() throws IOException {}
+	}	
+	
+	class Child extends Parent {
+
+		public Child() {
+			
+			try {
+				super()
+			} catch(IOException e) {}
+		}
+	}
+
+-	The child class handles exception using try catch block but try cannot be first statement inside constructor this will give compile time error saying as 
+	super() must be first statement inside constructor.
+
+-	Hence if parent class constructor throws checked exception then child class constructor must also through same exception or its parent class.	
