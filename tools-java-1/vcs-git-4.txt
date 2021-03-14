@@ -132,7 +132,7 @@ What is tagging?
 	
 	#git tag --list	
 	
--	All lightweight tags will be stored as text file inside .git/refs/tags folder.
+-	All lightweight tags will be stored as text file inside .git/refs/tags folder which contains the latest commit id.
 
 -	To delete a tag we need to use following command.
 
@@ -152,9 +152,37 @@ What is tagging?
 	
 	#git tag --delete v-1.0.0
 	
+Explain the annotated tag?
+
+-	Light weight tag is just label for commit and it won't maintain any extra information.
+
+-	Annotated tag are exactly same as light weight tag except that it provide additional information like tagger name, date, message and others.
+
+-	Git store annotated tag as an object.
+
+-	To create annotated tag to latest commit we need to use the following command.
+
+	syntax:
 	
+	#git tag -a [tag_name] -m [tag_message]
 	
+	example:
 	
+	#git tag -a v-1.0.0 -m "release v-1.0.0"
 	
+-	To view annotated tage object we need to use following command.
+
+	syntax:
 	
+	#git tag -v [tag_name]
+	
+	example:
+	
+	#git tag -v v-1.0.0
+	
+-	Like lightweight tags annotated tags will also be stored as text file inside .git/refs/tags folder.
+
+-	But this file will not contain the latest commit id instead it will store the hash code of tag object.
+
+-	Additional information provided by annotated tag is stored in binary form inside text file under folder .git/objects/{first two character}/{remaining characters}.
 	
