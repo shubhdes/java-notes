@@ -108,6 +108,8 @@ What is tagging?
 
 -	Tag is a static or permanant label to a commit.
 
+-	A single commit can have one or more tags.
+
 -	Within the repository tag name should be unique.
 
 -	There are two types of tags, they are light weight tags and annotated tags.
@@ -120,7 +122,7 @@ What is tagging?
 	
 	example:
 	
-	#git tag v-1.0.0
+	#git tag V-1.0.0
 	
 -	To list available tags we need to use following commands.
 
@@ -146,11 +148,11 @@ What is tagging?
 	
 	example:
 	
-	#git tag -d v-1.0.0
+	#git tag -d V-1.0.0
 	
 	example:
 	
-	#git tag --delete v-1.0.0
+	#git tag --delete V-1.0.0
 	
 Explain the annotated tag?
 
@@ -168,7 +170,7 @@ Explain the annotated tag?
 	
 	example:
 	
-	#git tag -a v-1.0.0 -m "release v-1.0.0"
+	#git tag -a V-1.0.0 -m "release V-1.0.0"
 	
 -	To view annotated tage object we need to use following command.
 
@@ -178,11 +180,80 @@ Explain the annotated tag?
 	
 	example:
 	
-	#git tag -v v-1.0.0
+	#git tag -v V-1.0.0
 	
 -	Like lightweight tags annotated tags will also be stored as text file inside .git/refs/tags folder.
 
 -	But this file will not contain the latest commit id instead it will store the hash code of tag object.
 
 -	Additional information provided by annotated tag is stored in binary form inside text file under folder .git/objects/{first two character}/{remaining characters}.
+
+How to tag previous commit?
+
+-	We can tag for previous commit also using following commands.
+
+	syntax:
 	
+	#git tag -a [tag_name] [commit_id] -m [message]
+	
+	example:
+	
+	#git tag -a V-1.0.0-beta c19fd1b -m "release V-1.0.0 beta version"
+	
+How to update an existing tag?
+
+-	We can update an existing tag using two ways.
+
+-	First way is to delete an existing tag and add new tag.
+
+	example:
+
+	#git tag --delete V-1.0.1
+
+	#git tag -a V-1.0.2
+
+-	Another way is to move tag from one commit to another commit is using option -f or --force.
+
+	syntax:
+	
+	#git tag -a [tag_name] -f [commit_id] -m [message]
+	
+	example:
+	
+	#git tag -a V-1.0.2 -f d19ee1b -m "release V-1.0.2"
+	
+How to push tag to remote repository?
+
+-	The git push command sends files and commit information to remote repository.
+
+-	It does not send the tag information.
+
+-	We need to use following command to send single tag to remote repository.
+
+	syntax:
+	
+	#git push origin [tag_name]
+	
+	example:
+	
+	#git push origin V-1.0.0
+	
+-	We need to use following command to send all tags to remote repository.
+	
+	example:
+	
+	#git push origin master --tags
+	
+How to delete tag from remote repository?
+
+-	To delete tag from remote repository we need to use following command.
+
+	syntax:
+	
+	#git push origin :[tag_name]
+	
+	example:
+	
+	#git push origin :V-1.0.0
+
+-	Deleting tag from remote repository will not delete tag from local repository.	
