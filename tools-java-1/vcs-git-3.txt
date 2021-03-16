@@ -96,15 +96,15 @@ What is merging?
 	example:
 
 	=========================================================================================
-	| time | master | durga |
+	| 		time 	| 				master				 |				 durga 				|
 	=========================================================================================
-	| 1 | c1m -	myfile.txt created | |
+	| 1 			| c1m -	myfile.txt created			 | 									|
 	|---------------------------------------------------------------------------------------|
-	| 2 | | branch created |
+	| 2 			| 									 | branch created 					|
 	|---------------------------------------------------------------------------------------|
-	| 3 | | c1d -	myfile.txt updated |
+	| 3 			| 									 | c1d - myfile.txt updated			|
 	|---------------------------------------------------------------------------------------|
-	| 4 | git merge durga -	no conflict | |
+	| 4 			| git merge durga -	no conflict 	 | 									|
 	=========================================================================================
 
 -	After creating child branch if parent branch also contains some changes then git will perform three way merge.
@@ -132,17 +132,17 @@ What is git conflict?
 	example:
 
 	=========================================================================================
-	| time | master | durga |
+	| 		time 	| 				master				 |				 durga 				|
 	=========================================================================================
-	| 1 | c1m -	myfile.txt created | |
+	| 1				| c1m -	myfile.txt created 			 |									|
 	|---------------------------------------------------------------------------------------|
-	| 2 | | branch created |
+	| 2 			| 									 | branch created 					|
 	|---------------------------------------------------------------------------------------|
-	| 3 | | c1d -	myfile.txt updated |
+	| 3 			| 									 | c1d -	myfile.txt updated 		|
 	|---------------------------------------------------------------------------------------|
-	| 4 | c2m -	myfile.txt updated | |
+	| 4 			| c2m -	myfile.txt updated 			 |									|
 	|---------------------------------------------------------------------------------------|
-	| 5 | git merge durga -	conflict | |
+	| 5 			| git merge durga -	conflict 		 |									|
 	=========================================================================================
 
 How to delete a branch?
@@ -212,21 +212,21 @@ Explain rebase operation?
 	example:
 
 	=========================================================================================
-	| time | master | durga |
+	| 		time 	| 				master				 |				 durga 				|
 	=========================================================================================
-	| 1 | c1m -	myfile1.txt created | |
+	| 1 			| c1m -	myfile1.txt created 		 | 									|
 	|---------------------------------------------------------------------------------------|
-	| 2 | | branch created |
+	| 2 			| 									 | branch created					|
 	|---------------------------------------------------------------------------------------|
-	| 3 | | c1d -	myfile1.txt updated |--------
-	|---------------------------------------------------------------------------------------| |
-	| 4 | c2m -	myfile2.txt created | | |
-	|---------------------------------------------------------------------------------------| |
-	| 5 | | git rebase master | |
-	|---------------------------------------------------------------------------------------| |
-	| 3 | | c2d -	myfile1.txt updated |<-------
+	| 3 			| 									 | c1d - myfile1.txt updated 		|--------
+	|---------------------------------------------------------------------------------------| 		|
+	| 4 			| c2m -	myfile2.txt created 		 |									| 		|
+	|---------------------------------------------------------------------------------------| 		|
+	| 5 			| 									 | git rebase master 				| 		|
+	|---------------------------------------------------------------------------------------| 		|
+	| 3 			| 									 | c2d - myfile1.txt updated 		|<-------
 	|---------------------------------------------------------------------------------------|
-	| 7 | git merge durga -	no conflict | |
+	| 7 			| git merge durga -	no conflict 	 |									|
 	=========================================================================================
 
 What is stash?
@@ -324,3 +324,33 @@ How to delete stash?
 	example:
 
 	#git stash drop stash@{0}
+	
+What is cherry picking in git?
+
+-	Cherry picking allows to merge a in between commit of child branch to parent branch.
+
+-	To cherry pick commit from child branch and merge to parent branch we need to use following command.
+
+	syntax:
+
+	#git cherry-pick [child_branch_commit_id]
+	
+	example:
+
+	#git cherry-pick 12cd34e
+	
+-	A new duplicate commit is created in parent branch with changes from cherry picked command of child branch.
+
+-	There is a chance of merge commit.	
+
+-	We can use -n or --no-commit option to merge cherry picked commit but without creating new commit.
+
+	syntax:
+	
+	#git cherry-pick --no-commit [commit_id]
+	
+	example:
+	
+	#git cherry-pick --no-commit 12cd34e
+	
+-	This will require commit to be done manually.	

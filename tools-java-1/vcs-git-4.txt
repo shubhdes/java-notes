@@ -256,4 +256,4 @@ How to delete tag from remote repository?
 	
 	#git push origin :V-1.0.0
 
--	Deleting tag from remote repository will not delete tag from local repository.	
+-	Deleting tag from remote repository will not delete tag from local repository.

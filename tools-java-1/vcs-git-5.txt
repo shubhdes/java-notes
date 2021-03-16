@@ -1,0 +1,43 @@
+core java -	version control system tool - 5
+
+Why git reset is not recommended to use in public repositories?
+
+-	The git reset command will delete commit history.
+
+-	Hence there may be conflict when a developer uses git reset command and delete commit history.
+
+-	Further if the developer push the changes to remote repository there may be chances of conflict.
+
+Explain the alternative to git reset command?
+
+-	The git revert command is alternative to git reset command.
+
+-	The command will undo changes of commit without deleting the commit history.
+
+-	It will create new commit.
+
+-	The following message must be used to revert commit.
+
+	syntax:
+	
+	#git revert [commit_id] -m [message]
+	
+	example:
+	
+	#git revert 12bab32 -m "revert to second commit"
+	
+-	There may be chances of merge conflict when we revert in between commit.
+
+-	This merge conflict must be resolved manually.
+
+-	We can use -n or --no-commit option to revert commit but without creating new commit.
+
+	syntax:
+	
+	#git revert --no-commit [commit_id]
+	
+	example:
+	
+	#git revert --no-commit 12bab32
+	
+-	This will require commit to be done manually.	
