@@ -40,4 +40,42 @@ Explain the alternative to git reset command?
 	
 	#git revert --no-commit 12bab32
 	
--	This will require commit to be done manually.	
+-	This will require commit to be done manually.
+
+What is reflog in git?
+
+-	The reflog maintains complete history of all git operations performed in form of logs.
+
+-	Even if a commit is deleted by using git reset command we can restore that commit using git reflog command.
+
+-	This information is maintained in logs for 90 days.
+
+-	The git reflog command maintains complete history of local repository operations and not remote repository operations.
+
+-	To find complete history of local repository operations we need to use following command.
+
+	example:
+
+	#git reflog
+
+-	To find git operations history in particular branch we need to use following command.
+
+	syntax:
+	
+	#git reflog [branch_name]
+
+	example:
+
+	#git reflog master
+
+-	We can revert to any commit information maintained by reflog using following command.
+
+	syntax:
+	
+	#git revert [commit_id]
+
+	example:
+
+	#git revert 12fee32
+
+	
