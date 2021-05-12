@@ -1,0 +1,31 @@
+spring boot - docker-2.0
+
+How does spring boot maven plugin automate image construction?
+
+-	The spring boot maven plugin can be used to automate image construction.
+
+?	This plugin is called after packaging phase of build lifecycle.
+
+-	The plugin supports build pack which means it does not require external Dockerfile.
+
+-	It identifies other required docker images like java development kit and include them in application image.
+
+-	It requires configuration parameters like image name and tag.
+
+-	To create an image the plugin requires several other docker images which it pulls from docker hub.
+
+-	When the pullPolicy is set to IF_NOT_PRESENT the plugin will pull docker images from docker hub for first image construction.
+
+-	It will reuse the same docker images for every next image construction.
+
+	example:
+	<plugin>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-maven-plugin</artifactId>
+		<configuration>
+			<image>
+				<name>my-repo/my-app:1.0</name>
+			</image>
+			<pullPolicy>IF_NOT_PRESENT</pullPolicy>
+		</configuration>
+	</plugin>

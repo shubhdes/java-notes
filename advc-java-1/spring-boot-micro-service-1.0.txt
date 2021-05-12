@@ -396,6 +396,24 @@ What is the use of zipkin distributed tracing server?
 		<groupId>org.springframework.cloud</groupId>
 		<artifactId>spring-cloud-sleuth-zipkin</artifactId>
 	</dependency>
+
+-	With the above dependency present micro-service will try to locate zipkin server locally on port 9411.
+
+-	We can explictly give the instance information of zipkin server to override default by using following property inside application.properties.
+
+	Example:
+	
+	spring.zipkin.baseUrl = http://localhost:9411
+	
+-	If the micro-service send information of every request to zipkin then there might be performance issue.
+
+-	We can allow only certain percentage of overall web request that micro-service accept and send information to zipkin 
+
+-	This can be done by setting sampling rate for each micro-service by using following property inside application.properties.
+
+	Example:
+	
+	spring.sleuth.sampler.probability = 1.0
 	
 What is fault tolerance and how to implement it?
 
