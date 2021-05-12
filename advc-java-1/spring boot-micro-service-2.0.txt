@@ -1,0 +1,427 @@
+spring boot - micro-service-2.0
+
+What is a spring cloud config client?
+	
+-	Inside micro-service architecture the configuration information of each micro-service is maintained in central location called GIT repository.
+	
+-	The spring cloud config client is responsible to request spring cloud config server to read the GIT repository and provide configuration information to it.	
+	
+-	To convert spring boot application into spring cloud config client we need to use @EnableConfigClient annotation.
+
+	Example:
+	
+	@EnableConfigClient
+	@SpringBootApplication
+	class MyConfigurationClient {
+	
+	}
+
+-	The above annotation will require following maven dependency to be present inside pom.xml file.
+
+	Example:
+	
+	<dependency>
+		<groupId>org.springframework.cloud</groupId>
+		<artifactId>spring-cloud-config-client</artifactId>
+	</dependency>	
+
+-	The spring cloud config client must know the location of the spring cloud config server, spring application name, profile information and these detail we must
+	provide as configuration inside bootstrap.properties file.
+	
+	Example:
+	
+	spring.application.name = limits-service
+	
+	spring.cloud.config.uri = optional:configserver:http://10.10.10.10:8080
+	
+	spring.cloud.config.profile = dev
+
+-	The use of keyword optional indicates that even when the connection to configuration server is not successful but configuration client must run.
+	
+-	When the profile information is not present inside bootstrap.properties file then spring cloud config server will read default configuration from file present
+	inside GIT repository with name format as {spring.application.name}.properties.	
+
+What is load balancing and how to implement it?	
+
+-	When one micro-service call another micro-service the rest web-service call must be equally distributed amongst all instance of called micro-service.
+
+-	This balancing is called load balancing and when the calling micro-service does load balancing then such balancing is called client side load balancing.	
+	
+-	The feign client use spring-cloud-load-balancer for client side load balancing.	
+	
+-	To use spring-cloud-load-balancer we do not require any new annotation.
+	
+	Example:
+	
+	@FeignClient(name = "currency-exchange-service")
+	public interface MyFeignClient {
+	
+		@GetMapping(path = "/currency-exchange-service/from/{from}/to/{to}")
+		public abstract CurrencyConversion currencyConversion(@PathVariable(name = "from") String from,
+			@PathVariable(name = "to") String to);
+	}
+
+-	It does not require any new dependency in pom.xml file instead spring-cloud-load-balancer is part of naming client dependency.
+
+	Example:
+	
+	<dependency>
+		<groupId>org.springframework.cloud</groupId>
+		<artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+	</dependency>
+
+What is spring-cloud-api-gateway and how to implement it?
+
+-	One micro-service can call another micro-service using rest web-service call.
+
+-	The api gateway will intercept every rest web-service call.	
+
+-	To convert spring boot application into spring-cloud-api-gateway we do not require any new annotation.
+
+	Example:
+	
+	@EnableDiscoveryClient
+	@SpringBootApplication
+	class MyApiGateway {
+	
+	}
+
+-	We need the following maven dependency to be present inside pom.xml file.
+
+	Example:
+	
+	<dependency>
+		<groupId>org.springframework.cloud</groupId>
+		<artifactId>spring-cloud-starter-gateway</artifactId>
+	</dependency>
+
+-	We need to enable api gateway to locate other micro-service by using the following property in application.properties.
+
+	Example:
+	
+	eureka.client.service-url.defaultZone = http://10.10.10.10:8080/eureka
+
+	eureka.client.register-with-eureka = true
+	
+	eureka.client.fetch-registry = true
+
+	spring.cloud.gateway.discovery.locator.enabled = true
+	
+-	The calling micro-service must call api gateway using request url in format http://{api gateway ip}:{api gateway port}/{spring application name}/{request uri}.	
+
+What is fault tolerance and how to implement it?
+
+-	Inside micro-service architecture to process one web request one micro-service need to call another micro-service using rest web-service call.
+
+-	The next micro-service will call another micro-service and the rest web-service call continue from one micro-service to another.
+
+-	When any micro-service instance raise runtime exception then entire web request processing will fail.	
+	
+-	Using fault tolerance micro-service can return default or fallback response to rest web-service call instead of raising an runtime exception.	
+	
+-	It also allows us to retry rest web-service call for specified number of times instead of returning default response when first rest web-service call fails.
+
+-	We can also limit the number of rest web-service calls to a micro-service.	
+	
+-	To convert spring boot application into fault tolerance application we need to use resilience4j framework.
+	
+-	This framework will require following maven dependencies to be present inside pom.xml file.
+
+	Example:
+	
+	<dependency>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-aop</artifactId>
+	</dependency>
+	<dependency>
+		<groupId>io.github.resilience4j</groupId>
+		<artifactId>resilience4j-spring-boot2</artifactId>
+	</dependency>	
+
+-	When micro-service method throws an uncaught runtime exception then we can make the method to execute again for specified number of times.
+
+-	We need to use @Retry annotation at method level which require string arguement called name.
+
+	Example:
+	
+	@Retry(name = "server-down")
+	public String getResponse() {
+		return new RestTemplate()
+				.getEntity("http://10.10.10.10:8080/server-down", String.class).getBody();
+	}
+
+-	We need to specify the maximum the number of rest web-service retries to a micro-service by using the following property in application.properties.
+	
+	Example:
+	
+	resilience4j.retry.instances.server-down.maxAttempts = 5
+	
+-	It is also possible to specify the time duration between rest web-service retries by using the following property in application.properties.
+	
+	Example:
+	
+	resilience4j.retry.instances.server-down.waitDuration = 5s
+	
+-	We can also specify time duration between rest web-service retries must increase exponentially by using the following property in application.properties.
+
+	Example:
+	
+	resilience4j.retry.instances.server-down.enableExponentialBackoff = true	
+	
+-	Inside fault tolerance application when any method raise runtime exception then fallback method is called to return default response to rest web-service call.	
+	
+-	This detail we must provide using @Retry annotation which accept string arguement called fallback that accept name of fallback method.
+
+-	The fallback method must accept one parameter of type Throwable.
+
+-	We can overload the fallback method such that we can have different versions of method to be called for different raise runtime exception raised.
+
+	Example:
+	
+	@Retry(name = "server-down", fallback = "failedResponse")
+	public String getResponse() {
+		return new RestTemplate()
+				.getEntity("http://10.10.10.10:8080/server-down", String.class).getBody();
+	}
+	
+	public String failedResponse(ResourceAccessException ex) {
+		//
+	}
+	
+	public String failedResponse(Exception ex) {
+		//
+	}
+
+How to implement circuit breaker design-pattern in fault tolerant micro-service?
+
+-	According to circuit-breaker design-pattern a circuit-breaker can have three states, namely closed, half-open and open.
+
+-	In closed state one micro-service will make rest web-service calls to another micro-service.
+
+-	Open state allows one micro-service will not make rest web-service calls to another micro-service instead it will call fallback method.
+
+-	Half-open state allows one micro-service will make rest web-service calls to another micro-service only certain number of times. 
+
+-	For the remaining number of times it will call fallback method.
+
+-	To implement circuit-breaker design-pattern inside spring boot application we need to use resilience4j framework.
+	
+-	This framework will require following maven dependencies to be present inside pom.xml file.
+
+	Example:
+	
+	<dependency>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-aop</artifactId>
+	</dependency>
+	<dependency>
+		<groupId>io.github.resilience4j</groupId>
+		<artifactId>resilience4j-spring-boot2</artifactId>
+	</dependency>	
+
+-	When micro-service method throws an uncaught runtime exception then we can make the method to execute again for specified number of times.
+
+-	We need to use @CircuitBreaker annotation at method level which require string arguement called name.
+
+	Example:
+	
+	@CircuitBreaker(name = "server-down")
+	public String getResponse() {
+		return new RestTemplate()
+				.getEntity("http://10.10.10.10:8080/server-down", String.class).getBody();
+	}
+
+-	We need to specify the maximum the percentage of rest web-service failure allowed after which the circuit-breaker transitions to open state by using the 
+	following property in application.properties.
+	
+	Example:
+	
+	resilience4j.circuitbreaker.instances.server-down.failureRateThreshold = 50
+	
+-	It is also possible to specify the time duration after which circuit-breaker transitions from open state to half-open state.
+	
+	Example:
+	
+	resilience4j.circuitbreaker.instances.server-down.waitDurationInOpenState = 60s
+	
+-	We can also specify the maximum the number of rest web-service calls allowed when circuit-breaker is in half-open state by using the following 
+	property in application.properties.
+
+	Example:
+	
+	resilience4j.circuitbreaker.instances.server-down.permittedNumberOfCallsInHalfOpenState = 10	
+	
+-	Inside fault tolerance application when any method raise runtime exception then fallback method is called to return default response to rest web-service call.	
+	
+-	This detail we must provide using @CircuitBreaker annotation which accept string arguement called fallback that accept name of fallback method.
+
+-	The fallback method must accept one parameter of type Throwable.
+
+-	We can overload the fallback method such that we can have different versions of method to be called for different raise runtime exception raised.
+
+	Example:
+	
+	@CircuitBreaker(name = "server-down", fallback = "failedResponse")
+	public String getResponse() {
+		return new RestTemplate()
+				.getEntity("http://10.10.10.10:8080/server-down", String.class).getBody();
+	}
+	
+	public String failedResponse(ResourceAccessException ex) {
+		//
+	}
+	
+	public String failedResponse(Exception ex) {
+		//
+	}
+
+How to implement rate-limiter in fault tolerant micro-service?
+
+-	By using rate-limiter a micro-service method can be called only certain number of times within a specific time duration.
+
+-	This framework will require following maven dependencies to be present inside pom.xml file.
+
+	Example:
+	
+	<dependency>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-aop</artifactId>
+	</dependency>
+	<dependency>
+		<groupId>io.github.resilience4j</groupId>
+		<artifactId>resilience4j-spring-boot2</artifactId>
+	</dependency>	
+
+-	We need to use @RateLimiter annotation at method level which require string arguement called name.
+
+	Example:
+	
+	@RateLimiter(name = "server-down")
+	public String getResponse() {
+		return new RestTemplate()
+				.getEntity("http://10.10.10.10:8080/server-down", String.class).getBody();
+	}
+
+-	We need to specify the maximum the number of rest web-service calls allowed within specific time duration by using following properties in application.properties.
+	
+	Example:
+	
+	resilience4j.rateLimiter.instances.server-down.limitForPeriod = 2
+	
+	resilience4j.rateLimiter.instances.server-down.limitRefreshPeriod = 10s
+
+-	When the micro-service method is called number of times more than limitForPeriod within time duration of limitRefreshPeriod we will get runtime
+	exception saying RequestNotPermitted.
+
+How to implement bulk-head in fault tolerant micro-service?
+
+-	By using bulk-head a micro-service method can support only certain number of concurrent calls.
+
+-	This framework will require following maven dependencies to be present inside pom.xml file.
+
+	Example:
+	
+	<dependency>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-aop</artifactId>
+	</dependency>
+	<dependency>
+		<groupId>io.github.resilience4j</groupId>
+		<artifactId>resilience4j-spring-boot2</artifactId>
+	</dependency>	
+
+-	We need to use @BulkHead annotation at method level which require string arguement called name.
+
+	Example:
+	
+	@BulkHead(name = "server-down")
+	public String getResponse() {
+		return new RestTemplate()
+				.getEntity("http://10.10.10.10:8080/server-down", String.class).getBody();
+	}
+
+-	We need to specify the maximum the number of concurrent rest web-service calls allowed by using following properties in application.properties.
+	
+	Example:
+	
+	resilience4j.bulkhead.instances.server-down.maxConcurrentCalls = 10
+
+-	When the micro-service method is called concurrently number of times more than maxConcurrentCalls we will get runtime exception saying RequestNotPermitted.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Explain RouteLocator bean for by spring-cloud-api-gateway?
+
+-	RouteLocator bean is simple and effective way to route request from spring-cloud-api-gateway to other micro-service.
+
+	Example:
+	
+	public RouteLocator getRouteLocator(RouteLocatorBuilder builder) {
+		
+	}
+
+-	The spring-cloud-api-gateway will ask the naming server for the instance information of a microservice.
+
+-	But it can use RouteLocator spring bean .
+
+-	It can match routes using request url, header parameters and query string.
+
+	Example:
+
+	public RouteLocator getRouteLocator(RouteLocatorBuilder builder) {
+		return builder.routes()
+					.route(path -> path
+						.path("/currency-exchange-service-1.0")
+						.uri("/currency-exchange-service-2.0"))
+					.build();
+	}
+
+-	It can working with naming client and provide load balancing.
+
+	Example:
+
+	public RouteLocator getRouteLocator(RouteLocatorBuilder builder) {
+		return builder.routes()
+					.route(path -> path
+						.path("/currency-exchange-service/**")
+						.uri("lb://currency-exchange-service"))
+					.build();
+	}
+
+-	It also allows to create filter that will be called before calling the microservice.
+
+-	By using this filter can add or remove some parameter from the request before it is send to microservice.
+
+-	We can also rewrite the request url or redirect request to different url.
+	
+	Example:
+
+	public RouteLocator getRouteLocator(RouteLocatorBuilder builder) {
+		return builder.routes()
+					.route(path -> path
+						.path("/currency-exchange-service-1.0")
+						.filters(filter -> filter.rewrite("", ""))
+						.uri("/currency-exchange-service"))
+					.build();
+	}	

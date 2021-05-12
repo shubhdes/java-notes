@@ -1,4 +1,4 @@
-spring boot - micro-service
+spring boot - micro-service-1.0
 
 What is micro-service?
 
@@ -14,61 +14,19 @@ What are challenges for micro-service?
 
 -	What will be the logical boundary for each micro-service?
 
--	How to manage and maintain the configuration for micro-service?			=	config server and config client
+-	How to manage and maintain the configuration for micro-service?	= config server and config client
 
--	How to dynamically scale up or scale down micro-service?				=	eureka
+-	How to dynamically scale up or scale down micro-service? = eureka
 
--	How to trace flow of each request inside micro-service architecture?	=	zipkin
+-	How to trace flow of each request inside micro-service architecture? = zipkin
 
--	How to implement fault-tolerance inside micro-service architecture?		=	hystrix
+-	How to implement fault-tolerance inside micro-service architecture?	= hystrix
 
 What is spring cloud?
 
 -	The spring cloud is collection of spring boot project.
 
 -	One such project is spring-cloud-netflix project that allow easy integration of spring boot project with micro-service components provided by netflix.
-
-How to read properties file inside spring boot application?
-
--	The spring boot application provide annotation @ConfigurationProperties at class level.
-
--	This annotation accept string arguement called prefix.
-
--	The annotation read all properties from spring boot environment having property key in format {prefix}.{suffix}.
-
--	The prefix value is defined by annotation arguement.
-
--	The value for this environment properties is set inside field of spring bean class object having field name as suffix.
-
--	This annotation can read primitive and non primitive properties both.
-
-	Example:
-	
-	@ConfigurationProperties(prefix = "my.configuration")
-	class MyConfiguration {
-	
-		private int id;
-	
-		private List<String> lst;
-		
-		private Map<Integer, String> map;
-		
-		private Employee emp;
-	}
-
-	my.configuration.id = 100
-
-	my.configuration.lst[0] = spring boot
-	
-	my.configuration.lst[1] = micro-service
-	
-	my.configuration.map.1 = java
-	
-	my.configuration.map.2 = python
-	
-	my.configuration.emp.id = 121121
-	
-	my.configuration.emp.name = john
 	
 What is a spring cloud config server?
 
@@ -95,7 +53,7 @@ What is a spring cloud config server?
 	@EnableConfigServer
 	@SpringBootApplication
 	class MyConfigurationServer {
-	
+		//
 	}
 
 -	The above annotation will require following maven dependency to be present inside pom.xml file.
@@ -126,7 +84,7 @@ What is a spring cloud config client?
 	@EnableConfigClient
 	@SpringBootApplication
 	class MyConfigurationClient {
-	
+		//
 	}
 
 -	The above annotation will require following maven dependency to be present inside pom.xml file.
@@ -143,10 +101,10 @@ What is a spring cloud config client?
 	
 	Example:
 	
-	spring.cloud.config.uri = http://10.10.10.10:8080
-	
 	spring.application.name = limits-service
 	
+	spring.cloud.config.uri = http://10.10.10.10:8080
+
 	spring.profiles.active = dev
 	
 -	When the profile information is not present inside bootstrap.properties file then spring cloud config server will read default configuration from file present
@@ -174,7 +132,7 @@ How to call one micro-service from another micro-service?
 	@EnableFeignClients
 	@SpringBootApplication
 	class MyFeignClient {
-	
+		//
 	}
 
 -	The above annotation will require following maven dependency to be present inside pom.xml file.
@@ -208,9 +166,9 @@ What is load balancing and how to implement it?
 
 -	This balancing is called load balancing and when the calling micro-service does load balancing then such balancing is called client side load balancing.	
 	
--	The feign client use ribbon client for client side load balancing.	
+-	The feign client use ribbon for client side load balancing.	
 	
--	The ribbon client must know the spring application name of micro-service to be called and this detail is provided using @RibbonClient annotation.	
+-	The ribbon must know the spring application name of micro-service to be called and this detail is provided using @RibbonClient annotation.	
 	
 	Example:
 	
@@ -231,7 +189,7 @@ What is load balancing and how to implement it?
 		<groupId>org.springframework.cloud</groupId>
 		<artifactId>spring-cloud-starter-netflix-ribbon</artifactId>
 	</dependency>
-	
+
 What is a naming server and how and how to implement it?
 
 -	Inside micro-service architecture it must be possible to add and remove number of instance for any micro-service at runtime.
@@ -249,7 +207,7 @@ What is a naming server and how and how to implement it?
 	@EnableEurekaServer
 	@SpringBootApplication
 	class MyNamingServer {
-	
+		//
 	}
 
 -	The above annotation will require following maven dependency to be present inside pom.xml file.
@@ -281,7 +239,7 @@ What is a naming client and how to implement it?
 	@EnableDiscoveryClient
 	@SpringBootApplication
 	class MyNamingClient {
-	
+		//
 	}
 
 -	The above annotation will require following maven dependency to be present inside pom.xml file.
@@ -296,7 +254,7 @@ What is a naming client and how to implement it?
 -	The naming client must know the location of naming server and this detail we must provide inside application.properties.	
 
 	eureka.client.service-url.defaultZone = http://10.10.10.10:8080/eureka
-	
+
 	eureka.client.register-with-eureka = true
 	
 	eureka.client.fetch-registry = true
@@ -324,8 +282,8 @@ What is api gateway and how to implement it?
 	@EnableDiscoveryClient
 	@EnableZuulProxy
 	@SpringBootApplication
-	class MyNamingClient {
-	
+	class MyApiGateway {
+		//
 	}
 
 -	The above annotation will require following maven dependency to be present inside pom.xml file.
@@ -456,7 +414,7 @@ What is fault tolerance and how to implement it?
 	@EnableHystrix
 	@SpringBootApplication
 	class MyFaultTolerance {
-	
+		//
 	}
 	
 -	The above annotation will require following maven dependency to be present inside pom.xml file.
@@ -474,11 +432,11 @@ What is fault tolerance and how to implement it?
 	
 	Example:
 	
-	@HystrixCommand(fallback = "defaultConfiguration")
+	@HystrixCommand(fallback = "failedResponse")
 	public LimitConfiguration retrieveConfiguration() {
-	
+		//
 	}
 	
-	public LimitConfiguration defaultConfiguration() {
-	
+	public LimitConfiguration failedResponse() {
+		//
 	}

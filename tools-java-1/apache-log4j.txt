@@ -114,7 +114,7 @@ Explain the log4j framework logger inheritance?
 	log4j.rootLogger=DEBUG, stdout
 	 
 	log4j.logger.com.p1=INFO, fileout				/**message statement will be written to file only**/
-	log4j.additivity.p1=false
+	log4j.additivity.com.p1=false
 	 
 	log4j.logger.com.p2=INFO, fileout				/**message statement will be written to console and file both**/
 	
