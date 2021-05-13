@@ -62,6 +62,14 @@ How to deploy an application using kubernetes?
 
 	#kubectl create deployment my-app --image=shubhdes/my-app:1.0
 
--	Once the deployment is completed it is necessary to expose it to external system.
+-	Once the deployment is completed it is necessary to expose it to external system using the following command.
 
 -	External system will be using the deployed application.	
+
+	syntax:
+	
+	#kubectl expose deployment [deployment name] --type=[type] --port=[port]
+	
+	example:
+	
+	#kubectl expose deployment my-app --type=LoadBalance --port=8080
