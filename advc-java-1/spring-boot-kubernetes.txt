@@ -1,0 +1,67 @@
+spring boot-kubernetes
+
+What is kubernetes?
+
+-	Kubernetes is server manager which manages servers in cloud.
+
+-	Kubernetes calls these servers as nodes.
+
+-	There are two types of nodes master node and worker node.
+
+-	These two types of nodes together are called as cluster.
+
+-	The master node is responsible to manage one or more worker nodes.
+
+-	The worker node is responsible to run our application.
+
+-	Using kubernetes
+
+How to execute kubernetes commands?
+
+-	To execute kubernetes commands we need to connect to cluster first.
+
+-	In google cloud click on the cluster hyper link to open cluster details in new browser window.
+
+-	In this window on top right hand side select icon that says activate cloud shell.
+
+-	We can open cloud shell in new browser window by using new window icon on top right hand side of the cloud shell window.
+
+-	Again in the cluster browser window on top right hand side click icon which says connect and copy the command from prompt window.
+
+-	Paste this command in cloud shell window in new browser window and press enter.
+
+	syntax:
+	
+	#gcloud container clusters get-credentials [cluster name] --zone [cluster zone] --project [project code]
+	
+	example:
+	
+	#gcloud container clusters get-credentials shubhdes-1 --zone us-central1-a --project solid-course-258105
+
+-	This will connect you to the kubernetes cluster.
+
+-	All kubernetes commands require kubectl binary to be installed, in google cloud shell this binary is already installed.
+
+-	The word kubectl stands for kubernetes controller. 
+
+	example:
+	
+	#kubectl --version
+	
+How to deploy an application using kubernetes?
+
+-	To deploy docker image into cluster we need to use the following command.
+
+-	This command will require the docker image to be present inside the docker hub.ss
+
+	syntax:
+
+	#kubectl create deployment [deployment name] --image=[image name]
+
+	example:
+
+	#kubectl create deployment my-app --image=shubhdes/my-app:1.0
+
+-	Once the deployment is completed it is necessary to expose it to external system.
+
+-	External system will be using the deployed application.	
