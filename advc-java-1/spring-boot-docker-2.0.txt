@@ -1,4 +1,4 @@
-spring boot - docker-2.0
+spring boot - docker-2.0 [>= 2.4 ]
 
 How does spring boot maven plugin automate image construction?
 

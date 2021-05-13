@@ -1,4 +1,4 @@
-spring boot - micro-service-2.0
+spring boot - micro-service-2.0 [>= 2.4 ]
 
 What is a spring cloud config client?
 	

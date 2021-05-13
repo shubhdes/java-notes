@@ -1,4 +1,4 @@
-spring boot - micro-service-1.0
+spring boot - micro-service-1.0 [< 2.4 ]
 
 What is micro-service?
 
@@ -405,7 +405,7 @@ What is the use of zipkin distributed tracing server?
 	
 	spring.zipkin.baseUrl = http://localhost:9411
 	
--	If the micro-service send information of every request to zipkin then there might be performance issue.
+-	If the micro-service send information of every web request to zipkin then there might be performance issue.
 
 -	We can allow only certain percentage of overall web request that micro-service accept and send information to zipkin 
 
@@ -414,6 +414,37 @@ What is the use of zipkin distributed tracing server?
 	Example:
 	
 	spring.sleuth.sampler.probability = 1.0
+
+What is the need of rabbit mq in distributed tracing?
+
+-	A micro-service sends information of every web request to zipkin distributed tracing server.
+
+-	But when zipkin distributed tracing server is not available the attempt of micro-service will fail.
+
+-	Hence we use rabbit mq where micro-service will save the information of every web request.
+
+-	Further zipkin distributed tracing server will read this information from rabbit mq.
+
+-	To connect micro-service application to rabbit mq we need the following dependency inside pom.xml.
+
+	Example:
+	
+	<dependency>
+		<groupId>org.springframework.ampq</groupId>
+		<artifactId>spring-rabbit</artifactId>
+	</dependency>
+
+-	To allow micro-service use rabbit mq to send information of every web request we can use following property in application.properties.
+
+	spring.zipkin.sender.type = rabbit
+
+-	With the above dependency present micro-service will try to locate rabbit mq locally on port 5672.
+
+-	We can explictly give the instance information of rabbit mq to override default by using following property inside application.properties.
+
+	Example:
+	
+	spring.zipkin.baseUrl = http://localhost:9411	
 	
 What is fault tolerance and how to implement it?
 
