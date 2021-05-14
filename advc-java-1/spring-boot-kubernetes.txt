@@ -14,7 +14,7 @@ What is kubernetes?
 
 -	The worker node is responsible to run our application.
 
--	Using kubernetes
+-	Kubernetes follow once concept one responsibility principle.
 
 How to execute kubernetes commands?
 
@@ -32,7 +32,7 @@ How to execute kubernetes commands?
 
 	syntax:
 	
-	#gcloud container clusters get-credentials [cluster name] --zone [cluster zone] --project [project code]
+	#gcloud container clusters get-credentials [name] --zone [name] --project [name]
 	
 	example:
 	
@@ -56,7 +56,7 @@ How to deploy an application using kubernetes?
 
 	syntax:
 
-	#kubectl create deployment [deployment name] --image=[image name]
+	#kubectl create deployment [name] --image=[name]
 
 	example:
 
@@ -68,8 +68,104 @@ How to deploy an application using kubernetes?
 
 	syntax:
 	
-	#kubectl expose deployment [deployment name] --type=[type] --port=[port]
+	#kubectl expose deployment [name] --type=[type] --port=[port]
 	
 	example:
 	
 	#kubectl expose deployment my-app --type=LoadBalance --port=8080
+	
+What is a pod in kubernetes?
+
+-	In kubernetes smallest deployable unit is pod.
+
+-	One or more containers live inside a pod.
+
+-	One or more pods live inside a container.
+
+-	To view all available pods inside cluster we need to use following command.
+
+	example:
+
+	#kubectl get pods
+
+-	To view all details of specific pod inside cluster we need to use following command.
+
+	syntax:
+
+	#kubectl describe pod [name]	
+	
+	example:
+
+	#kubectl describe pod my-app-12sbeha-206yh
+
+-	To remove a running pod	inside cluster we need to use following command.
+
+	syntax:
+
+	#kubectl delete pod [name]	
+	
+	example:
+
+	#kubectl delete pod my-app-12sbeha-206yh 
+	
+What is a replicaset in kubernetes?
+
+-	In kubernetes replicaset ensures that specific number of pods are always running.
+
+-	We can set the minimum number of pod instance that must be running at any given time using following command.
+
+	syntax:
+
+	#kubectl scale deployment [name] --replicas=[n]
+	
+	example:
+
+	#kubectl scale deployment my-app --replicas=3
+
+What is a deployment in kubernetes?
+
+-	Consider we have a deployment that is running an image of my-app version 1.0.
+
+-	To deploy an image of same my-app with version 2.0 we need to undeploy the image with version 1.0.
+
+-	We need to ensure that we have total zero downtime during this undeployment and redeployment.
+
+-	To set new image to an existing deployment we need to use the following command.
+
+	syntax:
+
+	#kubectl scale deployment my-app --image=[container=image] 
+	
+	example:
+
+	#kubectl scale deployment my-app --image=my-app=shubhdes/my-app:2.0
+	
+-	Everytime deployment is created or update a new replicaset is created.
+
+-	When deployment is updated and replicaset of new deployment has one pod running then replicaset of older deployment removes one pod.
+
+-	Also when replicaset of new deployment has second pod running then replicaset of old deployment will scale down second pod.
+
+-	In this manner replicaset of old deployment removes all pods when replicaset of new deployment has all pods running.
+
+-	This deployment startegy is called rolling update.
+
+-	But when the deployment is updated and it is failed the replicaset of older deployment continue to work.
+
+-	This will ensure total zero downtime during this undeployment and redeployment.
+
+What are events in kubernetes?
+
+-	Whenver an deployment, pod, replicaset and service is created or updated or deleted these actions are called as events.
+
+-	To view all events that were generated in kubernetes we need to use the following command.
+
+	example:
+	
+	#kubectl get events
+	
+-	We can also sort the events by timestamp of their occurence using the following command.
+
+	example:
+	
+	#kubectl get events --sort-by=.metadata.creationTimestamp	
