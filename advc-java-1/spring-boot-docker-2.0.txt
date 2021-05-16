@@ -16,6 +16,8 @@ How does spring boot maven plugin automate image construction?
 
 -	When the pullPolicy is set to IF_NOT_PRESENT the plugin will pull docker images from docker hub for first image construction.
 
+-	Another value for pullPolicy is ALWAYS which will pull docker images from docker hub in every build even if the image is already present locally. 
+
 -	It will reuse the same docker images for every next image construction.
 
 	example:

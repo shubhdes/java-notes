@@ -16,6 +16,8 @@ What is kubernetes?
 
 -	Kubernetes follow once concept one responsibility principle.
 
+-	It provides auto-scaling, service discovery, load balancing, self-healing and zero downtime.
+
 How to execute kubernetes commands?
 
 -	To execute kubernetes commands we need to connect to cluster first.
@@ -72,7 +74,7 @@ How to deploy an application using kubernetes?
 	
 	example:
 	
-	#kubectl expose deployment my-app --type=LoadBalance --port=8080
+	#kubectl expose deployment my-app --type=LoadBalancer --port=8080
 	
 What is a pod in kubernetes?
 
@@ -154,6 +156,26 @@ What is a deployment in kubernetes?
 
 -	This will ensure total zero downtime during this undeployment and redeployment.
 
+What is a service in kubernetes?
+
+-	A service allows cluster to receive traffic through permanantly available interface.
+
+-	Pods are through away units in kubernetes.
+
+-	They are created and destroyed dynamically hence thier IP address will change frequently.
+
+-	Service has permanant IP address which accept the incoming traffic and redirect it to pods.
+
+-	Service can show different behavior and perform different activities based on the service type specified at the time of deployment.
+
+	syntax:
+	
+	#kubectl expose deployment [name] --type=[type] --port=[port]
+	
+	example:
+	
+	#kubectl expose deployment my-app --type=LoadBalancer --port=8080
+
 What are events in kubernetes?
 
 -	Whenver an deployment, pod, replicaset and service is created or updated or deleted these actions are called as events.
@@ -168,4 +190,177 @@ What are events in kubernetes?
 
 	example:
 	
-	#kubectl get events --sort-by=.metadata.creationTimestamp	
+	#kubectl get events --sort-by=.metadata.creationTimestamp
+	
+What are different components of master node?
+
+-	The master node has four components called as distributed database, api-server, scheduler and controller manager.
+
+-	The distributed database is called etcd.
+
+-	All kubernetes desired state i.e. commands executed to change the state of cluster are stored in etcd.
+
+-	The api-server is called as kube api-server.
+
+-	It is an interface between the cloud shell window and kubernetes engine.
+
+-	The scheduler is called kube scheduler.
+
+-	It is responsible to make decision on which node new pod will be created.
+
+-	The controller manager is alse called as kube controller manager.
+
+-	It is responsible to monitor the health of the cluster.
+
+-	It ensures that actual state of kubernetes cluster matches desired state from distributed database.
+
+What are different components of worker node?
+
+-	The worker node has four components called as node agent, networking component, container runtime and pods.
+
+-	The node agent is called kubelet.
+
+-	It monitors the node and send information to controller manager of master node.
+
+-	One of its activities is to monitor running pods and inform the controller manager of master node when a pod becomes unavailable.
+
+-	The networking component is called kube proxy.
+
+-	It helps in creating services i.e permanant interface around pods.
+
+-	The container runtime is docker container which run inside a pod.
+
+-	The worker node can contain one or more pods.
+
+-	Applications run inside pods.
+
+How to deploy microservices in kubernetes?
+
+-	Kubernetes provides service discovery, api gateway and log management features.	
+
+-	Therefore we need to remove the following dependencies from maven pom.xml of the microservices project.
+
+	example:
+	
+	<!-- naming server-->
+	<dependency>
+		<groupId>org.springframework.cloud</groupId>
+		<artifactId>spring-cloud-starter-netflix-eureka-server</artifactId>
+	</dependency>
+	
+	<!-- naming client-->
+	<dependency>
+		<groupId>org.springframework.cloud</groupId>
+		<artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+	</dependency>
+	
+	<!-- api gateway-->
+	<dependency>
+		<groupId>org.springframework.cloud</groupId>
+		<artifactId>spring-cloud-starter-netflix-zuul</artifactId>
+	</dependency>
+	
+	<!-- zipkin -->
+	<dependency>
+		<groupId>org.springframework.cloud</groupId>
+		<artifactId>spring-cloud-sleuth-zipkin</artifactId>
+	</dependency>
+	
+	<!-- rabbit mq-->
+	<dependency>
+		<groupId>org.springframework.ampq</groupId>
+		<artifactId>spring-rabbit</artifactId>
+	</dependency>
+	
+-	By default kubernetes will create environment variable for each microservice at time of deployment.
+
+-	The value of this variable will be instance information of pod running docker container for microservice.
+
+-	When microservice name is my-app-ms1 then kubernetes will create environment variable with name MY_APP_MS1_SERVICE_HOST.
+
+-	Next step we need to update annotation of feign proxy to use kubernetes created environment variable.
+
+	example:
+	
+	@FeignClient(name = "my-app-ms1", url = "${MY_APP_MS1_SERVICE_HOST}:8080")
+
+How to use yaml configuration to deploy microservices in kubernetes?
+
+-	Deployment in kubernetes using yaml file is called declarative approach.
+
+-	Copy the yaml file of existing deployment using the below command.
+
+	syntax:
+	
+	#kubectl get deployment [name] -o yaml >> [file]
+	
+	example:
+	
+	#kubectl get deployment my-app-ms1 -o yaml >> deployment.yaml
+	
+-	Copy the yaml file of existing service using the below command.
+
+	syntax:
+	
+	#kubectl get service [deployment name] -o yaml >> [file]
+	
+	example:
+	
+	#kubectl get service my-app-ms1 -o yaml >> service.yaml
+	
+-	Append the contents of service.yaml to the contents of deployment.yaml.	
+
+-	Update deployment.yaml as required.
+
+-	Delete the existing deployment of the microservice using the following command.
+
+	syntax:
+	
+	#kubectl delete all -l [label]=[value]
+	
+	example:
+	
+	#kubectl delete all -ll app=my-app-ms1
+	
+-	Deleting deployment is optional otherwise kubernetes will update existing deployment.	
+
+-	Create or update the existing deployment using following command.
+
+	syntax:
+	
+	#kubectl apply -f [file]
+	
+	example:
+	
+	#kubectl apply -f deployment.yaml
+	
+Why is it recommended to not use kubernetes created environment variable?
+
+-	The kubernetes will create environment variable for each microservice. 
+
+-	Consider a situation where we have two microservices my-app-ms1 and my-app-ms2.
+
+-	The microservice my-app-ms1 makes a web request to my-app-ms2.
+
+-	However while deployment the my-app-ms1 is deployed first an hence there is no environment variable of my-app-ms2.
+
+-	Even when later my-app-ms2 is deployed the environment variable is not made available to my-app-ms1.
+
+-	When microservice my-app-ms1 will call my-app-ms2 the web request will fail with runtime exception.
+
+-	Hence it is recommended to use custom environment variable instead of kubernetes created environment variable.
+
+-	We can pass this environment variable to container of my-app-ms1 microservice in deployment.yaml.
+
+	syntax:
+	
+	env:
+		-name: [name]
+		 value: http://[permanant service]
+
+	example:
+	
+	env:
+		-name: MY_APP_MS1_URI
+		 value: http://my-app-ms1 
+ 	
