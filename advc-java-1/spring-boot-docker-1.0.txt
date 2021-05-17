@@ -18,23 +18,28 @@ What is an image, registry, repository and tags?
 
 -	The following command will show list all the image with image name, tag and image identifier.
 
-	example:
+	Example:
+
 	#docker image ls
 	
 -	The following command with an image identifier will show the steps involved in constructing image.
 
-	syntax:
+	Syntax:
+
 	#docker image history {imageId}	
 
-	example:
+	Example:
+
 	#docker image history cb819	
 
 -	The following command with an image identifier will show metadata information about the image.
 
-	syntax:
+	Syntax:
+
 	#docker image inspect {imageId}
 	
-	example:
+	Example:
+
 	#docker image inspect cb819	
 
 -	A docker registry (https://hub.docker.com) is collection of directories that can be accessed publicly.
@@ -45,26 +50,32 @@ What is an image, registry, repository and tags?
 
 -	The following command will download the image from remote repository present inside docker registry.
 
-	syntax:
+	Syntax:
+
 	#docker pull {/repository/image:tag}
 	
-	example:
+	Example:
+
 	#docker pull /my-repo/my-app:1.0
 	
 -	The following command will delete the image from local directory.
 	
-	syntax:
+	Syntax:
+
 	#docker remove image {imageId}
 	
-	example:
+	Example:
+
 	#docker remove image cb819
 	
 -	The following command will mark same image with multiple version tags.
 
-	syntax:
+	Syntax:
+
 	#docker tag {/repository/image:tag1} {/repository/image:tag2}
 	
-	example:
+	Example:
+
 	#docker tag /my-repo/my-app:1.0	/my-repo/my-app:2.0
 
 What is container?
@@ -75,23 +86,28 @@ What is container?
 
 -	The option -a will show list of all container irrespective of whether the container state is running, pause or stop
 
-	example:
+	Example:
+
 	#docker container ls
 	
-	example:
+	Example:
+
 	#docker container ls -a
 
 -	The following command with container identifier will remove all stop container.
 
-	example:
+	Example:
+
 	#docker container prune
 
 -	The following command with container identifier will show metadata information about the container.
 
-	syntax:
+	Syntax:
+
 	#docker container inspect {containerId}
 
-	example:
+	Example:
+
 	#docker container inspect cb819	
 
 -	We can have same image running under multiple container.
@@ -102,42 +118,52 @@ What are different states of container?
 
 -	The following command will download image present inside repository under remote registry and create container for it and run it.
 
-	syntax:
+	Syntax:
+
 	#docker container run {/repository/image:tag}
 	
-	example:
+	Example:
+
 	#docker container run /my-repo/my-app:1.0
 
 -	The following command with container identifier will pause the running container.
 
-	syntax:
+	Syntax:
+
 	#docker container pause {/repository/image:tag}
 	
-	example:
+	Example:
+
 	#docker container pause cb819
 
 -	The following command with container identifier will again run the paused the container.
 
-	syntax:
+	Syntax:
+
 	#docker container unpause {/repository/image:tag}
 	
-	example:
+	Example:
+
 	#docker container unpause cb819
 
 -	The following command with container identifier will stop the running container gracefully.
 
-	syntax:
+	Syntax:
+
 	#docker container stop {containerId}
 	
-	example:
+	Example:
+
 	#docker container stop cb819
 
 -	The following command with container identifier will stop the running container abruptly.
 
-	syntax:
+	Syntax:
+
 	#docker container kill {containerId}
 	
-	example:
+	Example:
+
 	#docker container kill cb819
 
 How to expose port of container?
@@ -148,10 +174,12 @@ How to expose port of container?
 
 -	The following command will expose internal container port and map it to external server port.
 
-	syntax:
+	Syntax:
+
 	#docker container run -p {serverPort}:{containerPort} {/repository/image:tag}
 	
-	example:
+	Example:
+
 	#docker container run -p 8080:5000 /my-repo/my-app:1.0
 
 -	Any request on external server port will be redirected to internal container port.
@@ -164,21 +192,25 @@ How to debug an running image?
 
 -	The following command will run container in detached mode.
 
-	syntax:
+	Syntax:
+
 	#docker container run -d {/repository/image:tag}
 	
-	example:
+	Example:
+
 	#docker container run -d /my-repo/my-app:1.0
 
 -	The following command is used to check log statement of container running in detached mode.
 
 -	The option -f will update the terminal with new log statement.
 
-	syntax:
+	Syntax:
+
 	#docker logs {containerId}
 	#docker logs -f {containerId}
 	
-	example:
+	Example:
+
 	#docker logs cb819
 	#docker logs -f cb819
 	
@@ -188,35 +220,42 @@ How to create an image manually for the spring boot application and run it?
 
 -	Generate jar file for the spring boot application using below command.
 	
-	example:
+	Example:
+
 	#mvn clean install
 
 -	Download an image of java runtime environment and create container for it and run it.
 
-	example:
+	Example:
+
 	#docker container run -dit openjdk:8-jdk-alpine
 
 -	The open -it means create interactive container which can execute command when container state is running.
 
 -	Copy the jar file for the spring boot application inside image /tmp folder.
 
-	syntax:
+	Syntax:
+
 	#docker container cp {jarFile} {containerId:/tmp}
 	
-	example:
+	Example:
+
 	#docker container cp my-app-1.0.jar cb819:/tmp
 
 -	Create new image from running container.
 
-	syntax:
+	Syntax:
+
 	#docker container commit --change 'CMD ["java", "-jar", "jarName"]' {containerId} {repository/image:tag}
 	
-	example:
+	Example:
+
 	#docker container commit --change 'CMD ["java", "-jar", "my-app-1.0.jar"]' cb819 my-repo/my-app:1.0
 
 -	Create container and run the image.
 
-	example:
+	Example:
+
 	#docker container run -p 8080:8080 /repo/my-app:1.0
 
 How to automate an image construction for the spring boot application and run it?
@@ -225,41 +264,50 @@ How to automate an image construction for the spring boot application and run it
 
 -	Generate jar file for the spring boot application using below command.
 	
-	example:
+	Example:
+
 	#mvn clean package
 	
 -	Create file with name Dockerfile and no extension under project directory.	
 
 -	Include instruction inside Dockerfile to download an image of java runtime environment and create container for it and run it.
  
-	syntax:
+	Syntax:
+
 	#FROM {image:tag}
  
-	example:
+	Example:
+
 	#FROM openjdk:8-jdk-alpine
 	
 -	Include instruction inside Dockerfile to copy the jar file for the spring boot application inside image /tmp folder.
 
-	syntax:
+	Syntax:
+
 	#ADD /target/{jarName} /tmp/{jarName}
 
-	example:
+	Example:
+
 	#ADD /target/my-app-1.0.jar /tmp/my-app-1.0.jar
 
 -	Include instruction inside Dockerfile to create container and run the image. 
 
-	syntax:
+	Syntax:
+
 	#ENTRYPOINT ["java", "-jar", "/tmp/jarName"]
 
-	example:
+	Example:
+
 	#ENTRYPOINT ["java", "-jar", "/tmp/my-app:1.0.jar"]
 
 -	The following command will create an image using instruction present inside Dockerfile.
 
-	syntax:
+	Syntax:
+
 	#docker image build . -t {repository/image:tag}
 	
-	example:
+	Example:
+
 	#docker image build . -t my-repo/my-app:1.0
 	
 How does maven plugin automate image construction?
@@ -272,7 +320,8 @@ How does maven plugin automate image construction?
 
 -	After the jar file for the spring boot application is generated this plugin will construct an image during.
 
-	example:
+	Example:
+
 	<plugin>
 		<groupId>com.spotify</groupId>
 		<artifactId>dockerfile-maven-plugin</artifactId>
@@ -299,7 +348,8 @@ What is caching in image construction?
 
 -	The below command with container identifier can be used to show step used in image construction.
 
-	example:
+	Example:
+
 	#docker image history cb819	
 
 -	The result of each step will be added to cache. 
@@ -330,7 +380,8 @@ How to use caching in image construction?
 
 -	This plugin is called in packaging phase of build lifecycle.
 
-	example:
+	Example:
+
 	<plugin>
 		<groupId>org.apache.maven.plugins</groupId>
 		<artifactId>maven-dependency-plugin</artifactId>
@@ -356,7 +407,8 @@ How to use caching in image construction?
 -	When the spring boot application jar file is unpack then we can add instruction inside Dockerfile to copy properties file, external dependencies and class file
 	into base image separately.
 
-	example:
+	Example:
+
 	#FROM openjdk:8-jdk-alpine
 	
 	#ARG DEPENDENCY = target/dependency
@@ -369,7 +421,8 @@ How to use caching in image construction?
 	
 -	The following command will create image using instruction present inside Dockerfile.
 
-	example:
+	Example:
+
 	#docker image build . -t my-repo/my-app:1.0
 	
 	
@@ -395,37 +448,44 @@ How to create multiple stage build?
  	
 -	The FROM command will begin a new stage and this is the first stage of multiple stage build so we will name this stage as build.	
 	
-	example:
+	Example:
+
 	#FROM maven:3.6.1-jdk-8-alpine AS build
 
 -	Create a work directory and change present working directory to new directory.
 
-	example:
+	Example:
+
 	#WORKDIR /my-app
 
 -	Copy pom.xml file inside present working directory.
 
-	example:
+	Example:
+
 	#COPY pom.xml .
 
 -	Download all external dependencies local maven repository.	
 	
-	example:
+	Example:
+
 	#RUN mvn dependency:go-offline -B
 
 -	Copy source folder inside new src folder under present working directory.
 
-	example:
+	Example:
+
 	#COPY src /my-app/src
 
 -	Create jar file for spring boot application. This will create spring boot application jar file inside target folder under present working directory.
 
-	example:
+	Example:
+
 	#RUN mvn package
 
 -	Unpack the jar file for spring boot application.
 
-	example:
+	Example:
+
 	#RUN jar -xf /target/*.jar
 
 -	As result of first stage build we have extracted jar file for spring boot application inside target folder under my-app directory.
@@ -434,12 +494,14 @@ How to create multiple stage build?
 
 -	Include instruction inside Dockerfile to download an image of java runtime environment and create container for it and run it.
 
-	example:
+	Example:
+
 	#FROM openjdk:8-jdk-alpine
 
 -	Copy the content of unpack spring boot application jar file inside app folder and start the spring boot application.
 
-	example:
+	Example:
+
 	#ARG DEPENDENCY=/my-app/target/dependency
 	#COPY --from=build ${DEPENDENCY}/BOOT-INF/lib /app/lib
 	#COPY --from=build ${DEPENDENCY}/META-INF /app/META-INF
@@ -449,7 +511,8 @@ How to create multiple stage build?
 
 -	The following command will create image using instruction present inside Dockerfile.
 
-	example:
+	Example:
+
 	#docker image build . -t my-repo/my-app:1.0
 	
 What is the difference between ADD and COPY command present inside Dockerfile?
@@ -494,22 +557,26 @@ How to upload an image inside docker hub?
 
 -	Login into docker hub by using the following command and docker hub username and password.
 
-	example:
+	Example:
+
 	#docker login
 	
 -	Push the image into remote repository inside docker hub registry.
 
-	syntax:
+	Syntax:
+
 	#docker push {repository/image:tag}
 
-	example:
+	Example:
+
 	#docker push my-repo/my-app:1.0	
 	
 What are different container network?
 
 -	There are three type of container network and they are called as bridge, host and none network.
 
-	example:
+	Example:
+
 	#docker network ls
 
 -	When the docker daemon start it will create a default network and this network is called as bridge network.
@@ -528,15 +595,18 @@ How to create an user defined network?
 
 -	Create network using following command.
 
-	syntax:
+	Syntax:
+
 	#docker create network {name}
 	
-	example:
+	Example:
+
 	#docker create network my-network
 	
 -	Run the container using user defined network.
 
-	example:
+	Example:
+
 	#docker container run -p 8080:8080 --network=my-network /repo/my-app-1:1.0
 	
 	#docker container run -p 8080:8080 --network=my-network /repo/my-app-2:1.0
@@ -549,15 +619,18 @@ How docker help deployment inside microservice architecture?
 
 -	Using docker compose we can deploy multiple service together.
 
-	example:
+	Example:
+
 	#docker-compose up -d
 
 -	Also docker compose allow runtime scale up and scale down for any service.
 
-	syntax:
+	Syntax:
+
 	#docker-compose scale {service}={count}
 
-	example:
+	Example:
+
 	#docker-compose scale my-app-1=2
 
 -	Docker support standard deployment process irrespective of platform used for service development.
@@ -582,7 +655,8 @@ How to create docker compose?
 
 -	This instruction must include name of image and port exposed by container.
 
-	example:
+	Example:
+
 	services:
 		my-app-1:
 			image:	my-repo/my-app-1:1.0
@@ -595,7 +669,8 @@ How to create docker compose?
 
 -	Add instruction to create network for container and include container inside network.
 
-		example:
+		Example:
+
 		networks:
 			my-network:
 		
@@ -609,7 +684,8 @@ How to create docker compose?
 		
 -	When one container require another container to run before it we must use the depends_on configuration inside docker-compose.yaml file.
 
-		example:
+		Example:
+
 		services:
 			my-app-2:
 				depends_on:
@@ -619,5 +695,6 @@ How to create docker compose?
 
 -	The option -d will run the container in detached mode.
 
-	example:
+	Example:
+
 	#docker-compose up -d

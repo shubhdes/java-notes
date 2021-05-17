@@ -20,7 +20,8 @@ How does spring boot maven plugin automate image construction?
 
 -	It will reuse the same docker images for every next image construction.
 
-	example:
+	Example:
+	
 	<plugin>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-maven-plugin</artifactId>

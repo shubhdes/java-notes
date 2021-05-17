@@ -32,11 +32,11 @@ How to execute kubernetes commands?
 
 -	Paste this command in cloud shell window in new browser window and press enter.
 
-	syntax:
+	Syntax:
 	
 	#gcloud container clusters get-credentials [name] --zone [name] --project [name]
 	
-	example:
+	Example:
 	
 	#gcloud container clusters get-credentials shubhdes-1 --zone us-central1-a --project solid-course-258105
 
@@ -46,7 +46,7 @@ How to execute kubernetes commands?
 
 -	The word kubectl stands for kubernetes controller. 
 
-	example:
+	Example:
 	
 	#kubectl --version
 	
@@ -56,11 +56,11 @@ How to deploy an application using kubernetes?
 
 -	This command will require the docker image to be present inside the docker hub.ss
 
-	syntax:
+	Syntax:
 
 	#kubectl create deployment [name] --image=[name]
 
-	example:
+	Example:
 
 	#kubectl create deployment my-app --image=shubhdes/my-app:1.0
 
@@ -68,11 +68,11 @@ How to deploy an application using kubernetes?
 
 -	External system will be using the deployed application.	
 
-	syntax:
+	Syntax:
 	
 	#kubectl expose deployment [name] --type=[type] --port=[port]
 	
-	example:
+	Example:
 	
 	#kubectl expose deployment my-app --type=LoadBalancer --port=8080
 	
@@ -86,27 +86,27 @@ What is a pod in kubernetes?
 
 -	To view all available pods inside cluster we need to use following command.
 
-	example:
+	Example:
 
 	#kubectl get pods
 
 -	To view all details of specific pod inside cluster we need to use following command.
 
-	syntax:
+	Syntax:
 
 	#kubectl describe pod [name]	
 	
-	example:
+	Example:
 
 	#kubectl describe pod my-app-12sbeha-206yh
 
 -	To remove a running pod	inside cluster we need to use following command.
 
-	syntax:
+	Syntax:
 
 	#kubectl delete pod [name]	
 	
-	example:
+	Example:
 
 	#kubectl delete pod my-app-12sbeha-206yh 
 	
@@ -116,11 +116,11 @@ What is a replicaset in kubernetes?
 
 -	We can set the minimum number of pod instance that must be running at any given time using following command.
 
-	syntax:
+	Syntax:
 
 	#kubectl scale deployment [name] --replicas=[n]
 	
-	example:
+	Example:
 
 	#kubectl scale deployment my-app --replicas=3
 
@@ -134,11 +134,11 @@ What is a deployment in kubernetes?
 
 -	To set new image to an existing deployment we need to use the following command.
 
-	syntax:
+	Syntax:
 
 	#kubectl scale deployment my-app --image=[container=image] 
 	
-	example:
+	Example:
 
 	#kubectl scale deployment my-app --image=my-app=shubhdes/my-app:2.0
 	
@@ -168,11 +168,11 @@ What is a service in kubernetes?
 
 -	Service can show different behavior and perform different activities based on the service type specified at the time of deployment.
 
-	syntax:
+	Syntax:
 	
 	#kubectl expose deployment [name] --type=[type] --port=[port]
 	
-	example:
+	Example:
 	
 	#kubectl expose deployment my-app --type=LoadBalancer --port=8080
 
@@ -182,13 +182,13 @@ What are events in kubernetes?
 
 -	To view all events that were generated in kubernetes we need to use the following command.
 
-	example:
+	Example:
 	
 	#kubectl get events
 	
 -	We can also sort the events by timestamp of their occurence using the following command.
 
-	example:
+	Example:
 	
 	#kubectl get events --sort-by=.metadata.creationTimestamp
 	
@@ -240,7 +240,7 @@ How to deploy microservices in kubernetes?
 
 -	Therefore we need to remove the following dependencies from maven pom.xml of the microservices project.
 
-	example:
+	Example:
 	
 	<!-- naming server-->
 	<dependency>
@@ -280,31 +280,31 @@ How to deploy microservices in kubernetes?
 
 -	Next step we need to update annotation of feign proxy to use kubernetes created environment variable.
 
-	example:
+	Example:
 	
 	@FeignClient(name = "my-app-ms1", url = "${MY_APP_MS1_SERVICE_HOST}:8080")
 
 How to use yaml configuration to deploy microservices in kubernetes?
 
--	Deployment in kubernetes using yaml file is called declarative approach.
+-	When deployment in kubernetes is done using yaml file is called declarative approach for deployment.
 
 -	Copy the yaml file of existing deployment using the below command.
 
-	syntax:
+	Syntax:
 	
 	#kubectl get deployment [name] -o yaml >> [file]
 	
-	example:
+	Example:
 	
 	#kubectl get deployment my-app-ms1 -o yaml >> deployment.yaml
 	
 -	Copy the yaml file of existing service using the below command.
 
-	syntax:
+	Syntax:
 	
 	#kubectl get service [deployment name] -o yaml >> [file]
 	
-	example:
+	Example:
 	
 	#kubectl get service my-app-ms1 -o yaml >> service.yaml
 	
@@ -314,11 +314,11 @@ How to use yaml configuration to deploy microservices in kubernetes?
 
 -	Delete the existing deployment of the microservice using the following command.
 
-	syntax:
+	Syntax:
 	
 	#kubectl delete all -l [label]=[value]
 	
-	example:
+	Example:
 	
 	#kubectl delete all -ll app=my-app-ms1
 	
@@ -326,11 +326,11 @@ How to use yaml configuration to deploy microservices in kubernetes?
 
 -	Create or update the existing deployment using following command.
 
-	syntax:
+	Syntax:
 	
 	#kubectl apply -f [file]
 	
-	example:
+	Example:
 	
 	#kubectl apply -f deployment.yaml
 	
@@ -352,15 +352,169 @@ Why is it recommended to not use kubernetes created environment variable?
 
 -	We can pass this environment variable to container of my-app-ms1 microservice in deployment.yaml.
 
-	syntax:
+	Syntax:
 	
 	env:
-		-name: [name]
-		 value: http://[permanant service]
+	  - name: [name]
+	    value: http://[permanant service]
 
-	example:
+	Example:
 	
 	env:
-		-name: MY_APP_MS1_URI
-		 value: http://my-app-ms1 
+      - name: MY_APP_MS2_URI
+        value: http://my-app-ms2
  	
+What is config map in kubernetes?
+
+-	In kubernetes config map allows us to store configurations for multiple microservices across multiple deployments in single place.
+
+-	Create config map for our deployment using following command.
+
+	Syntax:
+	
+	#kubectl create configmap [name] --from-literal=[name]=[value]
+	
+	Example:
+	
+	#kubectl create configmap my-app-ms1-cm --from-literal=MY_APP_MS2_URI=http://my-app-ms2
+
+-	Copy the yaml file of existing config using the below command.
+
+	Syntax:
+	
+	#kubectl get configmap [name] -o yaml >> [file]
+	
+	Example:
+	
+	#kubectl get configmap my-app-ms1-cm -o yaml >> configmap.yaml
+	
+-	Append the contents of configmap.yaml to the contents of deployment.yaml.	
+
+-	Change the container configuration in deployment.yaml to use config map.
+
+	Syntax:
+	
+	envFrom:
+	  - configMapRef:
+	      name: [name]
+
+	Example:
+	
+	envFrom:
+	  - configMapRef:
+	      name: my-app-ms1-cm
+
+-	Update deployment.yaml as required.
+
+-	Create or update the existing deployment using following command.
+
+	Syntax:
+	
+	#kubectl apply -f [file]
+	
+	Example:
+	
+	#kubectl apply -f deployment.yaml
+	
+How kubernetes maintains deployment history?
+
+-	In kubernetes complete deployment history is maintained.
+
+-	To find out the history of kubernetes deployment we need to use following command.
+
+	Syntax:
+
+	#kubectl rollout history deployment [name]
+
+	Example:
+
+	#kubectl rollout history deployment my-app-ms1
+
+-	In case if the deployment fails we can undo deployment and rollback the desired state to previous successfull deployment.
+
+	Syntax:
+
+	#kubectl rollout undo deployment [name] --to-revision=[n]
+
+	Example:
+
+	#kubectl rollout undo deployment my-app-ms1 --to-revision=2
+	
+What are probes?
+
+-	When we change deployment from one version to another there is some amount of downtime.
+
+-	This is because when deployment on new pod is successfull then kubernetes immediately terminate the old pod.
+
+-	However spring boot application running in new pod will take some time to start after deployment.
+
+-	This time duration will bring downtime.
+
+-	We can avoid this downtime using probes.
+
+-	Kubernetes uses two types of probes called readiness and liveness probes.
+
+-	When the readiness probes fails then no web request is forwarded to pod.
+
+-	When the liveness probe fails then the pod is restarted. 	
+
+-	In spring boot (version >= 2.3) these probes are provided by the actuator hence it is necessary to include following dependency in pom.xml.
+
+	Example:
+	
+	<dependency>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-actuator</artifactId>
+	</dependency>
+
+-	The readiness probe is available on /actuator/heath/readiness endpoint.
+
+-	The liveness probe is available on /actuator/heath/liveness endpoint.
+
+-	We can use these probes in deployment and we need to configure them in deployment.yaml file under containers section.
+
+	Example:
+	
+	readinessProbe:
+	  httpGet:
+	    port: 8000
+		  path: /actuator/heath/readiness
+	livenessProbe:
+	  httpGet:
+	    port: 8000
+		  path: /actuator/heath/liveness		 
+
+How to auto-scale microservices instance in kubernetes?
+
+-	We can increase number of pods running our microservice application using scale command or by modifying deployment.yaml file.
+
+-	However this process is manual.
+
+-	Kubernetes supports with auto-scale feature wherein kubernetes itself will increase number of pods if certain condition is met.
+
+-	To enable auto-scaling in kubernetes when the cpu usage exceeds over certain limit we need to use following command.
+
+	Syntax:
+
+	#kubectl autoscale deployment [name] --min=[n1] --max=[n2] --cpu-percent=[n3]
+
+	Example:
+
+	#kubectl autoscale deployment my-app-ms1 --min=1 --max=2 --cpu-percent=70
+
+-	This is called horizontal pod auto-scaler.
+
+-	We can delete this horizontal pod auto-scaler by using the following command.
+
+	Syntax:
+
+	#kubectl delete hpa [name]
+
+	Example:
+
+	#kubectl delete hpa my-app-ms1
+	
+How to delete cluster in kubernetes?
+
+-	In google cloud near to the cluster hyper link select the delete icon, this will delete your entire cluster.
+	
