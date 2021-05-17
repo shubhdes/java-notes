@@ -327,6 +327,7 @@ How to make api gateway perform some operation when it intercept a rest web-serv
 	
 	Example:
 	
+	@Component
 	class MyApiGateway extends ZuulFilter {
 	
 		public String filterType() {

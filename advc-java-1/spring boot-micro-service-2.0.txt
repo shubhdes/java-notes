@@ -109,6 +109,107 @@ What is spring-cloud-api-gateway and how to implement it?
 	
 -	The calling micro-service must call api gateway using request url in format http://{api gateway ip}:{api gateway port}/{spring application name}/{request uri}.	
 
+Explain RouteLocator bean for by spring-cloud-api-gateway?
+
+-	RouteLocator bean is simple and effective way to route request from spring-cloud-api-gateway to other micro-service.
+
+	Example:
+	
+	public RouteLocator getRouteLocator(RouteLocatorBuilder builder) {
+		
+	}
+
+-	The spring-cloud-api-gateway will ask the naming server for the instance information of a microservice.
+
+-	But it can use RouteLocator spring bean instead.
+
+-	It can match routes using request url, header parameters and query string.
+
+	Example:
+
+	public RouteLocator getRouteLocator(RouteLocatorBuilder builder) {
+		return builder.routes()
+					.route(path -> path
+						.path("/currency-exchange-service-1.0")
+						.uri("/currency-exchange-service-2.0"))
+					.build();
+	}
+
+-	Along with redirection we can add one or more request headers and request parameters.
+
+	Example:
+
+	public RouteLocator getRouteLocator(RouteLocatorBuilder builder) {
+		return builder.routes()
+					.route(path -> path
+						.path("/currency-exchange-service-1.0")
+						.filters(filter -> filter
+							.addRequestHeader("id", "1221321")
+							.addRequestParameter("msg", "welcome"))
+						.uri("/currency-exchange-service-2.0"))
+					.build();
+	}
+	
+-	It can work with naming client and provide load balancing.
+
+	Example:
+
+	public RouteLocator getRouteLocator(RouteLocatorBuilder builder) {
+		return builder.routes()
+					.route(path -> path
+						.path("/currency-exchange-service/**")
+						.uri("lb://currency-exchange-service"))
+					.build();
+	}
+
+-	It also allows to create filter that will be called before calling the microservice.
+
+-	By using this filter can add or remove some parameter from the request before it is send to microservice.
+
+-	We can also rewrite the request url and redirect request to different url.
+	
+	Example:
+
+	public RouteLocator getRouteLocator(RouteLocatorBuilder builder) {
+		return builder.routes()
+					.route(path -> path
+						.path("/currency-exchange-service-1.0")
+						.filters(filter -> filter
+							.rewrite("/currency-exchange-service-1.0/(?<segment>.*",
+								"/currency-exchange-service-2.0/${segment}"))
+						.uri("/currency-exchange-service"))
+					.build();
+	}		
+
+How to create filter in spring-cloud-api-gateway?
+
+-	We can use filter in spring-cloud-api-gateway for handling cross cutting concerns.
+
+-	The spring cloud provide an interface class called GlobalFilter to implement cross cutting concerns.
+
+-	A filter in spring-cloud-api-gateway must implement GlobalFilter interface.
+
+-	We must override the following method.
+
+	public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain);
+
+-	The overriding method must define the implementation for operation to be executed by the filter when it intercept a rest web-service call.
+	
+	Example:
+	
+	@Component
+	class MyApiGateway extends GlobalFilter {
+	
+		public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
+		
+			Date currentDt = new Date();
+		
+			System.out.println("rest web-service call intercepted : " + currentDt)
+			
+			return chain.filter(exchange);
+		}
+	}
+
 What is fault tolerance and how to implement it?
 
 -	Inside micro-service architecture to process one web request one micro-service need to call another micro-service using rest web-service call.
@@ -347,81 +448,3 @@ How to implement bulk-head in fault tolerant micro-service?
 	resilience4j.bulkhead.instances.server-down.maxConcurrentCalls = 10
 
 -	When the micro-service method is called concurrently number of times more than maxConcurrentCalls we will get runtime exception saying RequestNotPermitted.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Explain RouteLocator bean for by spring-cloud-api-gateway?
-
--	RouteLocator bean is simple and effective way to route request from spring-cloud-api-gateway to other micro-service.
-
-	Example:
-	
-	public RouteLocator getRouteLocator(RouteLocatorBuilder builder) {
-		
-	}
-
--	The spring-cloud-api-gateway will ask the naming server for the instance information of a microservice.
-
--	But it can use RouteLocator spring bean .
-
--	It can match routes using request url, header parameters and query string.
-
-	Example:
-
-	public RouteLocator getRouteLocator(RouteLocatorBuilder builder) {
-		return builder.routes()
-					.route(path -> path
-						.path("/currency-exchange-service-1.0")
-						.uri("/currency-exchange-service-2.0"))
-					.build();
-	}
-
--	It can working with naming client and provide load balancing.
-
-	Example:
-
-	public RouteLocator getRouteLocator(RouteLocatorBuilder builder) {
-		return builder.routes()
-					.route(path -> path
-						.path("/currency-exchange-service/**")
-						.uri("lb://currency-exchange-service"))
-					.build();
-	}
-
--	It also allows to create filter that will be called before calling the microservice.
-
--	By using this filter can add or remove some parameter from the request before it is send to microservice.
-
--	We can also rewrite the request url or redirect request to different url.
-	
-	Example:
-
-	public RouteLocator getRouteLocator(RouteLocatorBuilder builder) {
-		return builder.routes()
-					.route(path -> path
-						.path("/currency-exchange-service-1.0")
-						.filters(filter -> filter.rewrite("", ""))
-						.uri("/currency-exchange-service"))
-					.build();
-	}	
