@@ -54,7 +54,7 @@ How to deploy an application using kubernetes?
 
 -	To deploy docker image into cluster we need to use the following command.
 
--	This command will require the docker image to be present inside the docker hub.ss
+-	This command will require the docker image to be present inside the docker hub.
 
 	Syntax:
 
@@ -82,7 +82,7 @@ What is a pod in kubernetes?
 
 -	One or more containers live inside a pod.
 
--	One or more pods live inside a container.
+-	One or more pods live inside a node.
 
 -	To view all available pods inside cluster we need to use following command.
 
@@ -160,7 +160,7 @@ What is a service in kubernetes?
 
 -	A service allows cluster to receive traffic through permanantly available interface.
 
--	Pods are through away units in kubernetes.
+-	Pods are throw away units in kubernetes.
 
 -	They are created and destroyed dynamically hence thier IP address will change frequently.
 
