@@ -32,7 +32,7 @@ Explain use of access specifier at class level?
 	
 	# javac Durga.java		/**compile time error public class C must be declared in file C.java**/
 
--	Whenever a java program is compiled for every class present inside java file a separate class file will be created with name as javaClassNAme.class and not 
+-	Whenever a java program is compiled for every class present inside java file a separate class file will be created with name as javaClassName.class and not 
 	by javaFile.class.
 -	Executing a java class that does not contain public static void main(String[] args) method will give runtime exception saying NoSuchMethodError also executing
 	a java class with invalid class file name will give runtime exception saying NoClassDefFoundError.

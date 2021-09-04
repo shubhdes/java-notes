@@ -1,0 +1,793 @@
+spring boot-microservices-advanced
+
+What is event driven microservices communication?
+
+-	The event driven microservice communication is also called as message driven microservice communication.
+
+-	The event driven microservices communication makes microservices loosely coupled and easy to scalable.
+
+-	This kind of communication is asynchronous in nature.
+
+-	Inside microservice to microservice communication a microservice may require to send message to multiple other microservices simultaneously.
+
+-	In this situation the traditional request response pattern will fail as the request can be send one by one to multiple other microservices.
+
+-	Also it may be possible the the recieving microservice will be added later and should be able to recieve the message when it starts running.
+
+-	In this situation event driven microservice communication is used.
+
+-	Where microservice recieves command message from external system which it processes.
+
+-	Then microservice will post event message to broker and this microservice is called as publisher or producer.
+
+-	The other microservices will recieve event message from broker and these microservices are called as subscriber or consumer.
+
+How are transaction managed in microservices?
+
+-	A single transaction can contain multiple sub-transactions to pe performed.
+
+-	Only when all the sub-transactions are completed successfully then the transaction must be commit.
+
+-	But if any one sub-transaction fails the transaction must be rollback.
+
+-	It is possible that each sub-transaction of single transaction are carried out by different microservices.
+
+-	To manage such transaction we need to use SAGA design pattern for transaction management.
+
+-	This design pattern is of two types i.e choreography based and orchestration based.
+
+Explain choreography based SAGA design pattern?
+
+-	Consider four microservices namely order, product, payment and shipment.
+
+-	The order microservice creates and order and then send order created event to broker.
+
+-	The product microservice consume order created event from the broker and reserve product for that order.
+
+-	Then it send product reserved event to broker.
+
+-	The payment microservice consume product reserved event from the broker and process payment for that order.
+
+-	Then it send payment completed event to broker.
+
+-	The shipment microservice consume payment completed event from the broker and create shipment ticket for that order.
+
+-	Then it send shipment ticket created event to broker.
+
+-	The order microservice consume shipment ticket created and complete the order created.
+
+-	Now let us consider that payment processing for the order failed because of invalid payment details.
+
+-	Before processing payment two operations of same transaction i.e order creation and product reservation are completed.
+
+-	Therefore the payment microservice will send payment failed event to broker.
+
+-	The product microservice will consume payment failed event from the broker and will do compensating sub-transaction.
+
+-	It will cancel the product reservation and will send product reservation cancelled event to broker.
+
+-	Then order microservice will consume product reservation cancelled event from the broker and will do compensating sub-transaction.
+
+-	It will reject the order created.
+
+-	The compensating sub-transactions are performed in reverse order of the usual sub-transactions.
+
+Explain orchestration based SAGA design pattern?
+
+-	Consider five microservices namely order, product, payment, shipment and SAGA.
+
+-	The order microservice creates and order and then send order created event to broker.
+
+- 	The SAGA microservice will consume order created event from the broker and post reserve product command.
+
+-	The product microservice consume reserve product command from the broker and reserve product for that order.
+
+-	Then it send product reserved event to broker.
+
+- 	The SAGA microservice will consume product reserved command from the broker and post process payment command.
+
+-	The payment microservice consume process payment command from the broker and process payment for that order.
+
+-	Then it send payment completed event to broker.
+
+- 	The SAGA microservice will consume payment completed event from the broker and post create shipment ticket command.
+
+-	The shipment microservice consume create shipment ticket command from the broker and create shipment ticket for that order.
+
+-	Then it send shipment ticket created event to broker.
+
+- 	The SAGA microservice will consume shipment ticket created event from the broker and post complete order command.
+
+-	The order microservice consume complete order command and complete the order created.
+
+-	Now let us consider that payment processing for the order failed because of invalid payment details.
+
+-	Before processing payment two operations of same transaction i.e order creation and product reservation are completed.
+
+-	Therefore the payment microservice will send payment failed event to broker.
+
+- 	The SAGA microservice will consume payment failed event from the broker and post cancel product reservation command.
+
+-	The product microservice will consume product reservation command from the broker and will do compensating sub-transaction.
+
+-	It will cancel the product reservation and will send product reservation cancelled event to broker.
+
+- 	The SAGA microservice will consume product reservation cancelled event from the broker and post reject order command.
+
+-	Then order microservice will consume reject order command from the broker and will do compensating sub-transaction.
+
+-	It will reject the order created.
+
+-	The compensating sub-transactions are performed in reverse order of the usual sub-transactions.
+
+What is CQRS design pattern?
+
+-	CQRS stands for Command Query Responsibilty Segregation.
+
+-	This design pattern separates create, update, delete operation from the select operation.
+
+-	There are three types of messages used in this design pattern and they are called as command, query and event.
+
+-	Command message is responsible to cause create, update and delete one or more entities.
+
+-	Query message is responsible to select or fetch one or more entities.
+
+-	The event message is send to broker that contains information about create, update and delete operation performed on one or more entities.
+
+Explain the working of CQRS and Event sourcing design pattern?
+
+-	Consider two microservices namely product-command and product-query.
+
+-	The product-command microservice is responsible to create, update and delete product.
+
+-	But product-query microservice is responsible to select or fetch an existing product.
+
+-	Consider external system sends command to update product.
+
+-	This command is accepted by product-command microservice which will create an event product update into event database. 
+
+-	Then it will send product update event created to broker.
+
+-	This event message is consumer by product-query microservice which will actually update product entity into product database.
+
+-	The product database will contain the final state of the product.
+
+-	The event database will contain entire transition of the product from its first stage to final stage.
+
+What are the steps to run axon server as executable jar file?
+
+-	Axon server can be run as java jar file or as docker container.
+
+-	To run axon server as executable jar file we need to dowload its zip file from https://axoniq.io.
+
+-	Then extract the zip file and it will contain executable jar file.
+
+-	Then copy the jar file to a folder and use following command to run jar file.
+
+	Example:
+	
+	#java -jar axonserver.jar
+
+-	Open browser and visit the web page with link http://localhost:8024/ to see axon server dashboard.
+
+How to configure axon server properties?
+
+-	Axon server uses externalized configuration method.
+
+-	To configure properties for axon server we need to create folder with name config inside the folder where executable jar is present.
+
+-	Inside config folder create file with name axonserver.properties or axonserver.yaml.
+
+-	Within this file define axon server properties.
+
+-	All properties are prefixed with axoniq.axonserver except the server.port property.
+
+	Example:
+
+	server.port = 8024
+	axoniq.axonserver.devmode.enabled = true
+	
+-	Axon server on startup will automatically find files defined under config folder with name axonserver.properties or axonserver.yaml.
+
+-	The property axoniq.axonserver.devmode.enabled = true will enable few button on axonserver dashboard which will allows us to clear event store.
+
+How to create the spring boot project which uses axon framework?
+
+-	To create spring boot project that uses axon framework we need to add following dependency in pom.xml file.
+
+	Example:
+	
+	<dependency>
+		<groupId>org.axonframework</groupId>
+		<artifactId>axon-spring-boot-starter</artifactId>
+	</dependency>
+
+What is command class in CQRS design pattern for microservices?
+	
+-	In CQRS design pattern command means any rest endpoint request which will result into create, update or delete operations.	
+	
+-	The command java class will follow naming convention as ${verb}{noun}Command.
+
+	Example:
+	
+	CreateProductCommand
+
+-	The fields inside command class must be unmodifiable i.e. final fields only.
+
+-	It must have only getter methods and not setter methods.
+
+-	The command class must have an unique identifier field which is annotated using @TargetAggregateIdentifier annotation.
+
+	Example:
+	@Builder
+	@Data
+	public class CreateProductCommand {
+	
+		@TargetAggregateIdentifier
+		private final String id;
+	
+		private final String title;
+		...
+	}
+
+-	In the next step we need to create rest controller class and create command object inside its method.
+
+	Example:
+
+	@RestController
+	public class ProductCommandController {
+	
+		@PostMapping("/createProduct")
+		public String createProduct(CreateProductRestModel product) {
+		
+			CreateProductCommand productCommand = CreateProductCommand.builder()
+													.id(UUID.randomUUID().toString())
+													.title(product.getTitle())
+													.
+													...build();
+		}
+	}
+	
+What is command gateway class in CQRS design pattern for microservices?
+
+-	The CommandGateway is a class defined inside axon framework.
+
+-	This class is responsible to produce command object to command bus.
+
+	Example:
+	
+	@Autowired
+	private CommandGateway commandGateway;
+	
+	@PostMapping("/createProduct")
+	public String createProduct(CreateProductRestModel product) {
+	
+		CreateProductCommand productCommand = CreateProductCommand.builder()
+												.id(UUID.randomUUID().toString())
+												.title(product.getTitle())
+												.
+												...build();
+													
+		commandGateway.sendAndWait(productCommand);
+	}
+
+	
+What is aggregator class in CQRS design pattern for microservices?
+
+-	In CQRS design pattern aggregator object records all the changes in state of an entity.
+
+-	The aggregator java class will follow naming convention as ${noun}Aggregator.
+
+	Example:
+	
+	ProductAggregator
+
+-	This class is annotated with @Aggregate annotation.	
+
+-	It must contain all fields which are present inside the command class.
+
+-	The aggregator class must have an unique identifier field which is annotated using @AggregateIdentifier annotation.
+
+-	It must have no arguement constructor.
+	
+	Example:
+
+	@Aggregate
+	public class ProductAggregator {
+	
+		@AggregateIdentifier
+		private final String id;
+	
+		private final String title;
+		...
+	
+		public ProductAggregator() {
+		
+		}
+	}
+
+-	This class can contain methods or constructors that accept command object as arguement.
+
+-	They must be annotated with @CommandHandler annotation.
+
+-	These methods or constructors can be used for validation of the command object.
+
+-	It will consume command object from the command bus.
+
+	Example:
+	
+	@CommandHandler
+	public ProductAggregator(CreateProductCommand productCommand) {
+	
+	}
+
+What is the purpose of @TargetAggregateIdentifier annotation in command class and @AggregateIdentifier in aggregate class?
+
+-	The @Aggregate annotated class is used for command handling.
+
+-	This class can contain methods or constructors that accept command object as arguement.
+
+-	This @AggregateIdentifier annotated field must be initialized by @EventSourcingHandler annotated method for first event handled.
+
+	Example:
+	
+	public void on(ProductCreatedEvent event) {
+		productId = event.getProductId();
+		...
+	}
+
+-	For every next event axon framework before calling command handler method of aggregate class initialize the @AggregateIdentifier field.
+
+-	It uses the value set to @TargetAggregateIdentifier field of command class to do the initialization.
+
+	Example:
+	
+	public void on(ProductReservedEvent event) {
+		qty = qty - event.getQty();
+		...
+	}
+
+-	After initialization axon framework replays all previously happened events from event store on aggregate class.
+
+-	This will bring the fields of aggregate class to current state.
+	
+What is event class in CQRS design pattern for microservices?
+
+-	In CQRS design pattern the command handler is responsible to create an event object.
+
+-	This event object it persist into event store and also pushes it to message broker.
+
+-	The event class will follow naming convention as ${noun}{action}Event.
+
+	Example:
+	
+	ProductCreatedEvent
+
+-	It must contain all fields which are present inside the command class.
+
+	Example:
+
+	@Builder
+	@Data
+	public class ProductCreatedEvent {
+	
+		private final String id;
+	
+		private final String title;
+		...
+	}
+
+-	An event object is created by the command handler method of aggregator class.
+
+	Example:
+	
+	@CommandHandler
+	public ProductAggregator(CreateProductCommand productCommand) {
+	
+		ProductCreatedEvent productEvent = ProductCreatedEvent.builder()
+												.id(productCommand.getId())
+												.title(productCommand.getTitle())
+												...
+												.build();
+		AggregateLifecycle.apply(productEvent);
+	}
+	
+-	The AggregateLifecycle provides static method called apply that will produce event object to event bus.
+
+-	Within the aggregate class we can define event sourcing method.	
+
+-	These methods names are usually short.
+
+-	These methods accept event object as arguement.
+
+-	They must be annotated with @EventSourcingHandler annotation.
+
+	Example:
+	
+	@EventSourcingHandler
+	public void on(ProductCreatedEvent productEvent) {
+		
+		this.id = productEvent.getId();
+		
+		this.title = productEvent.getTitle();
+		...
+	}
+	
+What is event handler class in CQRS design pattern for microservices?
+
+-	The event handler class is also called as projection class.
+
+-	It will follow naming convention as ${noun}Events{handler/projection}.
+
+	Example:
+	
+	ProductEventsHandler
+
+-	This class is responsible to perform create, update and delete operations to database based on the event object.
+
+-	Within the event handler class we can define event handling method.	
+
+-	These methods names are usually short.
+
+-	These methods accept event object as arguement.
+
+-	They must be annotated with @EventHandler annotation.
+
+-	It will consume event object from the event bus.
+
+	Example:
+	
+	@EventHandler
+	public void on(ProductCreatedEvent productEvent) {
+		
+		ProductEntity productEntity = new ProductEntity();
+		
+		productEntity.setId(productEvent.getId());
+		
+		productEntity.setTitle(productEvent.getTitle());
+		...
+		repo.save(productEntity);
+	}
+	
+What is the difference between @EventSourcingHandler annotation and @EventHandler annotation?
+
+-	The method annotated with @EventSourcingHandler annotation is called when the event object is produced to event bus.
+
+-	The execution of command handler method is successfully with no runtime exception throw.
+
+-	But the aggregate object is not persisted inside event store instead it is staged to get persisted.
+
+-	The method annotated with @EventHandler annotation is called when the event object is produced to event bus.
+
+-	The aggregate object is persisted inside event store.
+
+What is query class in CQRS design pattern for microservices?
+	
+-	In CQRS design pattern query means any rest endpoint request which will result into select operations.	
+	
+-	The query java class will follow naming convention as ${verb}{noun}Query.
+
+	Example:
+	
+	FindProductQuery
+
+	Example:
+
+	public class FindProductQuery {
+	
+	}
+
+-	In the next step we need to create rest controller class and create query object inside its method.
+
+	Example:
+
+	@RestController
+	public class ProductCommandController {
+	
+		@GetMapping("/getProducts")
+		public List<FindProductRestModel> getProducts() {
+		
+			FindProductQuery productQuery = new FindProductQuery();
+		}
+	}
+
+What is query gateway in CQRS design pattern for microservices?
+
+-	The QueryGateway is a class defined inside axon framework.
+
+-	This class is responsible to produce query object to query bus.
+
+	Example:
+	
+	@Autowired
+	private QueryGateway queryGateway;
+	
+	@GetMapping("/getProducts")
+	public List<FindProductRestModel> getProducts() {
+	
+		FindProductQuery productQuery = new FindProductQuery();
+		
+		List<FindProductRestModel> productList = queryGateway.query(productQuery, 
+			ResponseType.multipleInstancesOf(FindProductRestModel.class)).join();
+		
+		return productList;
+	}
+	
+What is query handler class in CQRS design pattern for microservices?
+
+-	The query handler will follow naming convention as ${noun}Query{handler}.
+
+	Example:
+	
+	ProductQueryHandler
+
+-	This class is responsible to perform select operations to database based on the query object.
+
+-	Within the query handler class we can define query handling method.	
+
+-	These methods accept query object as arguement.
+
+-	They must be annotated with @QueryHandler annotation.
+
+-	It will consume query object from the query bus.
+
+	Example:
+	
+	@QueryHandler
+	public List<FindProductRestModel> findProduct(FindProductQuery productQuery) {
+		
+		List<ProductEntity> productList = repo.findAll(productEntity);
+		
+		List<FindProductRestModel> productList = new ArrayList<>();
+		...
+		return productList;
+	}
+	
+What is a command interceptor class?
+
+-	The command interceptor class is responsible to intercept command before they are produced to command bus by the command gateway.
+
+-	This allows us to implement additional validation on the command object before it is produced to command bus.
+
+-	The command interceptor class must implement MessageDispatcherInterceptor<CommandMessage<?>> interface.
+
+-	It must implement the following method.
+
+	Example:
+	
+	public BiFunction<Integer, CommandMessage<?>, CommandMessage<?>> handleMessage(List<? extends CommandMessage<?>> messages)
+
+	Example:
+	
+	public class CreateProductCommandInterceptor implements MessageDispatcherInterceptor<CommandMessage<?>> {
+	
+		public BiFunction<Integer, CommandMessage<?>, CommandMessage<?>> handleMessage(List<? extends CommandMessage<?>> messages) {
+			...
+		}
+	}
+	
+-	We need to register the command interceptor class with the command bus.
+
+	Example:
+	
+	@Autowired
+	public void registerInterceptor(ApplicationContext appCtx, CommandBus bus) {
+	
+		CreateProductCommandInterceptor interceptor = appCtx.getBean(CreateProductCommandInterceptor.class);
+		
+		bus.registerDispatchInterceptor(interceptor);
+	}
+
+What is set based consistency validation in CQRS design pattern?
+
+-	The purpose of the set based consistency validation is to ensure no duplicate products are created in database.
+
+-	According to this validation a products lookup table must exist which will be used by command microservice.
+
+-	Consider a new product needs to be created.
+
+-	There will be event handler class present with the command microservice.
+
+-	It will be responsible to create new record in this product lookup table.
+
+	Example:
+	
+	@EventHandler
+	public void on(ProductCreatedEvent productEvent) {
+		
+		ProductLookupEntity productLookupEntity = new ProductLookupEntity();
+		
+		productLookupEntity.setId(productEvent.getId());
+		
+		productLookupEntity.setTitle(productEvent.getTitle());
+		...
+		repo.save(productEntity);
+	}
+
+-	The command interceptor class will check everytime the whether the product exist in this product lookup table.
+
+-	If the product does not exist it will produce command to command bus otherwise it will throw a runtime exception.
+
+	Example:
+	
+	public BiFunction<Integer, CommandMessage<?>, CommandMessage<?>> handleMessage(List<? extends CommandMessage<?>> messages) {
+			
+		(index, command) -> {
+			
+			CreateProductCommand productCommand = (CreateProductCommand) messages.getPayload();
+			
+			ProductLookupEntity productLookupEntity = repo.findByTitle(productCommand.getTitle());
+			
+			if(null != productLookupEntity) {
+				
+				throw new RuntimeException();
+			}
+			
+			return command;
+		}
+	}
+	
+What is processing group in axon framework?
+
+-	A group of related event handler objects is called as processing group.
+
+-	Once command is produced to command bus it is consumed by all event handler methods with matching arguement.
+
+-	Axon framework allows us to group all related event handler objects into one single group using @ProcessingGroup annotation.
+
+-	This annotation accept one string arguement called group name.
+
+	Example:
+	
+	@ProcessingGroup("products-group")
+
+-	In axon framework execution of event handler methods is managed by event processors.
+
+-	There are two types of event processors namely tracking event processor and subscriber event processor.
+
+-	The tracking event processor calls event handler methods of same processing group concurrently in different threads.
+
+-	Here the runtime exception thrown from one event handler method will not cause execution of other event handler method to stop.
+
+-	But the subscriber event processor calls event handler methods of same processing group sequentially in single thread.
+
+-	Here the runtime exception thrown from one event handler method will stop the execution of other event handler method.
+
+-	To need to ensure that all event handler methods within same processing group are called sequentially in same single thread.
+
+-	The following property in application.properties files will ensure that all event handler methods within same processing group are
+	called sequentially in same single thread.
+
+	Syntax:
+	
+	axon.event.handling.processors.{groupName} = subscribing
+	
+	Example:
+	
+	axon.event.handling.processors.products-group = subscribing
+	
+Explain the exception handling within command handler method?
+
+-	The AggregateLifecycle provides static method called apply that will produce event object to event bus.
+
+-	The command handler method calls this static method.
+
+-	However this method will not immediately produce event object to event bus.
+
+-	Instead this method will stage the event object to be produced to event bus.
+
+-	Only when the execution of the command handler method is complete without any runtime exception then it will produce event object to event bus.
+
+-	Any runtime exception throw by the command handler method is wrapped inside CommandExecutionException class object.
+
+Explain the exception handling within event handler method (single microservice)?
+
+-	Axon framework provides an interface call ListernerInvocationErrorHandler.
+
+-	This interface provides following abstract method.
+
+	Example:
+	
+	public abstract void onError(Exception ex, EventMessage<?> event, EventMessageHandler eventMsgHandler) throws Exception
+	
+-	For exception handling within event handler method the above interface must be implemented and its abstract method must be overriden.
+	
+	Example:
+	
+	public class ProductsEventHandlerExceptionHandler implements ListernerInvocationErrorHandler {
+
+		public abstract void onError(Exception ex, EventMessage<?> event, EventMessageHandler eventMsgHandler) throws Exception {
+		
+			throw ex;
+		}
+	}
+	
+-	When an runtime exception is thrown from event handler method then this exception is caught by event processor.
+
+-	As part of exception handling the event processor call the above method.	
+
+-	Any runtime exception thrown from the above method is propogated to @RestController or @ControllerAdvice annotated class.
+
+-	However we must register this listener object with event processor for exception handling within event handler method.
+
+	Example:
+	
+	@Autowired
+	public void configure(EventProcessingConfigurer cfg) {
+	
+		cfg.registerListernerInvocationErrorHandler("products-group", conf -> new ProductsEventHandlerExceptionHandler());
+	}
+
+Explain the SAGA way of transaction management?
+
+-	Using axon framework we can implement SAGA way of transaction management.
+
+-	This will require a java class annotated with @Saga annotation.
+
+-	This annotation will make to SAGA class identified during spring component scanning process.
+
+-	By convention this java class is present inside the microservice that will accept the web request.
+
+	Example:
+	
+	@Saga
+	public class OrderSaga {
+	
+	}
+	
+-	The SAGA class will use event handler methods annotated with @SagaEventHandler annotation to consume the event produced to event bus.
+
+-	It will produce command to command bus.
+
+-	This command will be consumed by command handler class of another microservice.
+
+-	This process continues until entire transaction is completed.
+
+-	Every SAGA transaction begins by consuming event from event bus which is handled by method annotated using @StartSaga annotation.
+
+-	It ends by producing new command to command bus which is handled by method annotated using @EndSaga annotation.
+
+	@Saga
+	public class OrderSaga {
+	
+		@StartSaga
+		@SagaEventHandler
+		public void handle(OrderCreatedEvent event) {
+		
+		}
+		
+		@SagaEventHandler
+		public void handle(ProductReservedEvent event) {
+		
+		}
+		
+		@SagaEventHandler
+		public void handle(PaymentProcessedEvent event) {
+		
+		}
+
+		@EndSaga
+		@SagaEventHandler
+		public void handle(OrderApprovedEvent event) {
+		
+		}
+	} 
+
+-	
+
+
+What is a compensating transaction in SAGA way of transaction management?
+
+-	A single transaction can contain multiple sub-transactions to be performed.
+
+-	Only when all the sub-transactions are completed successfully then the transaction must be commit.
+
+-	But if any one sub-transaction fails the transaction must be rollback.
+
+-	But each sub-transaction itself is a transaction which is commit hence it cannot be rollback.
+
+-	Therefore we need to do another sub-transaction that will reverse effect of preceding sub-transactions.
+
+-	This sub-transactions must be called in reverse order of preceding sub-transactions.
+
+-	These sub-transactions together are called compensating transaction.

@@ -109,6 +109,16 @@ What is spring-cloud-api-gateway and how to implement it?
 	
 -	The calling micro-service must call api gateway using request url in format http://{api gateway ip}:{api gateway port}/{spring application name}/{request uri}.	
 
+-	By default micro-service is registered with eureka naming server using upper case spring application name.
+
+-	This will require us to use spring application name in upper case in request url.
+
+-	However by using the following property in application.properties we can make use of lower case spring application name in url. 
+
+	Example:
+	
+	spring.cloud.gateway.discovery.locator.lower-case-service-id = true
+
 Explain RouteLocator bean for by spring-cloud-api-gateway?
 
 -	RouteLocator bean is simple and effective way to route request from spring-cloud-api-gateway to other micro-service.
@@ -448,3 +458,39 @@ How to implement bulk-head in fault tolerant micro-service?
 	resilience4j.bulkhead.instances.server-down.maxConcurrentCalls = 10
 
 -	When the micro-service method is called concurrently number of times more than maxConcurrentCalls we will get runtime exception saying RequestNotPermitted.
+
+How to resolve port number conflict?
+
+-	By default all spring boot application run on port number 8080.
+
+-	However we can use the following property to set new port number for our spring boot application to run.
+
+	Example:
+	
+	server.port = 7070
+	
+-	When we have to run multiple instances of single micro-service we cannot run them on same port.
+
+-	In this case we can set the following property that will make spring boot randomly select port number which is available.
+
+	Example:
+	
+	server.port	= 0
+	
+What happens when multiple instances of same micro-service register with naming server using same spring application name?
+
+-	When multiple instance of same micro-service register with naming server using same spring application name then latest information is preserved.
+
+-	This means the micro-service instance that registers itself latest with naming server is only preserved by naming server.
+
+-	In this case we can set the following property that will multiple instances register itself with naming server using different spring application name.
+
+	Example:
+	
+	eureka.instance.instance-id = ${spring.application.name}:${instanceId:${random.value}}
+	
+-	In the above expression the instance name will be combination of spring boot application name and instanceId.
+
+-	This instanceId must be set into command line arguement.
+
+-	But when instanceId is not available then randomValue will be used to ensure unique instance name.

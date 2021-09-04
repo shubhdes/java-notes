@@ -368,7 +368,7 @@ Explain different scenario of method overloading?
 		
 			Test t = new Test();
 			t.m1(new Animal());
-			t.m1(new Monkey);
+			t.m1(new Monkey());
 			
 			Animal a = new Monkey();
 			t.m1(a);
@@ -481,7 +481,7 @@ What is method hiding?
 	
 	class Child extends Parent {
 	
-		private  static void m1() {
+		public static void m1() {
 		
 			System.out.println("child version");
 		}
@@ -498,7 +498,7 @@ What is method hiding?
 			
 			p1 = null;
 			
-			p1.m1();					/**method and variable resolution is done using reference variable data-type and not using the object data-type to
+			p1.m1();					/**static method and static variable resolution is done using reference variable data-type and not using the object data-type to
 			System.out.println(p1.x);	 which memory is allocated**/
 		}
 	}
@@ -528,7 +528,7 @@ What is method overriding for variable arguement method?
 	
 	class Child extends Parent {
 	
-		private void m1(int a) {
+		public void m1(int a) {
 		
 			System.out.println("child version");
 		}
@@ -670,7 +670,7 @@ What are static blocks inside a java class?
 
 -	In a java class static blocks are block that contains code to be executed when class is loaded for the first time.
 
--	A java class can have multipe static blocks and these static blocks are executed before constructors of class.	
+-	A java class can have multiple static blocks and these static blocks are executed before constructors of class.	
 
 -	Using static block and static member it is possible to run java program without public static void main(String[] args) method.
 
@@ -748,7 +748,7 @@ What are static blocks inside a java class?
 		
 			A a = null;
 			
-			B b = new A();
+			B b = new B();
 		}
 	}
 	
@@ -1161,7 +1161,7 @@ What is instance control flow in inheritance?
 	child first instance block
 	j value:0
 	i value:10
-	parent second instance block
+	child second instance block
 	child constructor
 	child main
 	j value:20
@@ -1203,7 +1203,7 @@ What is super() or super(params) or this() or this(params)?
 
 What is super or this?
 
--	The keyword super is used to refer parent class instance memebers whereas this is used to refer child class instance member and	these keywords cannot be 
+-	The keyword super is used to refer parent class instance members whereas this is used to refer child class instance member and	these keywords cannot be 
 	used in static methods or static blocks.
 
 What is recursive constructor call?
