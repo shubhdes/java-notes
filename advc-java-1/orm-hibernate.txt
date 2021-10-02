@@ -30,6 +30,7 @@ States of objects in hibernate
 	obj.setId("EMP001");
 	obj.setName("John");	//Transient i.e object is not associated with session yet.
 	session.save(obj);	//object added to session level cache
+	obj.setName("Joy");
 	transaction.commit();	//object saved in database i.e persistent
 	session.close();
 	obj.setName("Jack");	//detached i.e. changes to object are not saved in database.

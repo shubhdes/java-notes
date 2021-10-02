@@ -24,13 +24,13 @@ What is event driven microservices communication?
 
 How are transaction managed in microservices?
 
--	A single transaction can contain multiple sub-transactions to pe performed.
+-	A single transaction can contain multiple operations to pe performed.
 
--	Only when all the sub-transactions are completed successfully then the transaction must be commit.
+-	Only when all the operations are completed successfully then the transaction must be complete.
 
--	But if any one sub-transaction fails the transaction must be rollback.
+-	But if any one operation fails the remaining operations must be undo.
 
--	It is possible that each sub-transaction of single transaction are carried out by different microservices.
+-	It is possible that each operation of single transaction are carried out by different microservices.
 
 -	To manage such transaction we need to use SAGA design pattern for transaction management.
 
@@ -62,15 +62,15 @@ Explain choreography based SAGA design pattern?
 
 -	Therefore the payment microservice will send payment failed event to broker.
 
--	The product microservice will consume payment failed event from the broker and will do compensating sub-transaction.
+-	The product microservice will consume payment failed event from the broker and will do compensating operation.
 
 -	It will cancel the product reservation and will send product reservation cancelled event to broker.
 
--	Then order microservice will consume product reservation cancelled event from the broker and will do compensating sub-transaction.
+-	Then order microservice will consume product reservation cancelled event from the broker and will do compensating operation.
 
 -	It will reject the order created.
 
--	The compensating sub-transactions are performed in reverse order of the usual sub-transactions.
+-	The compensating operation are performed in reverse order of the usual operation.
 
 Explain orchestration based SAGA design pattern?
 
@@ -108,17 +108,17 @@ Explain orchestration based SAGA design pattern?
 
 - 	The SAGA microservice will consume payment failed event from the broker and post cancel product reservation command.
 
--	The product microservice will consume product reservation command from the broker and will do compensating sub-transaction.
+-	The product microservice will consume product reservation command from the broker and will do compensating operation.
 
 -	It will cancel the product reservation and will send product reservation cancelled event to broker.
 
 - 	The SAGA microservice will consume product reservation cancelled event from the broker and post reject order command.
 
--	Then order microservice will consume reject order command from the broker and will do compensating sub-transaction.
+-	Then order microservice will consume reject order command from the broker and will do compensating operation.
 
 -	It will reject the order created.
 
--	The compensating sub-transactions are performed in reverse order of the usual sub-transactions.
+-	The compensating operations are performed in reverse order of the usual operations.
 
 What is CQRS design pattern?
 
@@ -148,7 +148,7 @@ Explain the working of CQRS and Event sourcing design pattern?
 
 -	Then it will send product update event created to broker.
 
--	This event message is consumer by product-query microservice which will actually update product entity into product database.
+-	This event message is consumed by product-query microservice which will actually update product entity into product database.
 
 -	The product database will contain the final state of the product.
 
@@ -204,7 +204,7 @@ How to create the spring boot project which uses axon framework?
 
 What is command class in CQRS design pattern for microservices?
 	
--	In CQRS design pattern command means any rest endpoint request which will result into create, update or delete operations.	
+-	In CQRS design pattern command object is created for every request request which will result into create, update or delete of entities.	
 	
 -	The command java class will follow naming convention as ${verb}{noun}Command.
 
@@ -274,7 +274,7 @@ What is command gateway class in CQRS design pattern for microservices?
 	
 What is aggregator class in CQRS design pattern for microservices?
 
--	In CQRS design pattern aggregator object records all the changes in state of an entity.
+-	In CQRS design pattern aggregator object records changes in state of entities.	
 
 -	The aggregator java class will follow naming convention as ${noun}Aggregator.
 
@@ -321,41 +321,11 @@ What is aggregator class in CQRS design pattern for microservices?
 	
 	}
 
-What is the purpose of @TargetAggregateIdentifier annotation in command class and @AggregateIdentifier in aggregate class?
-
--	The @Aggregate annotated class is used for command handling.
-
--	This class can contain methods or constructors that accept command object as arguement.
-
--	This @AggregateIdentifier annotated field must be initialized by @EventSourcingHandler annotated method for first event handled.
-
-	Example:
-	
-	public void on(ProductCreatedEvent event) {
-		productId = event.getProductId();
-		...
-	}
-
--	For every next event axon framework before calling command handler method of aggregate class initialize the @AggregateIdentifier field.
-
--	It uses the value set to @TargetAggregateIdentifier field of command class to do the initialization.
-
-	Example:
-	
-	public void on(ProductReservedEvent event) {
-		qty = qty - event.getQty();
-		...
-	}
-
--	After initialization axon framework replays all previously happened events from event store on aggregate class.
-
--	This will bring the fields of aggregate class to current state.
-	
 What is event class in CQRS design pattern for microservices?
 
 -	In CQRS design pattern the command handler is responsible to create an event object.
 
--	This event object it persist into event store and also pushes it to message broker.
+-	The aggregate object it persist into event store and event object is pushed to message broker.
 
 -	The event class will follow naming convention as ${noun}{action}Event.
 
@@ -461,9 +431,57 @@ What is the difference between @EventSourcingHandler annotation and @EventHandle
 
 -	The aggregate object is persisted inside event store.
 
+What is the purpose of @TargetAggregateIdentifier annotation in command class and @AggregateIdentifier in aggregate class?
+
+-	The @TargetAggregateIdentifier annotation is used at field of command class.
+
+-	It means the command must be applied on specific instance of aggregate.
+
+-	The @AggregateIdentifier annotation is used at field of aggregate class.
+
+-	It means the command must be applied on this aggregate instance.
+
+-	For that instance @TargetAggregateIdentifier annotated field value matches @AggregateIdentifier annotated field value.
+
+-	For the first event axon will search for @TargetAggregateIdentifier annotated field value in event store.
+
+-	There will be no aggregate present in event store and hence axon will create an empty aggregate object.
+
+-   This object must be initialized by @EventSourcingHandler annotated method for first event handled.
+
+	Example:
+	
+	@EventSourcingHandler
+	public void on(ProductCreatedEvent event) {
+		productId = event.getProductId();
+		
+		title = event.getTitle();
+		...
+	}
+
+-	For the next event axon will search for @TargetAggregateIdentifier annotated field value in event store.
+
+-	There will be aggregate object present in event store and hence axon will create an empty aggregate object.
+
+-	It will assign @TargetAggregateIdentifier annotated field value to @AggregateIdentifier annotated field.
+
+-	It will replay all previously happened events from event store on empty aggregate object.
+
+-	This will bring the fields of aggregate object to present state.
+
+-	This object is updated by @EventSourcingHandler annotated method to new state.
+
+	Example:
+	
+	@EventSourcingHandler
+	public void on(ProductReservedEvent event) {
+		qty = qty - event.getQty();
+		...
+	}
+
 What is query class in CQRS design pattern for microservices?
 	
--	In CQRS design pattern query means any rest endpoint request which will result into select operations.	
+-	In CQRS design pattern query means request which will result into select operations.	
 	
 -	The query java class will follow naming convention as ${verb}{noun}Query.
 
@@ -536,7 +554,7 @@ What is query handler class in CQRS design pattern for microservices?
 	@QueryHandler
 	public List<FindProductRestModel> findProduct(FindProductQuery productQuery) {
 		
-		List<ProductEntity> productList = repo.findAll(productEntity);
+		List<ProductEntity> productList = repo.findAll();
 		
 		List<FindProductRestModel> productList = new ArrayList<>();
 		...
@@ -612,6 +630,7 @@ What is set based consistency validation in CQRS design pattern?
 	
 	public BiFunction<Integer, CommandMessage<?>, CommandMessage<?>> handleMessage(List<? extends CommandMessage<?>> messages) {
 			
+		return 
 		(index, command) -> {
 			
 			CreateProductCommand productCommand = (CreateProductCommand) messages.getPayload();
@@ -631,7 +650,7 @@ What is processing group in axon framework?
 
 -	A group of related event handler objects is called as processing group.
 
--	Once command is produced to command bus it is consumed by all event handler methods with matching arguement.
+-	Once event is produced to event bus it is consumed by all event handler methods with matching arguement.
 
 -	Axon framework allows us to group all related event handler objects into one single group using @ProcessingGroup annotation.
 
@@ -655,8 +674,7 @@ What is processing group in axon framework?
 
 -	To need to ensure that all event handler methods within same processing group are called sequentially in same single thread.
 
--	The following property in application.properties files will ensure that all event handler methods within same processing group are
-	called sequentially in same single thread.
+-	We need to use the following property in application.properties file.
 
 	Syntax:
 	
@@ -771,23 +789,16 @@ Explain the SAGA way of transaction management?
 		public void handle(OrderApprovedEvent event) {
 		
 		}
-	} 
+	}
 
--	
+What is a deadline?
 
+-	Consider situation where a command was posted to command bus but no corresponding event was posted to event bus.
 
-What is a compensating transaction in SAGA way of transaction management?
+-	After fixed time interval a new event must be posted to event bus as compensating event.
 
--	A single transaction can contain multiple sub-transactions to be performed.
+-	Deadline is event that takes place in absence of another event.
 
--	Only when all the sub-transactions are completed successfully then the transaction must be commit.
+-	It can be used inside SAGA as well as outside SAGA.
 
--	But if any one sub-transaction fails the transaction must be rollback.
-
--	But each sub-transaction itself is a transaction which is commit hence it cannot be rollback.
-
--	Therefore we need to do another sub-transaction that will reverse effect of preceding sub-transactions.
-
--	This sub-transactions must be called in reverse order of preceding sub-transactions.
-
--	These sub-transactions together are called compensating transaction.
+-	Deadline event are not stored into event store.	

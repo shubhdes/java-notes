@@ -546,7 +546,7 @@ How to define a customized classloaders?
 			Student s1 = new Student();		/**Student.class loaded using default classloader**/
 		
 			MyClassLoader mc = new MyClassLoader();
-			mc.load("MyClassLoader");				/**Student.class loaded using MyClassLoader**/
+			mc.load("Student");				/**Student.class loaded using MyClassLoader**/
 	
 			Student s2 = new Student();		/**Use Student.class loaded using MyClassLoader**/
 		}	
