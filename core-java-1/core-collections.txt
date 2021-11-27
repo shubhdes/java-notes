@@ -21,13 +21,13 @@ What are collections?
 														
 												Collection(I)
 													|
-		--------------------------------------------------------------------------------------------------------
-		|																									   |			
-	   List(I)																								 Set(I)		
-		|																									   |	
-	--------------																						---------------------	
-	| 		  	 |																						| 		  	 		|	
-ArrayList(C)  LinkedList(C)																			HashSet(C)			SortedSet(I)	
+		--------------------------------------------------------------------------------------------------------------------------------------------------------------
+		|																									   |													 |
+	   List(I)																								 Set(I)												   Queue(I)
+		|																									   |													 |
+	--------------																						---------------------								---------------------
+	| 		  	 |																						| 		  	 		|								| 		  	 		|	
+ArrayList(C)  LinkedList(C)																			HashSet(C)			SortedSet(I)				  PriorityQueue(C)      BlockingQueue(C)
 																										|					|
 																									LinkedHashSet(C)	NavigableSet(I)
 																															|
@@ -285,3 +285,27 @@ Explain LinkedList and its internal working?
 
 -	It is suitable for insert, update, delete operation but it is suitable for faster searching of values i.e to search a particular value in linked-list we need to
 	begin from first element of linked-list.
+
+Explain PriorityQueue and its internal working?
+
+-	Queue is child interface of Collection interface in java.util package.
+
+-	It is used to represent group of individual objects prior to processing.
+
+-	In which order we added objects in same order the objects must be processed i.e. first in first out requirement.
+
+-	Usually queue follows first in first out order but based on our requirement we can implement our own priority order also.
+
+-	PriorityQueue is a class in java.util package and its internal data-structure is queue.
+
+-	Elements are arranged according to some priority.
+
+-	We can use natural priority order or can create our own priority order.
+
+-	Insertion order is preserved.
+
+-	Duplicate values are allowed.
+
+-	Null values are not allowed.
+
+-	Some operating systems wont provide proper support for PriorityQueue.

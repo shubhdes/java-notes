@@ -948,7 +948,7 @@ What is static control flow in inheritance?
 What are instance blocks inside a java class?
 
 -	In a java class instance blocks are block that contains code to be executed when object of a class is created.
--	A java class can have multipe instance blocks and these instance blocks are executed before constructors of class.
+-	A java class can have multiple instance blocks and these instance blocks are executed before constructors of class.
 
 -	Whenever a java class object is created JVM performs instance control flow i.e. it identify instance variable and assign default value even if explicit value
 	is supplied.

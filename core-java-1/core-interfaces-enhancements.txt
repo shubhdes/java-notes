@@ -62,7 +62,7 @@ Explain default method with respect to inheritance?
 	
 	class Test implements Interface1, Interface2 {
 		
-		public default int m1(int a, int b) {
+		public int m1(int a, int b) {
 			Interface1.super.m1(a, b);
 		}
 	}
