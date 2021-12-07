@@ -1,0 +1,275 @@
+core java - kafka
+
+What is Apache kafka?
+
+-	Apache kafka is distributed streaming platform.
+
+-	We can use kafka to create real time streams of data.
+
+-	Also kafka can be used to process real time streams of data.
+
+How does Apache kafka work?
+
+-	Apache kafka uses publisher subscriber messaging system.
+
+-	This system consists of three entities, called as publisher, subscriber and broker.
+
+-	Publisher is also called as message producer.
+
+-	It pushes message to queue also called as broker.
+
+-	Subscriber is also called as message consumer.
+
+-	It pulls message from the broker.
+
+-	The publisher and subscriber are completely decoupled.
+
+Explain difference between traditional messaging system and Apache kafka messaging system?
+
+-	In traditional messaging system the message is not persisted, but Apache kafka persist the message for specific time period.
+
+-	Traditional messaging system do not follow distributed architecture, but Apache kafka follow distributed architecture.
+
+-	In traditional messaging system brokers keep track of consumed message, but in Apache kafka consumers keep track of consumed message.
+
+-	Traditional messaging system allow only specific consumer to consume message, but Apache kafka allow any consumer subscribed to topic to consume the message.
+
+Enlist the components of kafka ecosystem?
+
+-	The components of kafka ecosystem are broker, client, connector, stream and ksql.
+
+What is a broker?
+
+-	Broker is kafka server or kafka queue.
+
+-	It is a middle man between the producer and consumer.
+
+-	Following command must be used to start broker.
+
+	syntax:
+	
+	kafka-server-start.bat [configFilePath]
+
+	example:
+	
+	kafka-server-start.bat ..\..\config\server.properties
+
+What is a cluster?
+
+-	A cluster is group of computers acting together for common purpose.
+
+-	A kafka cluster is group of computers each running one instance of broker.
+
+-	This ensures availability, fault tolerance, reliable work distribution, scalability and concurrency.
+
+What is a zookeeper?
+
+-	Following command must be used to start zookeeper.
+
+	syntax:
+	
+	zookeeper-server-start.bat [configFilePath]
+
+	example:
+	
+	zookeeper-server-start.bat ..\..\config\zookeeper.properties
+	
+What is a topic?
+
+-	A topic is unique name given to group of message records.
+
+-	Analogy with RDMBS, a topic within broker is similar to table within a database.
+
+-	Following command must be used to create topic.
+
+	syntax:
+	
+	kafka-topics.bat --create --topic [topicName] -zookeeper [ipAddress:portNumber] --replication-factor [replicationFactor] --partitions [partitionCount]
+	
+	example:
+	
+	kafka-topics.bat --create --topic my-topic-001 -zookeeper localhost:2181 --replication-factor 1 --partitions 4
+	
+-	Following command must be used to list all the topics present inside broker.
+
+	syntax:
+	
+	kafka-topics.bat --zookeeper [ipAddress:portNumber] --list
+	
+	example:
+	
+	kafka-topics.bat --zookeeper localhost:2181 --list
+	
+What are topic partitions?
+
+-	A single topic is broken into small parts which are distributed across cluster, these parts are called as partitions.
+
+What is a producer?
+
+-	Producer is application which pushes message record to the broker.
+
+-	Client program will use apache kafka producer API to implement producer.
+
+-	Following command must be used to create console producer.
+
+	syntax:
+	
+	kafka-console-producer.bat --broker-list [ipAddress:portNumber] --topic [topicName]
+	
+	example:
+
+	kafka-console-producer.bat --broker-list localhost:9092 --topic my-topic-001
+
+What is a consumer?
+
+-	Consumer is application which pulls message record from the broker.
+
+-	Consumer will request message record from broker.
+
+-	Broker immediately will send message record it received from the producer to the consumer.
+
+-	Consumer will process the message record and will request next message record from broker.
+
+-	Client program will use apache kafka consumer API to implement consumer.
+
+-	Following command must be used to create console consumer.
+
+	syntax:
+	
+	kafka-console-consumer.bat --bootstrap-server [ipAddress:portNumber] --topic [topicName] --from-beginning
+	
+	example:
+
+	kafka-console-consumer.bat --bootstrap-server localhost:9092 --topic my-topic-001 --from-beginning
+
+What is a partitioner?
+
+-	A partitioner is the component inside broker responsible to determine the partition location of message record.
+
+-	A producer can push message record to partition as plain value or in form of key and value pair.
+
+-	When message record is simply plain value then partitioner push it inside any partition using round robin algorithm.
+
+-	But when message record is in form of key and value pair then key undergoes hashing to generate hash value.
+
+-	The hash value is used to determine the partition location of message record.
+
+-	This way message records with same key value are pushed to same partition location.
+
+-	Following command must be used to create console producer which uses key in message record.
+
+	syntax:
+	
+	kafka-console-producer.bat --broker-list [ipAddress:portNumber] --topic [topicName] --from-beginning --property "key.separator=[value]" --property "parse.key=[value]"
+	
+	example:
+
+	kafka-console-producer.bat --broker-list localhost:9092 --topic my-topic-001 --from-beginning --property "key.separator=-" --property "parse.key=true"
+	
+-	Following command must be used to create console consumer which uses key in message record.
+
+	syntax:
+	
+	kafka-console-consumer.bat --bootstrap-server [ipAddress:portNumber] --topic [topicName] --from-beginning -property "key.separator=[value]" --property "print.key=[value]"
+	
+	example:
+
+	kafka-console-consumer.bat --bootstrap-server localhost:9092 --topic my-topic-001 --from-beginning -property "key.separator=-" --property "print.key=true"
+
+What is partition offset?
+
+-	A partition offset is sequence number for message record in the partition.
+
+-	Broker is responsible to assign sequence number for every message record present in partition.
+
+-	This number is unique within the partition and not unique within the topic.
+
+-	A partition continues to grow as new message records are added.
+
+-	All message records are persisted inside commit log file.
+
+-	A consumer has three options to pull message records from partition.
+
+-	It can read all message record from beginning, latest or from specific offset value.
+
+What is consumer offset?
+
+-	Whenever consumer pulls message record from the partition it makes note of the offset value of the last message record pulled.
+
+-	This offset value is pushed as message record inside special topic called __consumer_offset.
+
+-	Further consumer pulls the offset value from __consumer_offset topic to understand which next message record it must pull from the partition.
+	
+What is a consumer group?
+
+-	A group of one or more consumer applications which share work load is called consumer group.
+
+-	Apache kafka allows only one consumer application from the consumer group to pull message record from one partition.
+
+-	This will also prevent duplicate pull of the same message record.
+
+-	Consumer group is used for scalable message consumption.
+
+-	Different application must have different consumer group identifiers.
+
+-	Following command must be used to create consumer and adding it to consumer group.
+
+	syntax:
+
+	kafka-console-consumer.bat --bootstrap-server [ipAddress:portNumber] --topic [topicName] --group [groupName]
+	
+	example:
+	
+	kafka-console-consumer.bat --bootstrap-server localhost:9092 --topic my-topic-001 --group my-group-001
+	
+-	When consumer is created without group then it kafka will create new group and consume to that consumer group.	
+
+-	Following command must be used to list all the consumer groups present inside broker.
+
+	syntax:
+	
+	kafka-consumer-groups.bat --bootstrap-server [ipAddress:portNumber] --list
+	
+	example:
+	
+	kafka-consumer-groups.bat --bootstrap-server localhost:9092 --list
+
+What is commit log?
+
+-	The message records in kafka are maintained in form of file system inside broker.
+
+-	The location of this file system can be configured using following property inside server.properties file.
+
+	example:
+	
+	log.dir = /tmp/kafka-logs
+	
+-	Under this location we have multiple folders one for each partition present inside the broker.
+
+-	The naming convention for these folders is [topicName-partitionCount].
+
+-	Message records are maintained inside a file named as 0000000000000000.log under this folder.
+
+-	These message records are present in form of bytes.
+
+-	Following command must be used to read message record from 0000000000000000.log file.
+
+	syntax:
+	
+	kafka-run-class.bat kafka.tools.DumpLogSegments --deep-iteration --files [filePath]
+	
+	example:
+	
+	kafka-run-class.bat kafka.tools.DumpLogSegments --deep-iteration --files /tmp/kafka-logs/my-topic-001/00000000000000000000.log
+
+What is retention policy?
+
+-	The retention policy determines how long in hours the message record will be present inside the partition.
+
+-	It can be configured using following property inside server.properties file.
+
+	example:
+	
+	log.retention.hours = 168
+	
+-	The default retention period is 168 hours i.e. 7 days.

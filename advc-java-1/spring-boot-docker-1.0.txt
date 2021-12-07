@@ -170,7 +170,7 @@ How to expose port of container?
 
 -	When an image is running it will use port provided inside image or it will use default port 5000.
 
--	Tthis port cannot be accessed outside the container network unless we explicitly expose it.
+-	This port cannot be accessed outside the container network unless we explicitly expose it.
 
 -	The following command will expose internal container port and map it to external server port.
 
