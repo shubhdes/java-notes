@@ -1,0 +1,85 @@
+micronaut - micro-service-1.0
+
+What is micronaut?
+
+-	Micronaut is framework used for developing microservices.
+
+-	It works by using annotation processing at compile time.
+
+-	It does not use reflection at runtime.
+
+-	It provides faster start up time.
+
+-	It does not require memory to save reflection caches.
+
+-	It packages source code inside jar file.
+
+-	It has an embedded web container called as netty.
+
+How is dependency injection done in micronaut?
+
+-	In micronaut dependency injection is done at compile time.
+
+-	Micronaut support three ways of dependency injection called as setter, field and constructor.
+	
+-	We must use @Primary annotation or @Named annotation to resolve dependency injection ambiguity.
+
+Enlist different class level annotations used in micronaut which corresponds to scope of micronaut bean?
+
+-	@Context annotation for eagerly initialized micronaut bean or @Singleton annotation for lazily initialized micronaut bean.
+
+-	@Prototype or @Bean annotation which is the default scope of micronaut bean.
+
+Enlist different controller method level annotations used in micronaut which corresponds to http method?
+
+-	@Get
+
+-	@Post
+
+-	@Put
+
+-	@Delete
+
+Enlist different controller method parameter level annotations used in micronaut?
+
+-	@PathVariable
+
+-	@QueryValue
+
+-	@Body
+
+Enlist different method level annotations used in micronaut to manage micronaut bean lifecycle?
+
+-	@PostConstruct
+
+-	@PreDestroy
+
+How to add configuration for a micronaut application?
+
+-	To add configuration for a micronaut application we must use application.yaml file.
+
+-	We must use the @Property annotation or @Value at field or parameter level to read configuration value.
+
+-	Micronaut support active environment.
+
+-	The active environment can be configured using MICRONAUT_ENVIRONMENTS variable.
+
+-	The configuration using environment variable have more priority than the configuration using application-environment.yaml.
+
+	ENVIRONMENT_VARIABLE > application-environment.yaml > application.yaml
+
+How to perform exception handling in micronaut?
+
+-	Exception handling in micronaut can be done locally or globally.
+
+-	To handle exception inside controller we need to define method annotated with @Error annotation.
+
+-	We can use this method to handle exception raised outside the controller.
+
+-	This can be done by changing the global attribute which accept boolean parameter as true.
+
+-	To provide exception handling globally we need to implement ExceptionHandler <E, R> interface.
+
+-	We must override the following abstract method.
+
+	public R handle(HttpRequest request, E exception) 
