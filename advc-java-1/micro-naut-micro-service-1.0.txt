@@ -16,6 +16,8 @@ What is micronaut?
 
 -	It has an embedded web container called as netty.
 
+-	It allows reactive programming.
+
 How is dependency injection done in micronaut?
 
 -	In micronaut dependency injection is done at compile time.
@@ -26,9 +28,13 @@ How is dependency injection done in micronaut?
 
 Enlist different class level annotations used in micronaut which corresponds to scope of micronaut bean?
 
+-	@Controller
+
 -	@Context annotation for eagerly initialized micronaut bean or @Singleton annotation for lazily initialized micronaut bean.
 
 -	@Prototype or @Bean annotation which is the default scope of micronaut bean.
+
+-	@Repository annotation for JPA repository or @JDBCRepository annotation for JDBC repository.
 
 Enlist different controller method level annotations used in micronaut which corresponds to http method?
 
@@ -82,4 +88,128 @@ How to perform exception handling in micronaut?
 
 -	We must override the following abstract method.
 
-	public R handle(HttpRequest request, E exception) 
+	public R handle(HttpRequest request, E exception)
+
+How to implement a micronaut client?
+
+-	A micronaut client allows reactive programming.
+
+-	It can be implemented using two ways which are called as low-level client and declarative client. 
+
+	Example:
+
+	public MicronautClient(@Client("http://localhost:8080") RxHttpClient client) {;}
+
+	Example:
+
+	@Client("http://localhost:8080")
+	public interface MicronautClient {
+
+		@Get("/employees")
+		public List<Employee> findAllEmployees();	
+	}
+
+How does micronaut client achieve resilience? 
+
+-	A micronaut client achieve resilience using three ways called as retry, circuit-break and fallback.
+
+-	Retry is implemented using @Retry annotation at method level or class level.
+
+-	When the micronaut server is not available the micronaut client will continue calling it until required attempts.
+
+-	The attempts attribute is used to define the number of retries allowed and delay attribute is used to define the time duration between attempts.
+
+	Example:
+	@Retryable(attempts = "3", delay = "2s")
+
+-	Circuit-break design pattern is implemented using @CircuitBreak annotation at method level or class level.
+
+-	Initially the circuit is in open state.
+
+-	When the micronaut server is not available the micronaut client will continue calling it until required attempts.
+
+-	Once the required attempts are exhausted the circuit is in closed state, any attempt to call micronaut server now will fail.
+
+-	Again the circuit will reopen after required time duration.
+
+-	The attempts attribute is used to define the number of retries allowed and delay attribute is used to define the time duration between attempts.
+
+	Example:
+	@CircuitBreak(attempts = "3", delay = "2s")
+
+-	Fallback is implemented using @Fallback annotation at class level.
+
+-	The fallback class must implement the declarative micronaut client interface.
+
+-	It must override the client method with appropriate fallback action.
+
+	Example:
+	
+	@Fallback
+	public class MicronautClientImpl implement MicronautClient {
+	
+	}
+
+Write a note on JDBC in micronaut?
+
+-	JDBC in micronaut allows to map a java class with a database table.
+
+-	In this way the fields inside a java class are mapped with columns inside database table.
+
+-	This java class must be annotated with @MappedEntity annotation.
+
+-	Following maven dependencies is required for JDBC.
+
+    <dependency>
+        <groupId>io.micronaut.data</groupId>
+        <artifactId>micronaut-data-hibernate-jpa</artifactId>
+    </dependency>
+
+    <dependency>
+        <groupId>io.micronaut.sql</groupId>
+        <artifactId>micronaut-jdbc-hikari</artifactId>
+    </dependency>
+
+-	Following annotation processors are required JDBC.
+
+	<path>
+        <groupId>io.micronaut.data</groupId>
+        <artifactId>micronaut-data-processor</artifactId>
+        <version>${micronaut.data.version}</version>
+	</path>
+
+-	Datasource must be configured inside application.yaml file.
+
+-	To create an repository we must declare an interface with @JdbcRepository annotation.
+
+-	This interface must implement the CrudRepository<T, I> class.
+
+Write a note on JPA in micronaut?
+
+-	JPA in micronaut uses hibernate implementation.
+
+-	Following maven dependencies is required for JPA.
+
+    <dependency>
+        <groupId>io.micronaut.sql</groupId>
+        <artifactId>micronaut-data-hibernate-jpa</artifactId>
+    </dependency>
+
+    <dependency>
+        <groupId>io.micronaut</groupId>
+        <artifactId>micronaut-jdbc</artifactId>
+    </dependency>
+
+-	Following annotation processors are required JPA.
+
+	<path>
+        <groupId>io.micronaut.data</groupId>
+        <artifactId>micronaut-data-processor</artifactId>
+        <version>${micronaut.data.version}</version>
+	</path>
+
+-	Datasource must be configured inside application.yaml file.
+
+-	To create an repository we must declare an interface with @Repository annotation.
+
+-	This interface must implement the JpaRepository<T, I> class.
