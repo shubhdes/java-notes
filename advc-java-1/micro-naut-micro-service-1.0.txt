@@ -162,7 +162,7 @@ Write a note on JDBC in micronaut?
 
     <dependency>
         <groupId>io.micronaut.data</groupId>
-        <artifactId>micronaut-data-hibernate-jpa</artifactId>
+        <artifactId>micronaut-data-jdbc</artifactId>
     </dependency>
 
     <dependency>
