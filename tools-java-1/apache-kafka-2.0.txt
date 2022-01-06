@@ -1,0 +1,29 @@
+core java - apache kafka 2.0
+
+What is a stream?
+
+-	A stream is continous, infinite and unbounded flow of message record.
+
+-	And stream processing means working on message record as soon as it arrives without collecting and storing it.
+
+-	We must use stream processing when we need to take quick action as soon as message record arrives.
+
+-	Also we must not use stream processing when we take decision after analysis of large repository of data.
+
+What is kafka stream? 
+
+-	The kafka stream is a stream processing technique.
+
+-	It uses the concept of topology.
+
+What is topology?
+
+-	Topology is an arrangement of different components of a system by connecting them to each other.
+
+-	The kafka stream is designed by connecting one or more processor with each other.
+
+-	Each processor pulls message record and then transforms it into another form.
+
+-	This transformed message record is now pulled by the next processor.
+
+Explain different types of processor in kafka stream topology?

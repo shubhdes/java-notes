@@ -1,0 +1,471 @@
+core java - gradle
+
+What is groovy?
+
+-	Groovy is a scripting language.
+
+-	It allows functional programming.
+
+-	It is similar to java.
+
+Explain data types in groovy?
+
+-	Groovy supports primitive data types called as def, int, long, float, double and String
+
+	Example:
+
+	int num = 10
+
+-	We can define string using single quote, double quote (gstring) and triple quote.
+
+-	The double quote string can contain one or more place holders.
+
+	Example:
+
+	name = 'shubham'
+	mesg = "welcome ${name}"
+
+-	The triple quote string can contain string defined across multiple lines.
+
+	Example:
+	mesg = '''Welcome shubham!!
+	This tutorial will cover groovy basics, 
+	You will enjoy groovy!!'''
+
+-	Groovy also supports regular expression.
+
+-	We can use ==~ pattern operator in groovy to determine whether string match the regular expression or not.
+
+	Example:
+
+	'shubham@groovy.com'==~ emailRegExp
+
+Explain closures in groovy?
+
+-	A closure in groovy is a method without name.
+
+-	It is similar to lambda expression in java.
+
+	Example:
+
+	evenOrOdd = {num -> 
+		num % 2 == 0 ? 'even' : 'odd'		
+	}
+
+-	It is possible to call closure method.
+
+-	Using circular bracket in method call is optional.
+
+	Example:
+
+	evenOrOdd
+
+-	We can pass closure as parameter to another method.
+
+	Example:
+
+	5.times {
+		num -> print(num)
+	}
+
+Explain collections in groovy?
+
+-	Groovy supports data structures such as list, set, hashtable and tree.
+
+	Example:
+
+	ArrayList list = [10, 20, 30, 40, 50]
+
+-	It supports operator overloading with collection.
+
+	Example:
+
+	list << 60
+	
+	Example:
+
+	list = list + [70, 80]
+	
+	Example:
+
+	list = list - [30, 40]
+
+-	We can also define set in groovy.
+
+	Example:
+
+	Set set = [10, 20, 30, 40, 50]
+
+-	We can also define map in groovy.
+
+	Example:
+
+	Map map = [empId:1001, name:'shubham', age:25]
+
+-	We can access the element of map using the key name.
+
+	Example:
+
+	print(map.name)
+	print(map['age'])
+
+	map.address = 'Mumbai'
+	map['phone'] = '8108916256'
+
+Explain methods in groovy?
+
+-	Groovy support method definition.
+
+	Syntax:
+
+	methodName(parameters) {
+		
+	}
+
+	Example:
+	
+	sum(num1, num2) {
+		num1 + num2
+	}
+	
+-	Based on the parameters passed to the method groovy will determine the argument datatype.
+
+-	Also based on the value returned from the method groovy will determine the method return type.
+
+-	The result of last statement inside the method is the return value of the method.
+
+-	Passing parameters to method is optional in groovy.
+
+-	We can have arguments with default value.	
+
+	sum(num1 = 10, num2 = 20) {
+		num1 + num2
+	}
+	
+-	It is possible to call method.
+
+-	Using circular bracket in method call is optional.
+	
+	Example:
+
+	sum 10, 20
+
+Explain how to create class and object in groovy?
+
+-	Groovy support class definition.
+
+	Syntax:
+
+	class className {
+
+	}
+
+	Example:
+
+	class Employee {
+
+		int empId
+
+		String name	
+	}
+
+-	In groovy we can create object of a class using new keyword.
+
+	Example:
+
+	Employee emp = new Employee()
+
+-	All groovy class have no argument constructor and map argument constructor.
+		
+	Example:
+
+	Employee emp = new Employee(empId:1001, name:'shubham')
+
+-	All groovy class have getter and setter methods present inside class.
+
+-	When required we can override the implementation of these getter and setter methods.
+
+-	A class can have static member in groovy.
+
+	Example:
+
+	static String company = 'MyGroovy';
+	
+What is gradle?
+
+-	Gradle is a build automation tool.
+
+-	It allows easy customisation of the build process like apache ant.
+
+-	It follows convention over configuration like apache maven.
+
+-	It uses scripting languages like groovy or kotlin.
+
+-	The configuration file for gradle is called build.gradle file.
+
+-	It allows incremental build.
+
+-	It run daemon process which provide build cache.
+
+-	It does transitive dependency management.
+
+Explain build phases in gradle?
+
+-	Every gradle project consist of three phases and they are called as initialisation, configuration and execution.
+
+-	Initialisation phase allows gradle will load the build.gradle file.
+
+-	It will identify whether project is single module project or multi module project.
+
+-	For a multi module project it will load build.gradle files present inside all the modules.
+
+-	During configuration phase gradle will generate a directed acyclic graph for all the task to executed.
+
+-	In the execution phase gradle will execute all the task one after another according to directed acyclic graph.
+
+Explain object of Project class in gradle?
+
+-	When a gradle build is called it will create an object of Project class.
+
+-	Any block present inside build.gradle file is method call on the Project class object.
+
+-	The plugin block is the only block which is not a method call on the Project class object.
+
+-	Consider repositories which is method called on the Project class object to which we are passing closure parameter.
+
+	Example:
+
+	repositories {
+
+		mavenCentral()
+	}
+
+	repositories ({
+
+		mavenCentral()
+	})
+
+-	We can call setter method on Project class object inside the build.gradle file.
+
+	Example:
+
+	project.description = 'First gradle project'
+	project.version = 1.0
+
+-	We can define custom properties for Project class object using ext map member variable.
+
+	Example:
+
+	project.ext.startDate = '01/01/2022'
+
+Explain object of Task class in gradle?
+
+-	A task is an atomic piece of work to be performed during the project build.
+
+-	Every plugin inside gradle is a collection of one or more tasks.
+
+-	A new task object is created for each task present inside the collection.
+
+-	These task objects are added inside the Project class object by calling the task method.
+
+	Example:
+
+	task firstTask {
+
+		print('Welcome to Gradle!!')
+	}
+
+	Example:
+
+	Task firstTask = new Task();
+	
+	firsTask.setAction({
+		print('Welcome to Gradle!!')
+	})
+	
+	project.task(firstTask)
+
+Explain the steps to create gradle project?
+
+-	First we need to create a gradle project folder.
+
+-	The following command is needed to transform folder into gradle project.
+
+	Example:
+	
+	#gradle init
+
+-	This command will generate a build.gradle file.
+
+-	The following command is needed to execute any gradle task.
+
+	Syntax:
+
+	#gradle [task]
+
+	Example:
+	
+	#gradle compile
+
+Explain repositories in gradle?
+
+-	Inside the build.gradle file there is a block for repositories.
+
+	Example:
+
+	repositories {
+
+	}
+	
+-	Inside this block we must define different repositories where gradle must search for the required artifact.
+
+-	It will search for the artifact in each repository following the order in which repositories are defined.
+
+	Example:
+
+	repositories {
+
+		mavenCentral()
+	}
+
+-	Also it maintains the artifact inside folder which is present ~/gradle.
+
+-	This folder is called as local repository.
+
+-	It does transitive dependency management.
+
+Explain dependencies and configurations in gradle?
+
+-	Inside the build.gradle file there is a block for dependencies.
+
+	Example:
+
+	dependencies {
+
+	}
+	
+-	Inside this block we must define different dependencies required for the project.
+
+-	For any dependency we must provide the group, artifact and version as colon separated string.
+
+-	It allows us to also define the lifetime of each dependency.
+
+-	It allows lifetime called as implementation, testImplementation, compileOnly, runtimeOnly, testCompileOnly and testRuntimeOnly.
+
+	Example:
+
+	dependencies {
+
+		testImplementation "junit:junit:4.0"
+	}
+
+How to create multimodule java project in gradle?
+
+-	In a multimodule project there is root folder and one or more module folders present inside it.
+
+-	Inside the root folder a build.gradle file and a settings.gradle file are present.
+
+-	Inside the module folder a build.gradle file is present.
+
+-	It is necessary to determine which module folders are part of the project.
+
+-	This must be configured inside the settings.gradle file present inside the root folder using include method.
+
+	Example:
+
+	include('web')
+	include('services')
+	include('integration')
+	include('data')
+
+-	All the configuration present inside the root folder's build.gradle file can be made available to the module folder build.gradle file.
+
+-	This will support configuration reusability and can be done using allprojects method and subprojects method.
+
+-	The allprojects method will ensure same configuration are applied to the root folder and to all the module folders.
+
+-	But the subprojects method will ensure same configuration are applied not to the root folder but only to all the module folders.
+
+	Example:
+	
+	subprojects {
+	
+		repositories {
+		
+		}
+		
+		dependencies {
+		
+		}
+	}
+
+-	The module folder can override the configuration when required.
+
+How to manage dependencies between modules inside a multimodule project?
+
+-	To manage dependencies between modules we need to use project method.
+
+-	Consider the web module require the services module.
+
+	Example:
+	
+	project(':web') {
+		
+		dependencies {
+			
+			implementation project(':services')
+		}
+	}
+	
+-	The above configuration is required inside root folder's build.gradle file.
+
+-	But the following configuration can be used inside the module folder's build.gradle file.
+
+	Example:
+	
+	dependencies {
+
+		implementation project(':services')
+	}
+
+How to create custom plugin in gradle?
+
+-	We can create custom plugin class in gradle.
+
+-	This class must implement the Plugin interface.
+
+-	It must override the following abstract method of the Plugin interface.
+
+	Example:
+	
+	public void abstract apply(Project project)
+	
+-	The implementation class must exist inside folder called as buildSrc.
+
+	Example:
+	
+	package com.plugin
+	
+	public class MyPlugin implements Plugin<Project> {
+	
+		public void apply(Project project) {
+			
+		}
+	}
+
+-	This folder must be present inside the root folder and not inside module folder. 	
+
+-	To use the plugin we must include it inside build.gradle file.
+
+	Syntax:
+	
+	import [packageName]
+	
+	apply plugin:[className]
+	
+	Example:
+	
+	import com.plugin
+	
+	apply plugin:MyPlugin
+	
