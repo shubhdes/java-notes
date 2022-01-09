@@ -1,0 +1,219 @@
+core java -	apache avro
+
+What is apache avro?
+
+-	Apache avro is a language independent serialization technique.
+
+-	It uses schema stored in json format inside file with extension avsc.
+
+-	This schema allows us to define attribute with primtive and complex data types.
+
+-	It is possible to generate source code using this schema.
+
+Explain schema in apache avro?
+
+-	The schema in apache avro is defined in json format.
+
+-	It is defined inside file with extension avsc.
+
+-	It is possible to generate source code using this schema.
+
+-	This schema must contain four attributes called as type, namespace, name and fields.
+
+-	The type field determine whether the schema will result into record or enum or array or map or union or fixed.
+
+-	The default value of type field is record.
+
+-	Namespace attribute determine the fully qualified packaged name.
+
+-	Name attribute determine the class name.
+
+-	Field attribute determine class level variables.
+
+-	It is an array of object each having two attributes called name and type.
+
+-	The name attribute determine variable name and type attribute determine variable type.
+
+	Example:
+	
+	{
+		"type" : "record",
+		"namespace" : "com.employee",
+		"name" : "Employee",
+		"fields" : [
+			{ "name" : "Name", "type" : "string" },
+			{ "name" : "age", "type" : "int" }
+		]
+	}
+	
+How to implement apache avro using maven?
+
+-	To implement apache avro schema based serialization and deserialization we need to add following dependency inside pom.xml file.
+
+	Example:
+	
+	<dependency>
+		<groupId>org.apache.avro</groupId>
+		<artifactId>avro</artifactId>
+		<version>1.11.0</version>
+	</dependency>
+
+-	We need to use following plugin inside pom.xml file.
+
+	<plugin>
+		<groupId>org.apache.avro</groupId>
+		<artifactId>avro-maven-plugin</artifactId>
+		<version>1.11.0</version>
+		<executions>
+			<execution>
+				<phase>generate-sources</phase>
+				<goals>
+					<goal>schema</goal>
+				</goals>
+				<configuration>
+					<sourceDirectory>${project.basedir}/src/main/avro/</sourceDirectory>
+					<outputDirectory>${project.basedir}/src/main/java/</outputDirectory>
+				</configuration>
+			</execution>
+		</executions>
+	</plugin>
+
+-	This plugin is responsible to generate class from schema and hence it must be called before the compile phase.
+
+-	For serialization using avro we need to use an implementation of DatumWriter interface.
+
+-	It will convert java object into an inmemory serialized content.
+
+	Example:
+	
+	final DatumWriter<Person> datumWriter = new SpecificDatumWriter<>(Person.class);
+	
+-	The serialized content must be written to file using DataFileWriter class.
+
+	Example:
+	
+	final DataFileWriter<Person> dataFileWriter = new DataFileWriter<>(datumWriter);
+	dataFileWriter.create(person.getSchema(), new File("person.avro"));
+	try {
+		dataFileWriter.append(person);
+	} finally {
+		dataFileWriter.close();
+	}
+
+-	For deserialization using avro we need to use an implementation of DatumReader interface.
+
+-	It will convert serialized file content into a java object.
+
+	Example:
+	
+	final DatumReader<Person> personReader = new SpecificDatumReader<>(Person.class);
+	
+-	The serialized content must be read from file using DataFileReader class.
+
+	Example:
+	
+	final DataFileReader<Person> dataFileReader = new DataFileReader<>(file, personReader);
+	try {
+		Person person = null;
+		while (dataFileReader.hasNext()) {
+			person = dataFileReader.next(new Person());
+			break;
+		}
+		return person;
+	} finally {
+		dataFileReader.close();
+	}	
+	
+What is schema registry?
+
+-	The schema registry is a central place to create and maintain schema for message record.
+
+-	It provides rest interface to create and maintain schema.
+
+-	It can maintain different version of the same schema which is called as schema evolution.
+
+-	It can also ensure schema compatibility.
+
+How does schema registry work with apache kafka?
+
+-	Before producer push message record to broker it ensure that schema is present in schema registry.
+
+-	In case if the schema is not present then the producer register schema with the schema registry.
+
+-	This will generate a schema identifier.
+
+-	Now the producer will serialize the message record using the schema.
+
+-	It will push serialized message record to the broker and will add the schema identifier inside the message record's header.
+
+-	When consumer consume the message it will read the schema identifier from the message record's header.
+
+-	It will request schema registry for the schema of the message record using schema identifier.
+
+-	Now the consumer will deserialize the message record using the schema.
+
+Explain schema registry compatibility?
+
+-	The schema registry allows schema evolution which are compatible.
+
+-	There are four type of compatible schema evolution which include none, backward, forward and full.
+
+-	In case of none schema registry does not allow any schema evolution.
+
+-	In case of backward compatible schema evolution the consumer must be able to deserialize the message record using present schema which was serialized using past schema.
+
+-	To ensure backward compatible schema evolution the consumer version of schema must be evolved before evolution of producer version of schema.
+
+-	This is the default schema evolution compatibility.
+
+-	Example of schema evolution with backward compatibility are removing attribute or addition of optional attribute.
+
+-	In case of forward compatible schema evolution the consumer must be able to deserialize the message record using past schema which was serialized using present schema.
+
+-	To ensure forward compatible schema evolution the producer version of schema must be evolved before evolution of consumer version of schema.
+
+-	Example of schema evolution with forward compatibility are adding attribute or deletion of optional attribute.
+
+How to use avro based serialization and deserialization with schema registry?
+
+-	To use avro based serialization and deserialization we need to include the following dependency inside pom.xml file.
+
+	Example:
+
+	<dependency>
+		<groupId>io.confluent</groupId>
+		<artifactId>kafka-avro-serializer</artifactId>
+		<version>${version}</version>
+	</dependency>
+
+-	This dependency is available inside following remote repository.
+
+	Example:
+	
+	<repositories>
+        <repository>
+            <id>packages-confluent-io</id>
+            <url>https://packages.confluent.io/maven</url>
+        </repository>     
+	</repositories>
+
+-	We must use the below class for serialization using avro for the producer.
+
+	Example:
+
+	props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, KafkaAvroSerializer.class);
+	props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, KafkaAvroSerializer.class);
+
+-	We must the the below class for deserialization using avro for the consumer.
+
+	Example:
+	
+	props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, KafkaAvroDeserializer.class);
+	props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, KafkaAvroDeserializer.class);
+
+-	We must use the schema registry application url.
+
+	Example:
+
+	props.put(AbstractKafkaAvroSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, "http://localhost:8081");
+	props.put(AbstractKafkaAvroSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, "http://localhost:8081");

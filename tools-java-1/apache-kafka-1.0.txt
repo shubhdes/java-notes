@@ -172,17 +172,17 @@ What is a partitioner?
 
 	syntax:
 	
-	kafka-console-producer.bat --broker-list [ipAddress:portNumber] --topic [topicName] --from-beginning --property "key.separator=[value]" --property "parse.key=[value]"
+	kafka-console-producer.bat --broker-list [ipAddress:portNumber] --topic [topicName] --property "key.separator=[value]" --property "parse.key=[value]"
 	
 	example:
 
-	kafka-console-producer.bat --broker-list localhost:9092 --topic my-topic-001 --from-beginning --property "key.separator=-" --property "parse.key=true"
+	kafka-console-producer.bat --broker-list localhost:9092 --topic my-topic-001 --property "key.separator=-" --property "parse.key=true"
 	
 -	Following command must be used to create console consumer which uses key in message record.
 
 	syntax:
 	
-	kafka-console-consumer.bat --bootstrap-server [ipAddress:portNumber] --topic [topicName] --from-beginning -property "key.separator=[value]" --property "print.key=[value]"
+	kafka-console-consumer.bat --bootstrap-server [ipAddress:portNumber] --topic [topicName] --from-beginning --property "key.separator=[value]" --property "print.key=[value]"
 	
 	example:
 

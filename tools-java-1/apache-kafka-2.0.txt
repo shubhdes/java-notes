@@ -8,7 +8,7 @@ What is a stream?
 
 -	We must use stream processing when we need to take quick action as soon as message record arrives.
 
--	Also we must not use stream processing when we take decision after analysis of large repository of data.
+-	Also we must not use stream processing when we need to take decision after analysis of large repository of data.
 
 What is kafka stream? 
 
@@ -16,14 +16,144 @@ What is kafka stream?
 
 -	It uses the concept of topology.
 
+-	To use kafka stream the following dependency must be present inside pom.xml file.
+
+	Example:
+	
+	<dependency>
+		<groupId>org.apache.kafka</groupId>
+		<artifactId>kafka-streams</artifactId>
+		<version>${version}</version>
+	</dependency>
+
+-	To create stream we need to create instance of KafkaStream class.
+
+	Example:
+	
+	final KafkaStreams stream = new KafkaStreams(topology, streamsConfiguration);
+	
+-	To begin the stream processing the stream instance must be opened by calling the start method.
+
+	Example:
+
+	stream.start();
+
+-	Also when stream processing is complete we can close the stream instance by calling the close method.
+
+	Example:
+
+	stream.close();	
+
 What is topology?
 
--	Topology is an arrangement of different components of a system by connecting them to each other.
+-	Topology define how input data is transformed into output data.
 
--	The kafka stream is designed by connecting one or more processor with each other.
+-	A topology is a graph of stream processors that are connected by streams. 
 
--	Each processor pulls message record and then transforms it into another form.
-
--	This transformed message record is now pulled by the next processor.
+-	Topology can be created using processor api or kafka stream domain specific language.
 
 Explain different types of processor in kafka stream topology?
+
+-	There are three types of processors and they are called as source, stream and sink processor.
+
+-	The source processor does not have any upstream processor.
+
+-	It produces an input stream to the topology by pulling message record from the topic and forward it to the downstream processor.
+
+-	The stream processor has a upstream processor and a downstream processor.
+
+-	It is a single transformation step.
+
+-	The sink processor does not have any downstream processor.
+
+-	It pushes received message record from its upstream processors to the topic.
+
+-	To create topology we need to create instance of Topology class.
+
+-	To this instance we can add one or more processor.
+
+	Example:
+	
+	final Topology topology = new Topology();
+	topology.addSource(SOURCE, studentDeserializer, scoreDeseriaizer, INPUT_TOPIC_NAME)
+			.addProcessor(PROCESSOR_0, StudentGradeCalculation::new, SOURCE)
+			.addSink(SINK, OUTPUT_TOPIC_NAME, studentSerializer, gradeSerializer, PROCESSOR_0);
+
+Explain how to create processor using processor api?
+
+-	To create processor using processor api we need to implement the Processor interface.
+
+-	This interface accept four type parameters.
+
+-	These type parameters are data types of key and value of the message record from upstream and the message record to downstream.
+
+	Example:
+	
+	public class MyProcessor implements Processor<Student, Score, Student, Grade> {
+	
+	}
+
+-	Implementing class must override the following three abstract methods.
+
+	public abstract void init(ProcessorContext<KeyOut, ValueOut> context);
+
+	public abstract void process(Record<KeyIn, ValueIn> record);
+	
+	public abstract void close();
+	
+-	Every processor instance has lifecyle which is managed by above three methods.
+
+-	The first method init is called only once when the processor instance is created.
+
+-	The next method process is called everytime when the processor receive a message record from the upstream.
+
+-	The last method close is called when the stream is closed.
+
+-	The processor must push message record to downstream using forward method.
+
+	Example:
+	
+	public class MyProcessor implements Processor<Student, Score, Student, Grade> {
+	
+		public void init(ProcessorContext<Student, Grade> context) {
+			//...
+		}
+
+		public void process(Record<Student, Score> inRecord) {
+			//...
+			context.forward(outRecord);
+		}
+	
+		public void close() {
+			//...
+		}
+	}
+	
+What is statefull stream processing?
+
+-	For some transformation the processor needs to remember the earlier message records it received.
+
+-	These transformation are called statefull operation. 
+
+-	Example of such transformation are distinct, sorting, summing and aggregation.
+
+-	It requires the processor to store the previous message record inside a state store.
+
+-	There are two type of state store they are called as inmemory state store or persistent state store.
+
+-	We must define the type of state store when creating the topology instance.
+
+	Example:
+	
+	final Topology topology = new Topology();
+	topology.addSource(SOURCE, studentDeserializer, scoreDeseriaizer, INPUT_TOPIC_NAME)
+			.addProcessor(PROCESSOR_0, StudentGradeCalculation::new, SOURCE)
+			.addStateStore(Stores.keyValueStoreBuilder(Stores.inMemoryKeyValueStore(STATE_STORE), studentSerdes,
+						gradeSerdes), PROCESSOR_0)
+			.addSink(SINK, OUTPUT_TOPIC_NAME, studentSerializer, gradeSerializer, PROCESSOR_0);
+			
+-	The processor can use this state store using the ProcessorContext instance.
+
+	Example
+	
+	this.studentGradeStore = context.getStateStore(STATE_STORE);
