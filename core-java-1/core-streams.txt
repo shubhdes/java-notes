@@ -80,15 +80,11 @@ What are stream operations?
 
 -	In stateless operations the processing of each element is independent of another.
 
-	Example:
-	
-	Filter, Map
+-	Filtering and mapping are examples of stateless operations.
 
 -	But in statefull operations processing of each element is dependent on another.
 
-	Example:
-	
-	Distinct, Sort
+-	Distinct and sorting are examples of stateless operations.	
 
 -	Terminal operations produce final result of processing and not another stream.
 
@@ -145,6 +141,12 @@ Enlist some terminal stream operation?
 	public boolean anyMatch(Predicate pred)
 	
 	public boolean noneMatch(Predicate pred)
+	
+-	Reduce operation is similar to any AGGREGATE function inside SQL SELECT query.
+
+	Syntax:
+	
+	public Stream<R> reduce(T t, BinaryOperator<R> func)
 
 Explain what is Collectors?
 
@@ -172,110 +174,26 @@ Explain what is Collectors?
 	
 	Map<Department, Double> deptWiseSal = strm.collect(Collectors.groupingBy(Employee::getDepartment, Collectors.summingDouble(Employee::getSalary)));
 
-What are parallel streams?
+Explain what are parallel stream?
 
--	By default all non-terminal and terminal stream operation are executed sequentially by single thread.
--	But we can explicitly cause these operations to be executed by simultaneously by multiple threads using parallel streams.
+-	All stream operation are called sequentially.
 
--	Parallel streams must be used only when operations on collection or array elements is stateless.
-
--	To create parallel streams we have two ways,
-
-	a) By invoking following method on collection object,
-	
-		public Stream<R> parallelStream()
-	
-	b) By invoking following method on stream object;
-		
-		public Stream<R> parallel()
-	
-	Example:	
-	{
-		List<String> l1 = new ArrayList<String>();
-		l1.add("java");l1.add("c++");l1.add("python");
-		l1.add("html");l1.add("css");l1.add("js");
-		
-		l1.parallelStream().forEach(System.out::println);	/**css html c++ java js python**/
-	}
-
-What are infinite streams?
-
--	Terminal operation that can perform never ending data computation and add computed data to output stream, such streams are called infinite streams.
--	To create infinite streams we have two ways,
-	
-	a) By invoking following method of Stream class,
-	
-		public static Stream<R> generate(Supplier<R> s)
-		-	Here stream will have same data repeatedly returned by supplier.
-	
-	Example:
-	{
-		Stream.generate(() -> 10)
-		.forEach(System.out::println);		/**10 10 10 10 10...**/
-	}		
-	
-	b) By invoking following method of Stream class,
-	
-	   public static Stream<R> iterate(T t, UnaryOperator<R> s)
-	   -	Here stream will compute data with initial value t and unary operator.
-	  
-	Example:
-	{
-		Stream.iterate(10, i -> i + 10)
-		.forEach(System.out::println);		/**10 20 30 40 50...**/
-	}
-
-What is stream reduction?
-
--	Reducing a stream means combining data elements computed by non-terminal operations to single element at terminal.
--	To reduce stream we have one ways,
-	
-	a) By invoking following method on stream object,
-	
-		public Stream<R> reduce(T t, BinaryOperator<R> s)
-		-	Here stream will compute single data with initial value t and binary operator.
-	  
-	Example:
-	{
-		Stream.of(10, 20, 30, 40, 50).reduce(0, (a, b) -> a + b);		/**150**/
-	}		
-
-What are primitive streams?
-
--	To avoid frequent boxing and unboxing primitive streams are available in java.
--	Following are different primitive streams in java,
-
-	a) java.util.stream.IntStream
-	-	IntStream is a stream of primitive int elements.	
-	-	IntStream primitive interfaces provides following static methods for creating stream,
-
-		public static IntStream range(int s, int e)
-		-	It returns a stream from s to e - 1, if s >= e then returns empty stream.  	
-		
-		public static IntStream rangeClosed(int s, int e)
-		-	It returns a stream from s to e, if s > e then returns empty stream.  	
-
-	b) java.util.stream.LongStream
-	-	LongStream is a stream of primitive long elements.
-	-	LongStream primitive interfaces provides following static methods for creating stream,
-
-		public static LongStream range(int s, int e)
-		-	It returns a stream from s to e - 1, if s >= e then returns empty stream.  	
-		
-		public static LongStream rangeClosed(int s, int e)
-		-	It returns a stream from s to e, if s > e then returns empty stream.  	
-
-	c) java.util.stream.DoubleStream
-	-	DoubleStream is a stream of primitive double elements.
-	-	DoubleStream primitive interfaces provides following static methods for creating stream,
-
-		public static DoubleStream range(int s, int e)
-		-	It returns a stream from s to e - 1, if s >= e then returns empty stream.  	
-		
-		public static DoubleStream rangeClosed(int s, int e)
-		-	It returns a stream from s to e, if s > e then returns empty stream.  	
+-	But it is possible to call these operation parallel to improve speed.
 
 	Example:
-	{
-		IntStream.rangeClosed(10, 15);	/**10 11 12 13 14 15**/
-	}
+	
+	lst.parallelStream();
+	
+-	It uses parallelism.
+
+-	It uses fork join thread pool. 	
+	
+-	The operation must be stateless.
+
+-	It must be non-interfering and order of calling must not matter.	
+
+Explain what are primitive stream?
+
+-	The primitive stream are used to avoid frequent boxing and unboxing.
+
+-	There are three primitive stream and they are called as IntStream, LongStream and DoubleStream.

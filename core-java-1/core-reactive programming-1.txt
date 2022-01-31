@@ -1,0 +1,440 @@
+core java - reactive programming - 1
+
+What is reactive?
+
+-	Reactive is a programming paradigm.
+
+-	A reactive program must be responsive, resilient, elastic and message driven.
+
+What is RxJava?
+
+-	RxJava is an implementation to reactive programming specification.
+
+-	It was developed by netflix developers.
+
+-	It follows the push mechanism instead of pull mechanism.
+
+-	It uses observer design pattern.
+
+-	It uses different types of events called as data, complete and error.
+
+-	It allows to compose events using operators.
+
+-	It supports scheduler for parallel programming.
+
+-	It is backpressure ready.
+
+What is concurrency and parallelism?
+
+-	The term concurrency is the act of managing and running multiple processes together.
+
+-	It is achieved through interleaved processes running.
+
+-	A single processor does context switching between the processes.
+
+-	The term parallelism is the act of running multiple processes simultaneously.
+
+-	It is achieved through multiple processors.
+
+-	Each processor is running single process hence multiple processes can run simultaneously on different processor.
+
+What does asynchronous mean?
+
+-	The term asynchronous mean execution of child program independent of the parent program flow.
+
+-	The parent program does not wait until the child program execution is complete.
+
+-	This is achieved using callback.
+
+-	But callback is similar to goto statement and hence it will cause difficulty in debugging.
+
+-	Hence RxJava uses observer design pattern instead of callback.
+
+How does observable and observer work together?
+
+-	The observer design pattern consist of two entities and they are called as observable and observer.
+
+-	The observable entity will generate event when observer entity subscribe to it.
+
+-	The	observer entity must be notified about this event.
+
+Explain how does RxJava provide different ways to create observable?
+
+-	In RxJava we have Observable interface.
+
+-	Any source class which can generate event must implement this interface.
+
+-	This interface also provide factory methods for creating observable.
+
+-	The first method is the create method with the following method signature.
+
+	public static Observable create(ObservableOnSubscribe source)
+
+-	When we use this method for creating observable then we must explicitly emit all three types of event.
+
+	Example:
+	
+	final String[] days = { "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday" };
+	
+	final Observable<String> daysOfWeekSource = Observable.create(emitter -> {
+		try {
+			Stream.of(days).forEach(emitter::onNext);
+			emitter.onComplete();
+		} catch (Throwable exception) {
+			emitter.onError(exception);
+		}
+	});
+
+-	The next method is the just method with the following method signature.
+
+	public static Observable<T> just(T item1)
+	
+-	This method is ten times overloaded with different method arguement count.
+
+-	When we use this method for creating observable then we cannot emit all three types of event.
+
+	Example:
+	
+	final Observable<String> daysOfWeekSource = Observable.just("Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday");
+
+-	The next method is the fromIterable method with the following method signature.
+
+	public static Observable<T> fromIterable(Iterable<? extends T> source) 
+	
+-	This method is used to create observable from collection instance.
+
+-	When we use this method for creating observable then we cannot emit all three types of event.
+
+	Example:
+	
+	final List<String> days = Arrays.asList( "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday" );
+	
+	final Observable< String> daysOfWeekSource = Observable.fromIterable(days);
+	
+Explain how does RxJava provide different ways to create observer?
+
+-	In RxJava we have Observer interface.
+
+-	Any source class which can receive event must implement this interface.
+
+	Example:
+	
+	public class DaysOfWeekObserver implements Observer<String>  {}
+
+-	The implementation class must override the following four abstract methods to handle all three events.
+
+	public void onSubscribe(Disposable disposable);
+	
+	public void onNext(String day);
+	
+	public void onError(Throwable exception);
+
+	public void onComplete();
+	
+	Example:
+	
+	public class DaysOfWeekObserver implements Observer<String> {
+
+		@Override
+		public void onSubscribe(Disposable disposable) {
+			System.out.println("Week begins!!");
+		}
+
+		@Override
+		public void onNext(String day) {
+			System.out.println("Today is " + day);
+		}
+
+		@Override
+		public void onError(Throwable exception) {
+			exception.printStackTrace();
+		}
+		
+		@Override
+		public void onComplete() {
+			System.out.println("Weekend begins!!");
+		}
+	}
+	
+-	Also the Observable interface provide factory method for creating observer.
+
+-	The first method is the subscribe method with the following method signature.
+
+	public final Disposable subscribe(Consumer onNext, Consumer onError, Action onComplete) {
+
+-	When we use this method for creating observable then we must explicitly handle all three events.
+
+	Example:
+	
+	daysOfWeekSource.subscribe(day -> System.out.println("Today is " + day), Throwable::printStackTrace,
+		() -> System.out.println("Weekend begins!!"));
+
+What are different implementation of observable?
+
+-	There are three implementation of obervable and they are called as single, maybe and completable observable.
+
+-	A single observable can emit only one data event.
+
+-	It can emit two types of events called as data and error.
+
+-	The factory class is called Single and observable interface is called SingleSource.
+
+-	The observer interface is called SingleObserver.
+
+	Example:
+	
+	Single.just("Learning reactive programming is fun!!").subscribe(System.out::println,
+		Throwable::printStackTrace);
+
+-	A maybe observable can emit zero or one data event.
+
+-	It can emit three types of events called as data, complete and error.
+
+-	The factory class is called Maybe and observable interface is called MaybeSource.
+
+-	The observer interface is called MaybeObserver.
+
+	Example:
+	
+	Maybe.just("Learning reactive programming is fun!!").subscribe(System.out::println,
+		Throwable::printStackTrace, () -> System.out.println("Observer consumed all events!!"));
+
+-	A completable observable cannot emit any data event but it will ensure another process is completed.
+
+-	It can emit one type of event called as complete.
+
+-	The factory class is called Completable and observable interface is called CompletableSource.
+
+-	The observer interface is called CompletableObserver.
+
+	Example:
+	
+	Completable.fromRunnable(() -> {
+		for (int i = 1; i <= 100; i++) {
+			System.out.println(i);
+		}
+	}).subscribe(() -> System.out.println("Observer consumed all events!!"), Throwable::printStackTrace);
+	
+How does observer unsubscribe an observable?
+
+-	When observer receive complete event then it will unsubscribe the observable.
+
+-	It is possible that observer want to unsubscribe before it receive the complete event.
+
+-	Every subscribe method return an instance of Disposable interface.
+
+-	We need to call dispose method on this instance.
+
+	Example:
+	
+	disposable.dispose();
+	
+What is operator?
+
+-	Operator is method which work on a source observable and return tranformed observable.
+
+-	There are five categories of operators and they are called as suppress, tranform, reduce, error recovery and action.
+
+Enlist operator under suppress category?
+
+-	The filter operator will remove event data emitted from source obervable which does not meet predicate condition.
+
+	Example:
+	
+	daysOfWeekSource.filter(day -> !("Sunday".equalsIgnoreCase(day) || "Saturday".equalsIgnoreCase(day))).subscribe(
+		System.out::println, Throwable::printStackTrace, () -> System.out.println("Working days completed!!"));
+				
+-	The next operator is take operator which will accept only first arguement number of event data from source observable.
+
+-	The skip operator which will ignore only first arguement number of event data from source observable.
+
+-	The distinct operator will take only unique event data from source observable.
+
+Enlist operator under tranform category?
+
+-	The map operator work on a source observable and return tranformed observable.
+
+	Example:
+	
+	daysOfWeekSource.map(String::toUpperCase).subscribe(System.out::println, Throwable::printStackTrace,
+		() -> System.out.println("Week days completed!!"));
+
+-	The next operator is sorted operator which will sort event data from source observable using natural sorting order or user defined sorting order.
+
+Enlist operator under reduce category?
+
+-	The count operator will return number of event data emitted from source observable.
+
+	Example:
+	
+	daysOfWeekSource.count().subscribe(System.out::println, Throwable::printStackTrace);
+
+-	The reduce operator will work on the event data from source observable to return single event data.
+
+-	The collect operator is used to collect the event data from source observable to return collection of event data.
+
+Enlist operator under error recovery category? 
+
+-	The onErrorReturnItem is used to emit single event data when a runtime exception is raised.
+
+-	The onErrorResumeNext is used to emit more than one event data when a runtime exception is raised.
+
+Enlist operator under action category? 
+
+-	The doOnSubscribe which is used to run a action when observer subscribe to the observable.
+
+-	The doOnNext operator is used to run a action when upstream observable emit event data.
+
+-	The next operator is doOnError which is used to run a action when upstream observable emit event error.
+
+-	The final operator is doOnComplete which is used to run a action when upstream observable emit event complete.
+
+What are merge and concat operation on obervable?
+
+-	The merge operation will combine emission from more than one observable into single observable.
+
+-	It will not maintain order of emission.
+
+	Example:
+	
+	Observable
+		.merge(Observable.interval(1, TimeUnit.SECONDS).map(event -> "source 0 - " + event),
+			Observable.interval(1, TimeUnit.SECONDS).map(event -> "source 1 - " + event))
+		.subscribe(System.out::println, Throwable::printStackTrace,
+			() -> System.out.println("All events consumed!!"));
+
+-	The concat operation will combine emission from more than one observable into single observable.
+
+-	It will maintain order of emission.
+
+	Example:
+	
+	Observable
+		.concat(Observable.interval(1, TimeUnit.SECONDS).map(event -> "source 0 - " + event),
+			Observable.interval(1, TimeUnit.SECONDS).map(event -> "source 1 - " + event))
+		.subscribe(System.out::println, Throwable::printStackTrace,
+			() -> System.out.println("All events consumed!!"));
+			
+What are flatMap and concatMap operation on obervable?
+
+-	The flatMap operation work on the emission from an observable and return another observable.
+
+-	It will merge all the obervable into single obervable.
+
+-	It will not maintain order of emission.
+
+	Example:
+	
+	Observable.fromArray(days).flatMap(day -> Observable.fromArray(day.split(""))).subscribe(System.out::println,
+		Throwable::printStackTrace, () -> System.out.println("Week completed!!"));
+
+-	The concatMap operation work on the emission from an observable and return another observable.
+
+-	It will concat all the obervable into single obervable.
+
+-	It will maintain order of emission.
+
+	Example:
+	
+	Observable.fromArray(days).concatMap(day -> Observable.fromArray(day.split(""))).subscribe(System.out::println,
+		Throwable::printStackTrace, () -> System.out.println("Week completed!!"));
+		
+What is ambiguous operation on observable?
+
+-	The ambiguous operation identify the observable which emit first any event from a group of observable.
+
+-	The event from this fastest observable is only emitted to the observer.
+
+	Example:
+	
+	Observable
+		.amb(Arrays.asList(Observable.interval(1, TimeUnit.SECONDS).map(event -> "source 0 - " + event),
+			Observable.interval(500, TimeUnit.MILLISECONDS).map(event -> "source 1 - " + event)))
+		.subscribe(System.out::println, Throwable::printStackTrace,
+			() -> System.out.println("All events consumed!!"));
+
+What is zip and combineLatest operation on observable?
+
+-	The zip operation will apply lambda function on the corresponding event data from a group of observable.
+
+-	Whenever any observable does emission of event data then zip method will wait until all other observable emit the corresponding event data.
+
+	Example:
+	
+	Observable
+		.zip(Observable.interval(1, TimeUnit.SECONDS).map(event -> "source 0 - " + event),
+			Observable.interval(500, TimeUnit.MILLISECONDS).map(event -> "source 1 - " + event), String::concat)
+		.subscribe(System.out::println, Throwable::printStackTrace,
+				() -> System.out.println("All events consumed!!"));
+
+-	The combineLatest operation will apply lambda function on the latest event data from a group of observable.  
+
+-	Whenever any observable does emission of event data then combineLatest method will not wait instead it will use latest emitted event data from other observable.
+	
+	Example:
+	
+	Observable
+		.combineLatest(Observable.interval(1, TimeUnit.SECONDS).map(event -> "source 0 - " + event),
+			Observable.interval(500, TimeUnit.MILLISECONDS).map(event -> "source 1 - " + event), String::concat)
+		.subscribe(System.out::println, Throwable::printStackTrace,
+				() -> System.out.println("All events consumed!!"));
+				
+What is group operation on observable?
+
+-	The group operation is used to create groups of observable which match key criteria.
+
+-	
+
+What are different kinds of observable?
+
+-	There are two kinds of observable they are called as cold and hot observable.
+
+-	The cold observable always emit the event from the beginning to the observer.
+
+-	When a observer subscribe to the obervable with a delay then the observer will not miss any event.	
+
+-	But the hot observer will emit only the latest event to the observer.	
+
+-	When a observer subscribe to the obervable with a delay then the observer will miss event.
+
+-	A connectable observable allow only single subscription amongst all subscriber.
+
+-	It does not emit event upon subscription.
+
+-	The publish operation is used to create connectable observable
+
+	Example:
+
+	ConnectableObservable<Long> source = Observable.interval(1, TimeUnit.SECONDS).publish();
+
+-	The connect operation is used to allow connectable observable to emit event.
+
+	Example:
+	
+	source.connect();
+	
+Explain replay and caching operation on observable?
+
+-	The replay operation is used to convert hot observable to cold observable.
+
+-	When a observer subscribe to the obervable with a delay then the observer will not miss any event.
+
+-	This operation allow the cold observable to emit only latest arguement number of event to this observer.
+
+	Example:
+
+	ConnectableObservable<Long> source = Observable.interval(1, TimeUnit.SECONDS).replay(3);
+
+-	It return connectable observable instance and require to use the connect operation.
+
+	source.connect();
+
+-	The caching operation is used to convert hot observable to cold observable.
+
+-	When a observer subscribe to the obervable with a delay then the observer will not miss any event.
+
+	Example:
+
+	Observable<Long> source = Observable.interval(1, TimeUnit.SECONDS).cache();
+
+-	It does not return connectable observable instance and hence does not require to use the connect operation.

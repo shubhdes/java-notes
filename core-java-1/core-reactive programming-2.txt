@@ -1,0 +1,334 @@
+core java - reactive programming - 2
+
+What is subject?
+
+-	The subject shows behavior of both observable and observer.
+
+-	It is used as a bridge between the observable and observer.
+
+-	It is a kind of hot observable.
+
+-	It can mutlicast.
+
+-	It can merge emission from multiple observable.
+
+-	The RxJava provide an interface called as Subject.
+
+	Example:
+	
+	Subject<String> subject = PublishSubject.create();
+	
+-	It is not thread safe.
+
+-	To make it thread safe by using toSerialized operation.
+
+	Example:
+	
+	subject = subject.toSerialized();
+	
+Enlist different implementations of subject?
+
+-	The first implementation class is PublishSubject.
+
+-	It is a kind of hot observable.
+
+	Example:
+	
+	Subject<String> subject = PublishSubject.create();
+
+-	The next implementation class is ReplaySubject.
+
+-	It is a kind of cold observable.
+
+-	It uses cache operation to emit the event again.
+
+	Example:
+	
+	Subject<String> subject = ReplaySubject.create();
+	
+-	The next implementation class is BehaviorSubject.
+
+-	It uses replay operation with buffer size equal to one to emit the latest event again.
+
+	Example:
+	
+	Subject<String> subject = BehaviorSubject.create();
+	
+-	The next implementation class is AsyncSubject.
+
+-	It only emit the last event data before emitting the event complete.
+
+	Example:
+	
+	Subject<String> subject = AsyncSubject.create();
+	
+-	The last implementation class is UnicastSubject.
+
+-	It allow only single observer to subscriber otherwise it will raise a runtime exception saying IllegalStateException.
+
+-	It will keep all event inside buffer.
+
+-	Only when subscriber does subscription then event from the buffer will be emit and it will be cleared.
+
+-	After observer does subscription no events are added to buffer and directly emitted to observer.
+
+	Example:
+	
+	Subject<String> subject = UnicastSubject.create();
+
+What is observable contract?
+
+-	From observable emission must be sequential and one at a time.
+
+What is a scheduler?
+
+-	Observable emit event on the same thread in which it is declared and subscribed.
+
+-	This will allow one observer to consume event.
+
+-	The next observer can consume the event only after the first observer consumed complete event.
+
+-	Scheduler is a thread pool that will push the emissions from the observable.
+
+-	It allow observable emit event on the different thread for observer.
+
+-	When a observer consume complete event the thread will return back to pool.
+
+-	It may be reused for to push the emissions from the observable to another observer.
+	
+Enlist different schedulers?
+
+-	The first scheduler is computation scheduler.
+
+-	It is used for operation which involve calculation.	
+
+-	It uses fixed number of threads which is equal to the count of processor cores.
+
+	Example:
+	
+	Schedulers.computation();
+	
+-	The next scheduler is io scheduler.
+
+-	It is used for reading and writing operation.	
+
+-	The number of threads will increase and decrease dynamically.
+
+	Example:
+	
+	Schedulers.io();
+	
+-	The next scheduler is new thread scheduler.
+
+-	It will create new thread for each observer.
+
+-	It will destroy thread when the observer consume complete event.
+
+	Example:
+	
+	Schedulers.newThread();
+	
+-	The next scheduler is single scheduler.
+
+-	It will create single thread for sequential emission of event.
+
+	Example:
+	
+	Schedulers.single();
+
+Explain the subscribeOn operator?
+
+-	The subscribeOn operator is used to determine how observable will push emission to all observable.
+
+-	This operator does not work with the interval factory method.
+
+-	It can be used anywhere in the operator chain.
+
+-	It is recommended to put this operator close to the observable in the operator chain.
+
+-	When multiple subscribeOn operator are used on the observable the operator close to observable will only be considered
+
+	Example:
+	
+	Observable.range(1, 50).subscribeOn(Schedulers.computation())
+
+Explain the observeOn operator?
+
+-	The observeOn operator is used to determine how observable will push emission to all observable.
+
+-	This operator does not work with the interval factory method.
+
+-	It can be used anywhere in the operator chain.
+
+-	It is used to override the scheduler used in the upstream.
+
+	Example:
+
+	Observable.range(1, 50).observeOn(Schedulers.computation())
+	
+Explain the performance issue with the observeOn operator? 	
+
+-	In operator chain a event flow from the first operator and leave the last operator.
+
+-	Only when the event is consumed by observer the next event enter the first operator.
+
+-	But when there is observeOn operator in the operator chain the behavior is different.
+
+-	When event leave observeOn operator the next event enter the first operator.
+
+-	But the downstream may be slow to consume the event and upstream may emit event fast.
+
+-	This will result into event accumulate into observeOn operator.
+
+-	When this continues for longer the memory consumption will raise.
+
+Explain the flatMap operator?
+
+-	For every emission from source observable flatMap operator will create new observable instance.
+
+-	It will merge all the observable instances into one.
+
+	Example:
+	
+	Observable.fromArray(days).flatMap(day -> Observable.fromArray(day.split(""))).subscribe(System.out::println,
+		Throwable::printStackTrace, () -> System.out.println("Week completed!!"));
+
+Explain the buffer operator?
+
+-	It collect emission inside a collection.
+
+-	Then emit collected emission in a batch.
+
+	Example:
+	
+	Observable.range(1, 50).buffer(4)
+		.subscribe(System.out::println, Throwable::printStackTrace,
+				() -> System.out.println("All events consumed!!"));
+
+-	Also emission can be timely controlled.
+
+	Example:
+	
+	Observable.range(1, 50).buffer(2, TimeUnit.SECONDS)
+		.subscribe(System.out::println, Throwable::printStackTrace,
+				() -> System.out.println("All events consumed!!"));
+
+Explain the window operator?
+
+-	It collect emission inside another observable.
+
+-	It return an observable which emit another observable.
+
+-	There is no collection involved.
+
+-	The observable can emit emission immediately.
+
+-	Also emission can be timely controlled.
+
+Explain the throttle operator?
+
+-	The throttle operator omit emission when they occur rapidly.
+
+-	There are three version of this operator and they are called as throttleFirst, throttleLast and throttleWithTimeout.
+
+-	The throttleFirst operator will emit the first emission it recieved after mentioned time duration.
+
+	Example:
+
+	observable.throttleFirst(5, TimeUnit.SECONDS)
+		.subscribe(System.out::println, Throwable::printStackTrace,
+				() -> System.out.println("All events consumed!!"));
+				
+-	The throttleLast operator will emit the last emission it recieved after mentioned time duration.
+
+-	This operator is also called as sample operator.
+
+	Example:
+
+	observable.throttleLast(5, TimeUnit.SECONDS)
+		.subscribe(System.out::println, Throwable::printStackTrace,
+				() -> System.out.println("All events consumed!!"));
+
+-	The throttleWithTimeout operator will emit the next emission it recieved after mentioned time duration.
+
+-	This operator is also called as debounce operator.
+
+	Example:
+
+	observable.throttleWithTimeout(5, TimeUnit.SECONDS)
+		.subscribe(System.out::println, Throwable::printStackTrace,
+				() -> System.out.println("All events consumed!!"));
+
+Explain the switchMap operator?
+
+-	For every emission from source observable switchMap operator will create new observable instance.
+
+-	The downstream will operate on the new observable instance.
+
+-	But switchMap operator can dispose this observable instance inbetween.
+
+-	It will then will push the latest observable to the downstream.
+
+	Example:
+	
+	Observable.fromArray(days).switchMap(day -> Observable.fromArray(day.split(""))).subscribe(System.out::println,
+		Throwable::printStackTrace, () -> System.out.println("Week completed!!")); 
+		
+Explain the need of backpressure?
+
+-	In operator chain a event flow from the first operator and leave the last operator.
+
+-	Only when the event is consumed by observer the next event enter the first operator.
+
+-	But when there is observeOn operator in the operator chain the behavior is different.
+
+-	When event leave observeOn operator the next event enter the first operator.
+
+-	But the downstream may be slow to consume the event and upstream may emit event fast.
+
+-	This will result into event accumulate into observeOn operator.
+
+-	When this continues for longer the memory consumption will raise.
+
+-	With backpressure the upstream will produce fixed number of events.
+
+-	Only when the downstream consumed all these events then the upstream will produce next fixed number of events. 
+
+Explain flowable and subscriber?
+
+-	The flowable is an observable with backpressure.
+
+-	The subscriber is an observer used to consume emission from flowable.
+
+	Example:
+	
+	Flowable.fromArray(days).switchMap(day -> Observable.fromArray(day.split(""))).subscribe(System.out::println,
+		Throwable::printStackTrace, () -> System.out.println("Week completed!!")); 
+
+-	Also subscribing to flowable return a subscription instance.
+
+-	The cancel operator must be used on this instance to unsubscribe.
+
+	Example:
+	
+	subscription.cancel();
+	
+Enlist and explain the backpressure strategies?
+
+-	There are five backpressure strategies and they are called as missing, error, buffer, drop and latest.
+
+-	These strategies are defined inside BackPressureStrategy enum.
+
+-	The missing strategy is no backpressure.
+
+-	The error strategy will raise runtime exception saying MissingBackpressureException when downstream fails to match upstream.
+
+-	The buffer strategy pushes emission into unbounded queue.
+
+-	These emission remain inside queue until consumed by downstream.
+
+-	When the queue continues to grow it will raise runtime error saying OutOfMemoryError.
+
+-	The drop strategy will ignore emission when downstream fails to match upstream.
+
+-	The latest strategy will emit only the latest emission when downstream fails to match upstream.
