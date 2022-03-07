@@ -1,0 +1,10 @@
+kubernetes
+
+What is kubernetes?
+
+-	Orchestration means automated management of containers.
+
+-	Kubernetes is container orchestration system.
+
+-	For local development we must install minikube version of kubernetes.
+

@@ -1,4 +1,4 @@
-core java - log4j
+log4j
 
 What are problems with System.out.println() method call and why is it not suitable for logging?
 

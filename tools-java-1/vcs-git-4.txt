@@ -1,4 +1,4 @@
-core java -	version control system tool - 4
+version control system tool - 4
 
 Explain remote repository on github?
 

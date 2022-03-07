@@ -1,4 +1,4 @@
-core java - maven
+maven
 
 What is maven and why is it used?
 

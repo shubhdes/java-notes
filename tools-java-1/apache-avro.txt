@@ -1,4 +1,4 @@
-core java -	apache avro
+apache avro
 
 What is apache avro?
 

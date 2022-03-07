@@ -1,10 +1,10 @@
-spring boot - docker-2.0 [>= 2.4 ]
+docker-2.0 [>= 2.4 ]
 
 How does spring boot maven plugin automate image construction?
 
 -	The spring boot maven plugin can be used to automate image construction.
 
-?	This plugin is called after packaging phase of build lifecycle.
+-	This plugin is called after packaging phase of build lifecycle.
 
 -	The plugin supports build pack which means it does not require external Dockerfile.
 

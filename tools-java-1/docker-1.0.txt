@@ -1,4 +1,4 @@
-spring boot - docker-1.0 [< 2.4 ]
+docker-1.0 [< 2.4 ]
 
 Explain the docker architecture?	
 

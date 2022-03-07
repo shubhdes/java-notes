@@ -1,4 +1,4 @@
-core java -	version control system tool - 5
+version control system tool - 5
 
 Why git reset is not recommended to use in public repositories?
 

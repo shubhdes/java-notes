@@ -1,4 +1,4 @@
-core java -	version control system tool - 3
+version control system tool - 3
 
 Explain branching in git?
 

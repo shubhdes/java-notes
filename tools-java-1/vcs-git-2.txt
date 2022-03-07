@@ -1,4 +1,4 @@
-core java -	version control system tool - 2
+version control system tool - 2
 
 Explain the use of git diff command?
 

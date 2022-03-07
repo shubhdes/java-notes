@@ -1,4 +1,4 @@
-core java - apache kafka 1.0
+apache kafka 1.0
 
 What is Apache kafka?
 

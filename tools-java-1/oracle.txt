@@ -1,4 +1,4 @@
-oracle - sql
+oracle
 
 What are indexes and why are they required?
 

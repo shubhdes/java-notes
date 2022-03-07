@@ -1,4 +1,4 @@
-core java -	version control system tool - 1
+version control system tool - 1
 
 What is the need of version control system tool?
 
