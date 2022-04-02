@@ -8,3 +8,116 @@ What is kubernetes?
 
 -	For local development we must install minikube version of kubernetes.
 
+What is a pod?
+
+-	A pod is a wrapper around container.
+
+-	It is short-lived.
+
+-	One pod can contain one or more container but generally one pod contain only one container.
+
+-	But in exception case one pod can contain one microservice container and one or more helper container.
+
+-	Pod is not accessible outside the cluster.
+
+-	Following command allows to list all pods.
+
+	example:
+	
+	#kubectl get pods
+
+-	Following command allows to describe a pod.
+
+	syntax:
+	
+	#kubectl describe pod [name]
+	
+	example:
+	
+	#kubectl describe pod first-pod	
+	
+What is a service?
+
+-	A service is middleman between pod and outside world.
+
+-	It is long lived.
+
+-	Following command allows to list all services.
+
+	example:
+	
+	#kubectl get services
+
+-	Following command allows to describe a service.
+
+	syntax:
+	
+	#kubectl describe service [name]
+	
+	example:
+	
+	#kubectl describe service first-service
+
+-	There are three types of service and they are called as ClusterIP, NodePort and LoadBalancer.
+
+-	The role of service is to accept traffic from outside world or inside cluster.
+
+-	Then redirect this traffic to the pod.
+
+How does NodePort service work?
+
+-	The NodePort service uses a nodePort and ClusterIP service.
+
+-	It exposes nodePort on every node.
+
+-	The outside world can directly send traffic on this nodePort.
+
+-	The incoming traffic on nodePort is redirected to ClusterIP service.
+
+-	Then ClusterIP service will redirect this traffic to the port used by pod.
+
+What are labels and selectors?
+
+-	The labels are key and value pairs which identify a pod.
+
+-	Following command allows to list all pods with labels.
+
+	example:
+	
+	#kubectl get pods --show-labels
+	
+-	Following command allows to find pod with a label.
+
+	syntax:
+	
+	#kubectl get pods -l [key]=[value]
+
+	example:
+	
+	#kubectl get pods -l app=first
+
+-	The selectors are key and value pairs which help service to identify pod.
+
+What is a replicaset?
+
+-	A replicaset is count of pods running at any given time.
+
+-	The pod defined inside the replicaset definition are owned by it.
+
+-	It uses selectors to identify new pod added to the cluster which it must own.
+
+-	Following command allows to list all replicaset.
+
+	example:
+	
+	#kubectl get replicaset
+
+-	Following command allows to describe a replicaset.
+
+	syntax:
+	
+	#kubectl describe replicaset [name]
+	
+	example:
+	
+	#kubectl describe replicaset first-replicaset
