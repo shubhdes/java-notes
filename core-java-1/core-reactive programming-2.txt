@@ -78,7 +78,7 @@ Enlist different implementations of subject?
 
 What is observable contract?
 
--	From observable emission must be sequential and one at a time.
+-	From observable emission to a observer must be sequential and one at a time.
 
 What is a scheduler?
 
@@ -88,13 +88,15 @@ What is a scheduler?
 
 -	The next observer can consume the event only after the first observer consumed complete event.
 
--	Scheduler is a thread pool that will push the emissions from the observable.
+-	Scheduler is a thread pool.
 
--	It allow observable emit event on the different thread for observer.
+-	It allow observable emit event on the different thread for each observer.
+
+-	A thread is reserved for each observer.
 
 -	When a observer consume complete event the thread will return back to pool.
 
--	It may be reused for to push the emissions from the observable to another observer.
+-	It may be reused to push the emissions from the observable to another observer.
 	
 Enlist different schedulers?
 
@@ -162,6 +164,8 @@ Explain the observeOn operator?
 
 -	It is used to override the scheduler used in the upstream.
 
+-	It will override the scheduler only for downstream and will not override the scheduler for upstream.
+
 	Example:
 
 	Observable.range(1, 50).observeOn(Schedulers.computation())
@@ -180,7 +184,7 @@ Explain the performance issue with the observeOn operator?
 
 -	This will result into event accumulate into observeOn operator.
 
--	When this continues for longer the memory consumption will raise.
+-	When this continues for longer the memory consumption will increase.
 
 Explain the flatMap operator?
 

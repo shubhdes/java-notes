@@ -160,7 +160,7 @@ Explain how does RxJava provide different ways to create observer?
 
 -	The first method is the subscribe method with the following method signature.
 
-	public final Disposable subscribe(Consumer onNext, Consumer onError, Action onComplete) {
+	public final Disposable subscribe(Consumer onNext, Consumer onError, Action onComplete);
 
 -	When we use this method for creating observable then we must explicitly handle all three events.
 
@@ -396,6 +396,8 @@ What are different kinds of observable?
 -	But the hot observer will emit only the latest event to the observer.	
 
 -	When a observer subscribe to the obervable with a delay then the observer will miss event.
+
+-	A connectable obervable is an example of hot observable.
 
 -	A connectable observable allow only single subscription amongst all subscriber.
 
