@@ -2,15 +2,21 @@ kubernetes
 
 What is kubernetes?
 
+-	Kubernetes is an orchestration system.
+
 -	Orchestration means automated management of containers.
 
--	Kubernetes is container orchestration system.
+What is a node and cluster?
 
--	For local development we must install minikube version of kubernetes.
+-	A node is a computing device.
+
+-	It can be physical or virtual.
+
+-	A collection of nodes is called as cluster.
 
 What is a pod?
 
--	A pod is a wrapper around container.
+-	A pod is a wraps the container.
 
 -	It is short-lived.
 
@@ -34,7 +40,31 @@ What is a pod?
 	
 	example:
 	
-	#kubectl describe pod first-pod	
+	#kubectl describe pod firstpod	
+
+-	Following command allows to get shell into pod.
+
+	syntax:
+	
+	#kubectl exec [name] [command]
+	
+	example:
+	
+	#kubectl exec firstpod sh
+
+-	Following is yaml definition of a pod.
+
+	apiVersion: v1
+	
+	kind: Pod
+	
+	metadata:
+	  name: firstpod
+	
+	spec:
+	  containers:
+	  - name: firstpod
+	    image: richardchesterwood/k8s-fleetman-webapp-angular:release0	
 	
 What is a service?
 
@@ -56,29 +86,58 @@ What is a service?
 	
 	example:
 	
-	#kubectl describe service first-service
+	#kubectl describe service firstservice
 
--	There are three types of service and they are called as ClusterIP, NodePort and LoadBalancer.
+-	There are three types of service and they are called as cluster ip, node port and load balancer.
 
 -	The role of service is to accept traffic from outside world or inside cluster.
 
 -	Then redirect this traffic to the pod.
 
-How does NodePort service work?
+-	The cluster ip service can accept traffic only from inside the cluster.
 
--	The NodePort service uses a nodePort and ClusterIP service.
+-	Following is yaml definition of a service.
 
--	It exposes nodePort on every node.
+	apiVersion: v1
 
--	The outside world can directly send traffic on this nodePort.
+	kind: Service
 
--	The incoming traffic on nodePort is redirected to ClusterIP service.
+	metadata:
+	  name: firstservice
 
--	Then ClusterIP service will redirect this traffic to the port used by pod.
+	spec:
+	  
+	  ports:
+	  - name: http
+	    port: 80
+	    targetPort: 80
+	    nodePort: 30080
+
+	  type: NodePort
+
+How does node port service work?
+
+-	The node port service uses a node port and cluster ip service.
+
+-	It exposes port on every node called as node port.
+
+-	The outside world can directly send traffic on this port.
+
+-	The incoming traffic on this port is redirected to cluster ip service on its port.
+
+-	Then cluster ip service will redirect this traffic to the port used by pod called target port.
 
 What are labels and selectors?
 
 -	The labels are key and value pairs which identify a pod.
+
+	example:
+
+	metadata:
+  	  name: firstpod
+  	  
+  	  labels:
+    	app: webapp
 
 -	Following command allows to list all pods with labels.
 
@@ -96,11 +155,23 @@ What are labels and selectors?
 	
 	#kubectl get pods -l app=first
 
+-	A pod can have multiple labels.
+
 -	The selectors are key and value pairs which help service to identify pod.
+
+	example:
+
+	spec:
+	  selector:
+	    app: webapp	    
+
+-	A service can have multiple selectors.
+
+-	A service identify pod using all selectors provided.
 
 What is a replicaset?
 
--	A replicaset is count of pods running at any given time.
+-	A replicaset is number of pods running at any given time.
 
 -	The pod defined inside the replicaset definition are owned by it.
 
@@ -120,4 +191,353 @@ What is a replicaset?
 	
 	example:
 	
-	#kubectl describe replicaset first-replicaset
+	#kubectl describe replicaset firstreplicaset
+
+-	Following is yaml definition of a replicaset.
+
+	apiVersion: apps/v1
+
+	kind: ReplicaSet
+
+	metadata:
+	  name: firstreplicaset
+
+	spec:
+	  replicas: 3
+
+	  selector:
+	    matchLabels:
+	      app: webapp
+	  
+	  template:  
+	    metadata:
+	      labels:
+	        app: webapp
+
+	    spec:
+	      containers:
+	      - name: firstpod
+	        image: richardchesterwood/k8s-fleetman-webapp-angular:release0
+
+What is a deployment?
+
+-	It is an improved replicaset.
+
+-	It support zero downtime rollout.
+
+-	Following command allows to list all deployment.
+
+	example:
+	
+	#kubectl get deployment
+
+-	Following command allows to describe a deployment.
+
+	syntax:
+	
+	#kubectl describe deployment [name]
+	
+	example:
+	
+	#kubectl describe deployment firstdep
+
+-	Following is yaml definition of a deployment.
+
+	apiVersion: apps/v1
+
+	kind: Deployment
+
+	metadata:
+	  name: firstdep
+
+	spec:
+	  replicas: 3
+
+	  selector:
+	    matchLabels:
+	      app: webapp
+	  
+	  template:  
+	    metadata:
+	      labels:
+	        app: webapp
+
+	    spec:
+	      containers:
+	      - name: firstpod
+            image: richardchesterwood/k8s-fleetman-webapp-angular:release0
+
+How does deployment ensure zero downtime rollout?
+
+-	When we create or update a deployment then kubernetes will create a new replicatset for it.
+
+-	Also when we create or update a replicaset then kubernetes will create new pod for it.
+
+-	This process is called as rollout.
+
+-	When we update a deployment then the pod of old replicaset continue to exist until pod of new replicaset is ready.
+
+-	This will ensure zero downtime rollout also when the rollout fail. 
+
+-	But when the pod of new replicaset are ready then pod of old replicaset are destroyed.
+
+-	However the old replicaset continue to exist.
+
+-	This will allow kubernetes to rollback to old replicaset anytime.	
+
+-	Following command allows to list the history of rollout.
+
+	syntax:
+
+	#kubectl rollout history deployment [name]
+
+	example:
+
+	#kubectl rollout history deployment firstdep
+
+-	It will remember last ten rollout.
+
+-	It is possible to rollback a rollout.
+
+-	Following command allows to rollback a rollout.
+
+	syntax:
+
+	#kubectl rollout undo deployment [name]
+
+	example:
+
+	#kubectl rollout undo deployment firstdep
+
+-	The above command will rollback the rollout to present - 1 rollout version.
+
+-	It is possible to rollback the rollout to particular rollout version using --to-revision option.
+
+	syntax:
+
+	#kubectl rollout undo deployment [name] --to-revision=[version]
+
+	example:
+
+	#kubectl rollout undo deployment firstdep --to-revision=2
+
+What is namespace?
+
+-	A namespace is way to group together different resources in kubernetes.
+
+-	When namespace is not assigned to a resource it is added to namespace called default.
+
+-	Also when namespace is not used in command it will operate on resource in default namespace.
+
+-	Following command allows to list all pods inside namespace.
+
+	syntax:
+	
+	#kubectl get pods -n [name]
+
+	example:
+
+	#kubectl get pods -n firstns
+
+What is networking in kubernetes?
+
+-	It is recommended to have a single container inside a pod.
+
+-	Therefore container present inside a pod need to communicate with container present inside another pod.	
+
+-	This communication is supported by service.
+
+-	A pod send request to service which will redirect the request to another pod.
+
+-	But address of service is dynamically assigned to it and pod does not know it.
+
+-	Every kubernetes cluster contains pod called as core-dns.
+
+-	The pod can be communicated using its service called as kube-dns.
+
+-	Both the pod and service exist inside kube-system namespace.
+
+-	The pod contain a container which is a database that contain mapping between service and its address.
+
+-	A fully qualified service name contain name, namespace and cluster.
+
+What is a secret?
+
+-	Each pod may require one or multiple sensitive variables.
+
+-	A secret keeps these sensitive variables in a central location.
+
+-	Following is yaml definition of a secret.
+
+	apiVersion: apps/v1
+
+	kind: Secret
+
+	metadata:
+	  name: firstsec
+
+	stringData:
+	  username: "root"
+	  password: "root"
+	  
+-	In kubernetes all secret variables are base64 encoded. 	 
+
+What is volume?
+
+-	When is a pod dies all its files are lost.
+
+-	A volume maintains the files of a pod even when the pod dies.
+
+-	A volume will mount a directory inside container to a directory on local machine.
+
+-	Following is yaml definition of a volume.
+
+	containers:
+    ...
+	  volumeMounts:
+	  - name: firstvol
+	    mountPath: /data/db
+
+	volumes:
+    - name: firstvol
+      hostPath:
+        path: /mnt/
+        type: DirectoryOrCreate
+
+What is persistent volume claim?
+
+-	In ideal situation using a host to mount a volume is not recommended.
+
+-	It uses storage provided by cloud provider.
+
+-	However when we migrate from one cloud provider to another we need to change the volume parameters inside yaml file everytime.
+
+-	A persistent volume claim is a pointer to volume parameters.
+
+-	The declaration and definition for this pointer is provided externally.
+
+-	This allows us to migrate from one cloud provider to another without changing the volume parameters inside yaml file everytime.
+
+-	Following command allows to list all persistent volume claim.
+
+	example:
+	
+	#kubectl get pvc
+
+-	Following is yaml definition of a volume.
+
+	containers:
+    ...
+	  volumeMounts:
+	  - name: firstvol
+	    mountPath: /data/db
+
+	volumes:
+    - name: firstvol
+      persistentVolumeClaim:
+        claimName: firstpvc
+
+-	Following is yaml declaration of a persistent volume claim.
+
+	apiVersion: apps/v1
+
+	kind: PersistentVolumeClaim
+
+	metadata:
+	  name: firstpvc
+
+	spec:
+	  storageClassName: firststorageclass
+	...
+
+-	Following is yaml definition of a persistent volume claim.
+
+	apiVersion: apps/v1
+
+	kind: PersistentVolume
+
+	metadata:
+	  name: hoststorage
+
+	spec:
+	  storageClassName: firststorageclass
+	...
+
+What is a config map?
+
+-	Each pod may require one or multiple environment variables.
+
+-	A config map keeps these environment variables in a central location.
+
+-	Following is yaml definition of a config map.
+
+	apiVersion: apps/v1
+
+	kind: ConfigMap
+
+	metadata:
+	  name: firstcm
+	  namespace: firstns
+
+	data:
+	  USERNAME: "root"
+	  PASSWORD: "root"
+	  
+-	Following is yaml definition to consume an environment variable from config map.
+
+	containers:
+    ...
+	 env:
+	  - name : USERNAME
+	    valueFrom:
+	      configMapKeyRef:
+	        name: firstcm
+			key: USERNAME
+		  
+-	Following is another yaml definition to consume all environment variables config map.
+
+	containers:
+    ...
+	  envFrom:
+	  - configMapRef:
+	      name: firstcm
+		  
+-	When a config map is changed then pods are unaware about it.
+
+-	They continue to use the earlier environment variables. 		 
+
+Explain how to use volumes and config map together?
+
+-	Each pod may require one or multiple configuration files.
+
+-	A config map keeps these configuration files in a central location.
+
+-	A volume will mount a file inside container to a file defined inside config map.
+
+-	Following is yaml definition of a config map.
+
+	apiVersion: apps/v1
+
+	kind: ConfigMap
+
+	metadata:
+	  name: firstcm
+	  namespace: firstns
+
+	data:
+	  database.properties: |
+	    username=root
+	    password=root
+
+-	Following is yaml definition of a volume.
+
+	containers:
+    ...
+	  volumeMounts:
+	  - name: firstvol
+	    mountPath: /data/db
+
+	volumes:
+    - name: firstvol
+      configMap:
+        name: firstcm 
