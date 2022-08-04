@@ -8,7 +8,7 @@ What is kubernetes?
 
 What is a node and cluster?
 
--	A node is a computing device.
+-	A node is a computer.
 
 -	It can be physical or virtual.
 
@@ -16,11 +16,13 @@ What is a node and cluster?
 
 What is a pod?
 
--	A pod is a wraps the container.
+-	A pod wraps the container.
 
 -	It is short-lived.
 
--	One pod can contain one or more container but generally one pod contain only one container.
+-	One pod can contain one or more container.
+
+-	In general case one pod contain only one container.
 
 -	But in exception case one pod can contain one microservice container and one or more helper container.
 
@@ -40,7 +42,7 @@ What is a pod?
 	
 	example:
 	
-	#kubectl describe pod firstpod	
+	#kubectl describe pod mypod	
 
 -	Following command allows to get shell into pod.
 
@@ -50,7 +52,7 @@ What is a pod?
 	
 	example:
 	
-	#kubectl exec firstpod sh
+	#kubectl exec mypod sh
 
 -	Following is yaml definition of a pod.
 
@@ -59,16 +61,20 @@ What is a pod?
 	kind: Pod
 	
 	metadata:
-	  name: firstpod
+	  name: mypod
 	
 	spec:
 	  containers:
-	  - name: firstpod
+	  - name: mypod
 	    image: richardchesterwood/k8s-fleetman-webapp-angular:release0	
 	
 What is a service?
 
 -	A service is middleman between pod and outside world.
+
+-	The role of service is to accept traffic from outside world or inside cluster.
+
+-	Then redirect this traffic to the pod.
 
 -	It is long lived.
 
@@ -86,15 +92,9 @@ What is a service?
 	
 	example:
 	
-	#kubectl describe service firstservice
+	#kubectl describe service myservice
 
--	There are three types of service and they are called as cluster ip, node port and load balancer.
-
--	The role of service is to accept traffic from outside world or inside cluster.
-
--	Then redirect this traffic to the pod.
-
--	The cluster ip service can accept traffic only from inside the cluster.
+-	There are three types of service and they are called as ClusterIP, NodePort and LoadBalancer.
 
 -	Following is yaml definition of a service.
 
@@ -103,7 +103,7 @@ What is a service?
 	kind: Service
 
 	metadata:
-	  name: firstservice
+	  name: myservice
 
 	spec:
 	  
@@ -115,26 +115,30 @@ What is a service?
 
 	  type: NodePort
 
-How does node port service work?
+-	The CluserIP service can accept traffic only from inside the cluster.
 
--	The node port service uses a node port and cluster ip service.
+-	It is not accessible outside the cluster.
+
+-	The NodePort service uses a port and ClusterIP service.
 
 -	It exposes port on every node called as node port.
 
 -	The outside world can directly send traffic on this port.
 
--	The incoming traffic on this port is redirected to cluster ip service on its port.
+-	The incoming traffic on this port is redirected to ClusterIP service on its port.
 
--	Then cluster ip service will redirect this traffic to the port used by pod called target port.
+-	Then ClusterIP service will redirect this traffic to the port used by pod called target port.
 
 What are labels and selectors?
 
 -	The labels are key and value pairs which identify a pod.
 
+-	A pod can have multiple labels.
+
 	example:
 
 	metadata:
-  	  name: firstpod
+  	  name: mypod
   	  
   	  labels:
     	app: webapp
@@ -153,21 +157,19 @@ What are labels and selectors?
 
 	example:
 	
-	#kubectl get pods -l app=first
+	#kubectl get pods -l app=my
 
--	A pod can have multiple labels.
+-	The selectors are matched against labels.
 
--	The selectors are key and value pairs which help service to identify pod.
+-	A service can have multiple selectors.
+
+-	It identifies the pod using all selectors provided.
 
 	example:
 
 	spec:
 	  selector:
 	    app: webapp	    
-
--	A service can have multiple selectors.
-
--	A service identify pod using all selectors provided.
 
 What is a replicaset?
 
@@ -191,7 +193,7 @@ What is a replicaset?
 	
 	example:
 	
-	#kubectl describe replicaset firstreplicaset
+	#kubectl describe replicaset myreplicaset
 
 -	Following is yaml definition of a replicaset.
 
@@ -200,7 +202,7 @@ What is a replicaset?
 	kind: ReplicaSet
 
 	metadata:
-	  name: firstreplicaset
+	  name: myreplicaset
 
 	spec:
 	  replicas: 3
@@ -216,7 +218,7 @@ What is a replicaset?
 
 	    spec:
 	      containers:
-	      - name: firstpod
+	      - name: mypod
 	        image: richardchesterwood/k8s-fleetman-webapp-angular:release0
 
 What is a deployment?
@@ -239,7 +241,7 @@ What is a deployment?
 	
 	example:
 	
-	#kubectl describe deployment firstdep
+	#kubectl describe deployment my
 
 -	Following is yaml definition of a deployment.
 
@@ -248,7 +250,7 @@ What is a deployment?
 	kind: Deployment
 
 	metadata:
-	  name: firstdep
+	  name: mydep
 
 	spec:
 	  replicas: 3
@@ -264,10 +266,10 @@ What is a deployment?
 
 	    spec:
 	      containers:
-	      - name: firstpod
+	      - name: mypod
             image: richardchesterwood/k8s-fleetman-webapp-angular:release0
 
-How does deployment ensure zero downtime rollout?
+How does deployment ensure zero downtime rollout and rollback?
 
 -	When we create or update a deployment then kubernetes will create a new replicatset for it.
 
@@ -293,7 +295,7 @@ How does deployment ensure zero downtime rollout?
 
 	example:
 
-	#kubectl rollout history deployment firstdep
+	#kubectl rollout history deployment mydep
 
 -	It will remember last ten rollout.
 
@@ -307,7 +309,7 @@ How does deployment ensure zero downtime rollout?
 
 	example:
 
-	#kubectl rollout undo deployment firstdep
+	#kubectl rollout undo deployment mydep
 
 -	The above command will rollback the rollout to present - 1 rollout version.
 
@@ -319,7 +321,7 @@ How does deployment ensure zero downtime rollout?
 
 	example:
 
-	#kubectl rollout undo deployment firstdep --to-revision=2
+	#kubectl rollout undo deployment mydep --to-revision=2
 
 What is namespace?
 
@@ -337,7 +339,7 @@ What is namespace?
 
 	example:
 
-	#kubectl get pods -n firstns
+	#kubectl get pods -n myns
 
 What is networking in kubernetes?
 
@@ -353,38 +355,17 @@ What is networking in kubernetes?
 
 -	Every kubernetes cluster contains pod called as core-dns.
 
--	The pod can be communicated using its service called as kube-dns.
+-	The pod is accessible using its service called as kube-dns.
 
 -	Both the pod and service exist inside kube-system namespace.
 
--	The pod contain a container which is a database that contain mapping between service and its address.
+-	The pod contain a container which is a database that contain mapping between fully qualified service name and its address.
 
 -	A fully qualified service name contain name, namespace and cluster.
 
-What is a secret?
-
--	Each pod may require one or multiple sensitive variables.
-
--	A secret keeps these sensitive variables in a central location.
-
--	Following is yaml definition of a secret.
-
-	apiVersion: apps/v1
-
-	kind: Secret
-
-	metadata:
-	  name: firstsec
-
-	stringData:
-	  username: "root"
-	  password: "root"
-	  
--	In kubernetes all secret variables are base64 encoded. 	 
-
 What is volume?
 
--	When is a pod dies all its files are lost.
+-	When a pod dies all its files are lost.
 
 -	A volume maintains the files of a pod even when the pod dies.
 
@@ -395,95 +376,40 @@ What is volume?
 	containers:
     ...
 	  volumeMounts:
-	  - name: firstvol
+	  - name: myvol
 	    mountPath: /data/db
 
 	volumes:
-    - name: firstvol
+    - name: myvol
       hostPath:
         path: /mnt/
         type: DirectoryOrCreate
 
-What is persistent volume claim?
-
 -	In ideal situation using a host to mount a volume is not recommended.
 
--	It uses storage provided by cloud provider.
+-	It must use storage provided by cloud provider.		
 
--	However when we migrate from one cloud provider to another we need to change the volume parameters inside yaml file everytime.
-
--	A persistent volume claim is a pointer to volume parameters.
-
--	The declaration and definition for this pointer is provided externally.
-
--	This allows us to migrate from one cloud provider to another without changing the volume parameters inside yaml file everytime.
-
--	Following command allows to list all persistent volume claim.
-
-	example:
-	
-	#kubectl get pvc
-
--	Following is yaml definition of a volume.
-
-	containers:
-    ...
-	  volumeMounts:
-	  - name: firstvol
-	    mountPath: /data/db
-
-	volumes:
-    - name: firstvol
-      persistentVolumeClaim:
-        claimName: firstpvc
-
--	Following is yaml declaration of a persistent volume claim.
-
-	apiVersion: apps/v1
-
-	kind: PersistentVolumeClaim
-
-	metadata:
-	  name: firstpvc
-
-	spec:
-	  storageClassName: firststorageclass
-	...
-
--	Following is yaml definition of a persistent volume claim.
-
-	apiVersion: apps/v1
-
-	kind: PersistentVolume
-
-	metadata:
-	  name: hoststorage
-
-	spec:
-	  storageClassName: firststorageclass
-	...
-
-What is a config map?
+What is a configmap?
 
 -	Each pod may require one or multiple environment variables.
 
--	A config map keeps these environment variables in a central location.
+-	A configmap keeps these environment variables in a central location.
 
--	Following is yaml definition of a config map.
+-	Following is yaml definition of a configmap.
 
 	apiVersion: apps/v1
 
 	kind: ConfigMap
 
 	metadata:
-	  name: firstcm
-	  namespace: firstns
+	  name: mycm
+	  namespace: myns
 
 	data:
 	  USERNAME: "root"
 	  PASSWORD: "root"
 	  
--	Following is yaml definition to consume an environment variable from config map.
+-	Following is yaml definition to consume an environment variable from configmap.
 
 	containers:
     ...
@@ -491,38 +417,38 @@ What is a config map?
 	  - name : USERNAME
 	    valueFrom:
 	      configMapKeyRef:
-	        name: firstcm
+	        name: mycm
 			key: USERNAME
 		  
--	Following is another yaml definition to consume all environment variables config map.
+-	Following is another yaml definition to consume all environment variables configmap.
 
 	containers:
     ...
 	  envFrom:
 	  - configMapRef:
-	      name: firstcm
+	      name: mycm
 		  
--	When a config map is changed then pods are unaware about it.
+-	When a configmap is changed then pods are unaware about it.
 
 -	They continue to use the earlier environment variables. 		 
 
-Explain how to use volumes and config map together?
+Explain how to use volume and configmap together?
 
 -	Each pod may require one or multiple configuration files.
 
--	A config map keeps these configuration files in a central location.
+-	A configmap keeps these configuration files in a central location.
 
--	A volume will mount a file inside container to a file defined inside config map.
+-	A volume will mount a file inside container to a file defined inside configmap.
 
--	Following is yaml definition of a config map.
+-	Following is yaml definition of a configmap.
 
 	apiVersion: apps/v1
 
 	kind: ConfigMap
 
 	metadata:
-	  name: firstcm
-	  namespace: firstns
+	  name: mycm
+	  namespace: myns
 
 	data:
 	  database.properties: |
@@ -534,10 +460,10 @@ Explain how to use volumes and config map together?
 	containers:
     ...
 	  volumeMounts:
-	  - name: firstvol
+	  - name: myvol
 	    mountPath: /data/db
 
 	volumes:
-    - name: firstvol
+    - name: myvol
       configMap:
-        name: firstcm 
+        name: mycm

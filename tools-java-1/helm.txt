@@ -1,0 +1,182 @@
+helm
+
+What is helm?
+
+-	Helm is a package manager for kubernetes cluster.
+
+-	In helm package is called as chart.
+
+-	Every chart is present inside a repository.
+
+-	Installing a chart means creating kubernetes deployment.
+
+-	Following command is used to add repository to helm.
+
+	syntax:
+	
+	#helm repo add [name] [url]
+	
+	example:
+	
+	#helm repo add myrepo https://charts.bitnami.com/bitnami
+	
+-	Following command is used to refresh repository list in helm.
+
+	example:
+	
+	#helm repo update	
+
+-	Following command is used to install package from repository using helm.
+	
+	syntax:
+	
+	#helm install [name] [repo]/[chart]
+	
+	example:
+	
+	#helm install myinstall myrepo/mysql	
+
+-	Following command is used to list packages installed on the cluster.
+	
+	example:
+	
+	#helm list	
+
+-	Following command is used to uninstall package using helm.
+	
+	syntax:
+	
+	#helm uninstall [name]
+	
+	example:
+	
+	#helm uninstall myinstall
+
+Explain the file structure in helm chart?
+
+-	mysql
+	 |
+	 |-- /chart/
+	 |
+	 |-- /templates/
+	 |
+	 |-- Chart.yaml
+	 |
+	 |-- values.yaml
+
+Explain the Chart.yaml file?
+
+-	The Chart.yaml is metadata file.
+
+-	It consist of description about the helm packagae.
+
+Explain the templates folder?
+
+-	Every yaml file present inside the templates folder is read by text processor.
+
+-	The text processor evaluate the go expressions present inside each yaml file.
+
+-	The contents of all yaml files is concated using yaml separator.
+
+-	This concated yaml will create kubernetes deployment.
+
+-	Following command is used to show concated yaml.
+
+	syntax:
+	
+	#helm template [path]
+	
+	example:
+	
+	#helm template /mysql
+
+Explain the values.yaml file?
+
+-	The concated yaml in helm is configured using go expression.
+
+-	A go expressions can be evaluated using parameter.
+
+	example:
+	
+	replicas : {{ .Values.webapp.replicas }}
+
+-	This parameter is defined inside values.yaml file.
+
+	example:
+	
+	webapp:
+	  replicas: 3
+
+Explain function in go expression?
+
+-	A function call is a go expression.
+
+	syntax:
+	
+	{{ method param1 param2 ... param n}}
+	
+	example:
+	
+	{{ lower .Values.webapp.name }}
+
+	{{ default "myapp" .Values.webapp.name }}		
+	
+Explain function pipeline in go expression?
+
+-	Function pipeline means function chaining.
+
+-	The result of one function is passed as parameter to another function.
+
+	example:
+	
+	{{ .Values.webapp.name | default "myapp" | lower}}
+	
+Explain the conditional statement in go expression?
+
+-	A conditional statement is a go expression.
+
+	syntax:
+	
+	{{ if condition }} block {{ else }} block {{ end }}
+	
+	example:
+	
+	profile: {{ if eq .Values.webapp.profile "dev" }} DEV {{ else }} PROD {{ end }}
+	
+Explain the named template file in helm?
+
+-	A named template is also called as sub template.
+
+-	A template file exist inside templates folder.
+
+-	Its name begins with _ underscore and extension is tpl.	
+
+-	The text processor ignores file inside templates folder with name beginning with _ underscore.	
+
+-	This file contain common block of yaml required by multiple other yaml files.
+
+	example:
+	
+	{{- define name -}}
+	block
+	{{- end -}}  		
+	
+	example:
+	
+	{{- define "common" -}}
+	name: myapp
+	{{- end -}}  		
+
+-	Use of {{- -}} removes blank space and new line before and after the yaml block.	
+
+-	A go expression can be a pointer to yaml block in any tpl file.
+
+	syntax:
+	
+	{{ include name tag | indent n }}
+	
+	example:
+	
+	{{ include "common" . | indent 4 }}
+
+-	We can also use template function but it does not support indent pipeline.	

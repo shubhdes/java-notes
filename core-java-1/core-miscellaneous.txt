@@ -1,0 +1,42 @@
+core java - miscellaneous
+
+How does synchronized ensure consistency?
+
+-	The synchronized keyword ensures that all the threads have only one view for the state of object.
+
+-	When a thread enter synchronized block it reads the state of object from main memory to its local memory. 
+
+-	Also when a thread exits synchronized block it writes the state of object from its local memory to main memory. 
+
+What is double check locking problem?
+
+-	In java creating an object is not an atomic operation.
+
+-	It consist of operations such as allocation of memory, calling constructor, initializing fields and assigment of reference.
+
+-	A compiler is allowed to change sequence of these operations.
+
+	Example:
+
+	if(null == instance) {	// line x
+
+		synchronized(anotherInstance) {
+
+			if(null == instance) {
+
+				instance = new Instance();	// line y
+			}
+		}
+	}
+
+	return instance; // line z
+
+-	Now consider JVM is running thread 1 which is executing line y, it has allocated memory to instance and assigned reference.
+
+-	But it did not call constructor and did not intialize the fields.
+
+-	Now consider JVM is running thread 2 which is executing line x, it will identify that reference exist for instance.
+
+-	Then it will directly execute line z, and it will return partially initialized instance.	
+
+-	Using volatile keyword will not allow compiler to change sequence of these operations.

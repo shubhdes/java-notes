@@ -1,0 +1,117 @@
+kubernetes
+
+What is a job?
+
+-	A pod enters into complete state when the container running inside it has completed the execution.
+
+-	A job creates a pod and ensure it enters the complete state.
+
+-	But a pod can enter into error state before completion.
+
+-	The job identifies such pod and create a new pod as replacement. 
+
+-	When a pod enter into complete state then the job also enters into complete state.
+
+-	Following command allows to list all jobs.
+
+	example:
+	
+	#kubectl get jobs
+
+-	Following command allows to describe a job.
+
+	syntax:
+	
+	#kubectl describe job [name]
+	
+	example:
+	
+	#kubectl describe job myjob
+	
+-	Following is yaml definition of a job.
+
+	apiVersion: batch/v1
+	
+	kind: Job
+	
+	metadata:
+	  name: myjob
+	
+	spec:
+	  template:
+	    spec:
+	      containers:
+	      - name: mypod
+	        image: richardchesterwood/k8s-fleetman-webapp-angular:release0
+	  backoffLimit: 2
+	  
+What is a cronjob?
+
+-	A cronjob is similar to a job.
+
+-	But it periodically creates a pod according to the schedule.  
+
+-	Following is yaml definition of a cronjob.
+
+	apiVersion: batch/v1beta1
+	
+	kind: CronJob
+	
+	metadata:
+	  name: mycronjob
+	
+	spec:
+	  schedule: "* * * * *"
+	  jobTemplate:
+	    spec:	
+	      template:
+	        spec:
+	          containers:
+	          - name: mypod
+	          image: richardchesterwood/k8s-fleetman-webapp-angular:release0
+	      backoffLimit: 2
+
+What is a daemonset?
+
+-	A replicaset ensure fixed number of pods running inside the cluster.
+
+-	When a node fails its pod is lost.
+
+-	A replicaset create new pod as replacement on another node. 
+
+-	Also when a node is added to cluster then replicaset will not create a pod inside it.
+
+-	A daemonset is different from replicaset.
+
+-	It will create pod on every node inside the cluster.
+
+-	When a node fails its pod is lost.
+
+-	A daemonset does not create new pod as replacement on another node. 
+
+-	Also when a node is added to cluster then daemonset will create a pod inside it.
+		  
+-	Following is yaml definition of a daemonset.
+
+	apiVersion: apps/v1
+
+	kind: DaemonSet
+
+	metadata:
+	  name: myds
+
+	spec:
+
+	  selector:
+	    matchLabels:
+	      app: webapp
+	  
+	  template:  
+	    metadata:
+	      labels:
+	        app: webapp
+
+	    spec:
+	      containers:
+	      - name: mypod
+            image: richardchesterwood/k8s-fleetman-webapp-angular:release0		  	  				
