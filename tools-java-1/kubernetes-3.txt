@@ -1,0 +1,97 @@
+kubernetes
+
+What is a resource request?
+
+-	We can define the memory and cpu requirement for a pod.
+
+-	It is optional to include resource request.
+
+-	This helps kubernetes to know whether a node is capable for running a pod.			
+
+-	Following is yaml definition of a memory and cpu requirement.
+
+	resources:
+	  requests:
+	    memory: 300Mi
+		cpu: 100m
+
+What is a resource limit?
+
+-	We can define upper boundary for the memory and cpu requirement for a pod.
+
+-	When the memory usage of container exceed the limit then the container is restarted.
+
+-	The pod will remain alive.
+
+-	When the cpu usage of container exceed the limit then the cpu will throttle.
+
+-	The pod will remain alive also the container will not be restarted.
+
+-	Following is yaml definition of a memory and cpu limit.
+
+	resources:
+	  limits:
+	    memory: 500Mi
+		cpu: 300m
+
+What is a horizontal pod autoscaling?
+
+-	Horizontal pod autoscaling means dynamically changing the number of pod instances.
+
+-	When the number of request increases the number of pod instances are also increased.
+
+-	Also when the number of request decreases the number of pod instances are also decreased.
+
+-	Following is yaml definition of a horizontal autoscaling.
+
+	apiVersion: autoscaling/v1
+
+	kind: HorizontalPodAutoscaler
+
+	metadata:
+	  name: myhpa
+
+	spec:
+	  minReplicas: 1
+      maxReplicas: 4
+	  
+	  scaleTargetRef:
+	    apiVersion: apps/v1beta1 
+		kind: Deployment
+		name: mydep
+		
+	  targetCPUUtilizationPercentage: 400
+	 
+What is a readiness probe?
+
+-	When a container is ready the pod enters into running state.
+
+-	But the application inside container may be in booting state.
+
+-	Then it is not ready to accept any request. It is a downtime situation.
+
+-	The readiness probe help to determine whether a pod is ready to accept any request.
+
+-	Following is yaml definition of a readiness probe.
+
+	readinessProbe:
+	  httpGet:
+	    path: /
+		port: 8080
+
+What is a liveness probe?
+
+-	A liveness probe helps to determine whether a pod is alive.
+
+-	It is called continously.
+
+-	When the liveness probe fail it indicated that the pod is not alive. It is a downtime situation.
+
+-	Then kubernetes will restart the container inside the pod.
+
+-	Following is yaml definition of a readiness probe.
+
+	livenessProbe:
+	  httpGet:
+	    path: /
+		port: 8080		

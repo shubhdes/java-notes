@@ -42,7 +42,7 @@ What is a job?
 	    spec:
 	      containers:
 	      - name: mypod
-	        image: richardchesterwood/k8s-fleetman-webapp-angular:release0
+	        image: myrepo/myimage:0.0.1
 	  backoffLimit: 2
 	  
 What is a cronjob?
@@ -68,7 +68,7 @@ What is a cronjob?
 	        spec:
 	          containers:
 	          - name: mypod
-	          image: richardchesterwood/k8s-fleetman-webapp-angular:release0
+	          image: myrepo/myimage:0.0.1
 	      backoffLimit: 2
 
 What is a daemonset?
@@ -114,4 +114,59 @@ What is a daemonset?
 	    spec:
 	      containers:
 	      - name: mypod
-            image: richardchesterwood/k8s-fleetman-webapp-angular:release0		  	  				
+            image: myrepo/myimage:0.0.1
+			
+What is a statefulset?
+
+-	A statefulset create pod with predictable name.
+
+-	Each pod has a numeric suffix in its name.
+
+-	These pods start in sequential order.
+
+-	These pods can be accessed using headless service.
+
+-	The client program must know the pod name before calling it.
+
+-	Following command allows to list all statefulset.
+
+	example:
+	
+	#kubectl get statefulset
+
+-	Following command allows to describe a statefulset.
+
+	syntax:
+	
+	#kubectl describe statefulset [name]
+	
+	example:
+	
+	#kubectl describe statefulset mysfs
+
+-	Following is yaml definition of a statefulset.
+
+	apiVersion: apps/v1
+
+	kind: StatefulSet
+
+	metadata:
+	  name: mysfs
+
+	spec:
+	  replicas: 3
+	  serviceName: "myservice"
+
+	  selector:
+	    matchLabels:
+	      app: webapp
+	  
+	  template:  
+	    metadata:
+	      labels:
+	        app: webapp
+
+	    spec:
+	      containers:
+	      - name: mypod
+            image: myrepo/myimage:0.0.1		 	  				

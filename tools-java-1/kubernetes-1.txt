@@ -66,7 +66,7 @@ What is a pod?
 	spec:
 	  containers:
 	  - name: mypod
-	    image: richardchesterwood/k8s-fleetman-webapp-angular:release0	
+	    image: myrepo/myimage:0.0.1	
 	
 What is a service?
 
@@ -219,7 +219,11 @@ What is a replicaset?
 	    spec:
 	      containers:
 	      - name: mypod
-	        image: richardchesterwood/k8s-fleetman-webapp-angular:release0
+	        image: myrepo/myimage:0.0.1
+
+-	Pod replication saves from single point of failure.					
+
+-	Before replicating a pod we must determine whether other microservices can work with multiple instances of one microservice.
 
 What is a deployment?
 
@@ -267,7 +271,7 @@ What is a deployment?
 	    spec:
 	      containers:
 	      - name: mypod
-            image: richardchesterwood/k8s-fleetman-webapp-angular:release0
+            image: myrepo/myimage:0.0.1
 
 How does deployment ensure zero downtime rollout and rollback?
 
