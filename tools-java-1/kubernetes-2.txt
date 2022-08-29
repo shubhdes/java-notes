@@ -124,9 +124,11 @@ What is a statefulset?
 
 -	These pods start in sequential order.
 
+-	The client program must know the pod name before calling it.
+
 -	These pods can be accessed using headless service.
 
--	The client program must know the pod name before calling it.
+-	The headless service does not balance the load between pods.
 
 -	Following command allows to list all statefulset.
 

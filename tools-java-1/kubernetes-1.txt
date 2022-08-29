@@ -375,6 +375,22 @@ What is volume?
 
 -	A volume will mount a directory inside container to a directory on local machine.
 
+-	Following command allows to list all volume.
+
+	example:
+	
+	#kubectl get volume
+
+-	Following command allows to describe a volume.
+
+	syntax:
+	
+	#kubectl describe volume [name]
+	
+	example:
+	
+	#kubectl describe volume myvol
+	
 -	Following is yaml definition of a volume.
 
 	containers:
@@ -399,6 +415,22 @@ What is a configmap?
 
 -	A configmap keeps these environment variables in a central location.
 
+-	Following command allows to list all configmap.
+
+	example:
+	
+	#kubectl get configmap
+
+-	Following command allows to describe a configmap.
+
+	syntax:
+	
+	#kubectl describe configmap [name]
+	
+	example:
+	
+	#kubectl describe configmap mycm
+	
 -	Following is yaml definition of a configmap.
 
 	apiVersion: apps/v1
@@ -471,3 +503,58 @@ Explain how to use volume and configmap together?
     - name: myvol
       configMap:
         name: mycm
+		
+What is a ingress controller?
+
+-	Every cloud provider provides a load balancer.
+
+-	A load balancer is a hardware device.
+
+-	It redirects incoming request to one kubernetes service.
+
+-	To redirect request to multiple kubernetes services we require multiple load balancers.
+
+-	A ingress controller is a service in kubernetes which provides solution to above problem.
+
+-	A load balancer redirect request to ingress controller.
+
+-	Then ingress controller will redirect incoming request to one kubernetes service.
+
+-	There are multiple implementation available to ingress controller. But commonly used implementation is nginx.
+
+-	We must define the routing rules for ingress controller. 
+
+-	Following command allows to list all ingress controller.
+
+	example:
+	
+	#kubectl get ingress
+
+-	Following command allows to describe a ingress.
+
+	syntax:
+	
+	#kubectl describe ingress [name]
+	
+	example:
+	
+	#kubectl describe ingress myingress
+
+-	Following is yaml definition of a ingress controller.
+
+	apiVersion: extensions/v1beta1
+	
+	kind: Ingress
+
+	metadata:
+	  name: myingress
+	
+	spec:
+	  rules:
+	  - host: mydomain.com
+	    http:
+		  paths:
+		  - path: /
+		    backend:
+			  serviceName: myservice
+			  servicePort: 80
