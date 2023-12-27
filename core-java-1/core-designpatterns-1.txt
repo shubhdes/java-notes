@@ -1,0 +1,184 @@
+core java - design patterns
+
+What is a design pattern?
+
+-	A design pattern is a solution to recurring problem in a context.
+
+-	There are three categories of design patterns, i.e. creational, structural and behavioral.
+
+Explain and enlist creational design pattern?
+
+-	The creational design pattern deals with process of creating objects of a class.
+
+-	Below are different types of creational design patterns,
+
+	-	Singleton
+	
+	-	Factory
+	
+Explain the singleton design pattern?
+
+-	The singleton design pattern is a creational design pattern.
+
+-	A singleton class has only one instance which can be accessed globally through one single point.
+
+-	Any changes made to instance become visible globally.
+
+-	It is often used to store application configurations.
+
+Write a note on implementing singleton design pattern?
+
+-	Restricting instance creation using private constructor and class inheritance using final keyword.
+
+-	The singleton instance are referenced by static variable inside same singleton class.
+
+-	To provide single point access to the static variable using static method.
+
+-	A singleton class can be either eager or lazy.
+
+-	In a eager singleton class instance is created when the class is loaded. In a lazy singleton class instance is created when it is required for the first time.
+
+-	It requires synchronization and volatile to ensure multiple threads do not create multiple instance.
+
+-	This implementation introduces double check locking problem, which can removed by using implementation with lazy initialization holder.  
+
+Example:
+
+public final class LazyRegistry {
+
+	private LazyRegistry() {
+
+	}
+
+	public static LazyRegistry getInstance() {
+		return Registry.INSTANCE;
+	}
+
+	private static class Registry {
+		static volatile LazyRegistry INSTANCE = new LazyRegistry();
+	}
+}
+
+public class Client {
+
+	public static void main(String[] args) {
+		System.out.print(LazyRegistry.getInstance() == LazyRegistry.getInstance());
+	}
+}
+
+Write a note on design consideration for singleton design pattern?
+
+-	The singleton instance creation must not depend on any parameter from client.
+
+-	The global instance must not have too many mutable states.
+
+Write a note on pitfalls of singleton design pattern?
+
+-	Multiple part of code depend on one instance.
+
+-	It is difficult to unit test.
+
+-	The singleton instance are referenced by static variable which means one copy per class loader and not one copy per JVM.
+
+-	The global instance with too many mutable states will introduce bugs.
+
+Explain the prototype design pattern?
+
+-	The prototype design pattern is a creational design pattern.
+
+-	It is used when an creating instance of a class is costly.
+
+-	An existing instance is used as a prototype and copies of it are created.
+
+-	This saves instance creation from scratch.
+
+Write a note on implementing prototype design pattern?
+
+-	Creating an abstract prototype class which inherits the Cloneable interface.
+
+-	Implementing the clone method as public to either return a shallow copy or deep copy.
+
+-	The instance state is immutable then shallow cloning is recommended otherwise deep cloning is recommended.
+
+-	Implementing the intialise method to reset state of cloned instance and not use exact state from prototype.
+
+-	Inheriting the abstract prototype class.
+
+Example:
+
+public abstract class GameUnit implements Cloneable {
+
+	protected Point3D position;
+
+	public GameUnit() {
+		this.position = Point3D.ZERO;
+	}
+
+	@Override
+	public GameUnit clone() throws CloneNotSupportedException {
+		GameUnit gameUnit = (GameUnit) super.clone();
+		gameUnit.initialize();
+		return gameUnit;
+	}
+
+	public void initialize() {
+		this.position = Point3D.ZERO;
+	}
+
+	public void move(int x, int y, int z) {
+		this.position = new Point3D(x, y, z);
+	}
+}
+
+public class SwordsMan extends GameUnit {
+
+	private boolean isAttacking;
+
+	public SwordsMan() {
+		this.isAttacking = false;
+	}
+
+	@Override
+	public void initialize() {
+		super.initialize();
+		this.isAttacking = false;
+	}
+
+	public void attack() {
+		this.isAttacking = true;
+	}
+
+	@Override
+	public String toString() {
+		return "SwordsMan isAttacking=" + isAttacking + " at position=" + position;
+	}
+}
+
+public class Client {
+
+	public static void main(String[] args) throws CloneNotSupportedException {
+		SwordsMan prototype = new SwordsMan();
+		prototype.move(-10, 0, 0);
+		prototype.attack();
+		System.out.println(prototype);
+
+		SwordsMan swordsMan = (SwordsMan) prototype.clone();
+		System.out.println(swordsMan);
+	}
+}
+
+Write a note on design consideration for prototype design pattern?
+
+-	The prototype design pattern must be used when majority states are unchanged between instances.
+
+-	The prototype instance can be saved inside registry and accessed when required.
+
+-	This design pattern is required to support composite and decorator design pattern.
+
+Write a note on pitfalls of prototype design pattern?
+
+-	An prototype instance with too many mutable states is complex to clone.
+
+-	The default implementation of clone in Object class allows shallow cloning only and not deep cloning.
+
+-	A child class may not allow cloning and throw a runtime exception CloneNotSupportedException.

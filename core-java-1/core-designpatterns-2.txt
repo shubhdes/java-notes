@@ -1,0 +1,9 @@
+core java - design patterns
+
+Explain and enlist structural design pattern?
+
+-	The structural design pattern deal with how classes and objects are arranged or composed.
+
+-	Below are different types of structural design patterns,
+
+
