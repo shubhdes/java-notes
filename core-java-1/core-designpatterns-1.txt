@@ -496,3 +496,86 @@ Write a note on design consideration for simple factory design pattern?
 Write a note on pitfalls of simple factory design pattern?
 
 -	More choices can cause more complex instance creation.
+
+Explain the factory method design pattern?
+
+-	The factory method design pattern is a creational design pattern.
+
+-	It encapsulates the logic for instance creation inside a child class of the creator class.
+
+-	It is used when we don't know beforehand which class instance is to be created.
+
+-	Any new child class can be added to the code base without making any changes to the client code.
+
+Write a note on implementing factory method design pattern?
+
+-	Implementing an abstract creator class and its child class.
+
+Example:
+
+public abstract class Message {
+
+	public abstract String getContent();
+}
+
+public class JSONMessage extends Message {
+
+	@Override
+	public String getContent() {
+		return "{\"greetings\":\"welcome\"}";
+	}
+}
+
+public class TextMessage extends Message {
+
+	@Override
+	public String getContent() {
+		return "welcome";
+	}
+}
+
+public abstract class MessageCreator {
+
+	public abstract Message getMessage();
+}
+
+public class JSONMessageCreator extends MessageCreator {
+
+	@Override
+	public Message getMessage() {
+		return new JSONMessage();
+	}
+}
+
+public class TextMessageCreator extends MessageCreator {
+
+	@Override
+	public Message getMessage() {
+		return new TextMessage();
+	}
+}
+
+public class Client {
+
+	public static void main(String[] args) {
+		MessageCreator creator = new JSONMessageCreator();
+		Message message = creator.getMessage();
+		System.out.println(message.getContent());
+	}
+}
+	
+Write a note on design consideration for factory method design pattern?
+
+-	One creater class for one concrete class. The creator hierarchy mirrors concrete class hierarchy.
+
+-	The creator may be a non-abstract class and provide default implementation for factory method.
+
+-	The template method and abstract factory design patterns make use of factory method design pattern.
+
+Write a note on pitfalls of factory method design pattern?
+
+-	More classes and more complexity.
+
+-	It is difficult to unit test.
+
+-	It is difficult to refactor existing code to use factory method design pattern.
