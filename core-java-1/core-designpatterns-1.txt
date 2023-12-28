@@ -182,3 +182,317 @@ Write a note on pitfalls of prototype design pattern?
 -	The default implementation of clone in Object class allows shallow cloning only and not deep cloning.
 
 -	A child class may not allow cloning and throw a runtime exception CloneNotSupportedException.
+
+Explain the builder design pattern?
+
+-	The builder design pattern is a creational design pattern.
+
+-	It is used when an creating instance of a class is complex because of constructor with too many arguements.
+
+-	Also when an creating an instance of a class requires another class instance to exists.
+
+Write a note on implementing builder design pattern?
+
+-	Identifying too many data members of a class and define a complex constructor.
+
+-	Creating an nested static builder class with methods to initialize parts of an instance.
+
+-	Implementing build method to assemble an instance of the class. 
+
+Example:
+
+public class Person {
+
+	private String firstName;
+	private String lastName;
+	private int age;
+	private char gender;
+	private String address;
+	private String city;
+	private String state;
+	private String country;
+	private long pincode;
+	private String mobile;
+	private String email;
+
+	public Person(String firstName, String lastName, int age, char gender, String address, String city, String state,
+			String country, long pincode, String mobile, String email) {
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.age = age;
+		this.gender = gender;
+		this.address = address;
+		this.city = city;
+		this.state = state;
+		this.country = country;
+		this.pincode = pincode;
+		this.mobile = mobile;
+		this.email = email;
+	}
+
+	public static PersonBuilder getBuilder() {
+		return new PersonBuilder();
+	}
+	
+	@Override
+	public String toString() {
+		return "Person [firstName=" + firstName + ", lastName=" + lastName + ", age=" + age + ", gender=" + gender
+				+ ", address=" + address + ", city=" + city + ", state=" + state + ", country=" + country + ", pincode="
+				+ pincode + ", mobile=" + mobile + ", email=" + email + "]";
+	}
+
+	public static class PersonBuilder {
+
+		private String firstName;
+		private String lastName;
+		private int age;
+		private char gender;
+		private String address;
+		private String city;
+		private String state;
+		private String country;
+		private long pincode;
+		private String mobile;
+		private String email;
+		private Person person;
+
+		public PersonBuilder withFirstName(String firstName) {
+			this.firstName = firstName;
+			return this;
+		}
+
+		public PersonBuilder withLastName(String lastName) {
+			this.lastName = lastName;
+			return this;
+		}
+
+		public PersonBuilder withAge(int age) {
+			this.age = age;
+			return this;
+		}
+
+		public PersonBuilder withGender(char gender) {
+			this.gender = gender;
+			return this;
+		}
+
+		public PersonBuilder withAddress(String address) {
+			this.address = address;
+			return this;
+		}
+
+		public PersonBuilder withCity(String city) {
+			this.city = city;
+			return this;
+		}
+
+		public PersonBuilder withState(String state) {
+			this.state = state;
+			return this;
+		}
+
+		public PersonBuilder withCountry(String country) {
+			this.country = country;
+			return null;
+		}
+
+		public PersonBuilder withPincode(long pincode) {
+			this.pincode = pincode;
+			return null;
+		}
+
+		public PersonBuilder withMobile(String mobile) {
+			this.mobile = mobile;
+			return this;
+		}
+
+		public PersonBuilder withEmail(String email) {
+			this.email = email;
+			return this;
+		}
+
+		public Person build() {
+			this.person = new Person(firstName, lastName, age, gender, address, city, state, country, pincode, mobile, email);
+			return person;
+		}
+
+		public Person getPerson() {
+			return person;
+		}
+	}
+}
+
+public class Client {
+
+	public static void main(String[] args) {
+		Person person = Person.getBuilder().withFirstName("java").withLastName("hub").withAge(27)
+				.withEmail("hubjava98@gmail.com").build();
+		System.out.println(person);
+	}
+}
+
+Write a note on design consideration for builder design pattern?
+
+-	A nested static builder class provide decent namespace.
+
+-	The builder design pattern must be used when too many constructor arguements exists.
+
+Write a note on pitfalls of builder design pattern?
+
+-	Method chaining can be difficult to understand.
+
+-	Instance might be partially constructed.
+
+Explain the simple factory design pattern?
+
+-	The simple factory design pattern is a creational design pattern.
+
+-	It encapsulates the logic for instance creation inside a separate static method.
+
+-	It allows choice based instance creation.	
+
+Write a note on implementing simple factory design pattern?
+
+-	Implementing a factory class with static method.
+
+Example:
+
+public class Post {
+
+	private String title;
+
+	private String content;
+
+	private LocalDateTime createdOn;
+
+	private LocalDateTime publishedOn;
+
+	public String getTitle() {
+		return title;
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
+	}
+
+	public String getContent() {
+		return content;
+	}
+
+	public void setContent(String content) {
+		this.content = content;
+	}
+
+	public LocalDateTime getCreatedOn() {
+		return createdOn;
+	}
+
+	public void setCreatedOn(LocalDateTime createdOn) {
+		this.createdOn = createdOn;
+	}
+
+	public LocalDateTime getPublishedOn() {
+		return publishedOn;
+	}
+
+	public void setPublishedOn(LocalDateTime publishedOn) {
+		this.publishedOn = publishedOn;
+	}
+}
+
+public class NewsPost extends Post {
+
+	private String headline;
+
+	private LocalDateTime newsTime;
+
+	public String getHeadline() {
+		return headline;
+	}
+
+	public void setHeadline(String headline) {
+		this.headline = headline;
+	}
+
+	public LocalDateTime getNewsTime() {
+		return newsTime;
+	}
+
+	public void setNewsTime(LocalDateTime newsTime) {
+		this.newsTime = newsTime;
+	}
+}
+
+public class BlogPost extends Post {
+
+	private String author;
+
+	private String[] tags;
+
+	public String getAuthor() {
+		return author;
+	}
+
+	public void setAuthor(String author) {
+		this.author = author;
+	}
+
+	public String[] getTags() {
+		return tags;
+	}
+
+	public void setTags(String[] tags) {
+		this.tags = tags;
+	}
+}
+
+public class ProductPost extends Post {
+
+	private String name;
+
+	private String imageUrl;
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getImageUrl() {
+		return imageUrl;
+	}
+
+	public void setImageUrl(String imageUrl) {
+		this.imageUrl = imageUrl;
+	}
+}
+
+public class PostFactory {
+
+	public static Post getPost(String type) {
+		switch (type) {
+		case "news":
+			return new NewsPost();
+		case "blog":
+			return new BlogPost();
+		case "product":
+			return new ProductPost();
+		default:
+			throw new IllegalArgumentException("Post type is unknown");
+		}
+	}
+}
+
+Write a note on design consideration for simple factory design pattern?
+
+-	A separate simple factory class is easy to access.
+
+-	A static method is suitable as there is no need of any state tracking.
+
+-	A simple factory class can use other design patterns to create instance of a class.
+
+Write a note on pitfalls of simple factory design pattern?
+
+-	More choices can cause more complex instance creation.
