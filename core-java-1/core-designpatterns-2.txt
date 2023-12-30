@@ -4,6 +4,141 @@ Explain and enlist structural design pattern?
 
 -	The structural design pattern deal with how classes and objects are arranged or composed.
 
+-	It uses combination of inheritance and composition.
+
 -	Below are different types of structural design patterns,
 
+	-	adapter
 
+Explain the adapter design pattern?
+
+-	The adapter design pattern is a structural design pattern.
+
+-	An existing instance (adaptee) provides functionality required by client code, but client code expects instance to be of another interface type (target).
+
+-	Using adapter design pattern the existing instance can work with client code by adapting the instance to expected interface type.
+
+-	It is also called as wrapper.
+
+-	There are two varities of adapter design pattern, they are class adapter and object adapter.
+
+Write a note on implementing adapter design pattern?
+
+-	Implementing adapter class as child class of the target interface.
+
+-	For class adapter, the adapter class must extend the adaptee class.
+
+-	From the adapter class call inherited method of adaptee class. A class adapter design pattern is also called as two way adapter.
+
+-	For object adapter, the adapter class must compose of adaptee class instance.
+
+-	From the adapter class call method of adaptee class.
+
+-	We must accept the adaptee instance as constructor arguement for adapter class.
+
+Example:
+
+public class BusinessCardDesigner {
+
+	public String designCard(Customer customer) {
+		return customer.getName() + " works as " + customer.getDesignation() + " at " + customer.getAddress();
+	}
+}
+
+public interface Customer {
+
+	String getName();
+
+	String getDesignation();
+
+	String getAddress();
+}
+
+public class Employee {
+
+	private String fullName;
+
+	private String jobTitle;
+
+	private String officeLocation;
+
+	public String getFullName() {
+		return fullName;
+	}
+
+	public void setFullName(String fullName) {
+		this.fullName = fullName;
+	}
+
+	public String getJobTitle() {
+		return jobTitle;
+	}
+
+	public void setJobTitle(String jobTitle) {
+		this.jobTitle = jobTitle;
+	}
+
+	public String getOfficeLocation() {
+		return officeLocation;
+	}
+
+	public void setOfficeLocation(String officeLocation) {
+		this.officeLocation = officeLocation;
+	}
+}
+
+public class EmployeeObjectAdapter implements Customer {
+
+	private Employee adaptee;
+
+	public EmployeeObjectAdapter(Employee adaptee) {
+		this.adaptee = adaptee;
+	}
+
+	@Override
+	public String getName() {
+		return adaptee.getFullName();
+	}
+
+	@Override
+	public String getDesignation() {
+		return adaptee.getJobTitle();
+	}
+
+	@Override
+	public String getAddress() {
+		return adaptee.getOfficeLocation();
+	}
+}
+
+public class Client {
+
+	public static void main(String[] args) {
+		Employee emp = new Employee();
+		emp.setFullName("Java Hub");
+		emp.setJobTitle("Software Developer");
+		emp.setOfficeLocation("India");
+		Customer customer = new EmployeeObjectAdapter(emp);
+		BusinessCardDesigner businessCardDesigner = new BusinessCardDesigner();
+		String card = businessCardDesigner.designCard(customer);
+		System.out.println(card);
+	}
+}
+
+Write a note on design consideration for adapter design pattern?
+
+-	Avoid logic inside adapter class and simply delegate to adaptee class.
+
+-	With class adapter the adapter may override the method inherited from adaptee. This may cause adaptee and adapter to behave differently.
+
+-	A class adapter is not possible if both target and adaptee are concrete classes.
+
+-	In class adapter the adapter instance can behave like both target and adaptee. The adapter class will be polluted with unrelated inherited methods.
+
+-	With object adapter we can change the composed adaptee instance from one implementation to another.
+
+Write a note on pitfalls of adapter design pattern?
+
+-	In class adapter the adapter class will be polluted with unrelated inherited methods.
+
+-	The amount of logic inside adapter class depends on how much similar the target interface and adaptee class is.

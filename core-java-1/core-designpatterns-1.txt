@@ -12,9 +12,19 @@ Explain and enlist creational design pattern?
 
 -	Below are different types of creational design patterns,
 
-	-	Singleton
+	-	singleton
 	
-	-	Factory
+	-	prototype
+	
+	-	builder
+	
+	-	simple factory
+	
+	-	factory method
+	
+	-	abstract factory
+	
+	-	object pool
 	
 Explain the singleton design pattern?
 
@@ -574,8 +584,232 @@ Write a note on design consideration for factory method design pattern?
 
 Write a note on pitfalls of factory method design pattern?
 
--	More classes and more complexity.
+-	More classes and more complex to implement.
 
 -	It is difficult to unit test.
 
 -	It is difficult to refactor existing code to use factory method design pattern.
+
+Explain the abstract factory design pattern?
+
+-	The abstract factory design pattern is a creational design pattern.
+
+-	It is used when two or more instances work together forming a kit and mutliple such kits exists.
+
+-	It isolates the logic of creating these instances belonging to a kit from client code.
+
+Write a note on implementing abstract factory design pattern?
+
+-	Identify instances in one kit.
+
+-	Use factory method design pattern with multiple methods to create instances of concrete class belonging to one kit.
+
+Example:
+
+public interface Instance {
+
+}
+
+public class GCEInstance implements Instance {
+
+}
+
+public class EC2Instance implements Instance {
+
+}
+
+public interface Storage {
+
+}
+
+public class GCStorage implements Storage {
+
+}
+
+public class S3Storage implements Storage {
+
+}
+
+public interface ResourceFactory {
+
+	Instance createInstance();
+
+	Storage createStorage();
+}
+
+public class GoogleResourceFactory implements ResourceFactory {
+
+	@Override
+	public Instance createInstance() {
+		return new GCEInstance();
+	}
+
+	@Override
+	public Storage createStorage() {
+		return new GCStorage();
+	}
+}
+
+public class AwsResourceFactory implements ResourceFactory {
+
+	@Override
+	public Instance createInstance() {
+		return new EC2Instance();
+	}
+
+	@Override
+	public Storage createStorage() {
+		return new S3Storage();
+	}
+}
+
+public class Client {
+
+	public static void main(String[] args) {
+		ResourceFactory factory = new GoogleResourceFactory();
+		Instance instance = factory.createInstance();
+		System.out.println(instance);
+		Storage storage = factory.createStorage();
+		System.out.println(storage);
+	}
+}
+
+Write a note on design consideration for abstract factory design pattern?
+
+-	Concrete factory may be implemented as singleton.
+
+-	It is a good choice to constrain the families of instance created.
+
+-	It uses factory method design pattern.
+
+Write a note on pitfalls of abstract factory design pattern?
+
+-	More classes and more complex to implement.
+
+-	It is difficult to unit test.
+
+-	When a new instance is to be added to kit the abstract factory and concrete implementation will need to be changed.
+
+-	It is difficult to implement at the start of development.
+
+Explain the object pool design pattern?
+
+-	The object pool design pattern is a creational design pattern.
+
+-	It is used when instance creation is costly and many instances of a class are required for short period of time.
+
+-	Instances are pre-created and cached inside memory.
+
+Write a note on implementing object pool design pattern?
+
+-	Implement thread safe cache for instances of concrete class.
+
+-	Implement method to acquire from and release instances to the pool.
+
+-	Concrete class must provide method to reset instance state before returning it to the pool.
+
+-	Either an instance can be created or the acquiring thread must wait if no instance is available in pool.
+
+Example:
+
+public interface Poolable {
+
+	void reset();
+}
+
+public interface Image extends Poolable {
+
+	void draw();
+
+	Point2D getLocation();
+
+	void setLocation(Point2D location);
+}
+
+public class BitmapImage implements Image {
+
+	private Point2D location;
+
+	private String name;
+
+	public BitmapImage(String name) {
+		this.name = name;
+	}
+
+	@Override
+	public void draw() {
+		System.out.println("Drawing image=" + name + " at location=" + location);
+	}
+
+	@Override
+	public Point2D getLocation() {
+		return location;
+	}
+
+	@Override
+	public void setLocation(Point2D location) {
+		this.location = location;
+	}
+
+	@Override
+	public void reset() {
+		this.location = null;
+	}
+}
+
+public class ObjectPool<T extends Poolable> {
+
+	private BlockingQueue<T> availablePool;
+
+	public ObjectPool(Supplier<T> creator, int count) {
+		this.availablePool = new LinkedBlockingQueue<>();
+		for (int i = 0; i < count; i++) {
+			availablePool.offer(creator.get());
+		}
+	}
+
+	public T get() throws InterruptedException {
+		return availablePool.take();
+	}
+
+	public void release(T poolable) throws InterruptedException {
+		poolable.reset();
+		availablePool.put(poolable);
+	}
+}
+
+public class Client {
+
+	public static void main(String[] args) throws InterruptedException {
+		Supplier<BitmapImage> creator = () -> new BitmapImage("javahublogo.bmp");
+		ObjectPool<BitmapImage> pool = new ObjectPool<BitmapImage>(creator, 5);
+		BitmapImage image = pool.get();
+		image.setLocation(new Point2D(10, 10));
+		image.draw();
+		pool.release(image);
+	}
+}
+
+Write a note on design consideration for object pool design pattern?
+
+-	The reset operation must not be costly.
+
+-	Instances pre-creation can increase startup time and memory consumption.
+
+-	Costly reset operation inside synchronized context will decrease pool performance.
+
+-	The acquire method may support choice based instance selection.
+
+-	Pooling instance is beneficial only if instance creation is costly.
+
+-	It is not recommended to pool again an instance which was in use for long duration by client code.
+
+Write a note on pitfalls of object pool design pattern?
+
+-	Releasing instance back to the pool is vital and in control of the client code.
+
+-	Costly reset operation inside synchronized context will decrease pool performance.
+
+-	Refactoring legacy code to use object pool is difficult.
+
+-	Either an instance can be created or the acquiring thread must wait if no instance is available in pool.
