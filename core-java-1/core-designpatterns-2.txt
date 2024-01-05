@@ -9,6 +9,14 @@ Explain and enlist structural design pattern?
 -	Below are different types of structural design patterns,
 
 	-	adapter
+	
+	-	bridge
+	
+	-	decorator
+	
+	-	composite
+	
+	-	facade
 
 Explain the adapter design pattern?
 
@@ -142,3 +150,486 @@ Write a note on pitfalls of adapter design pattern?
 -	In class adapter the adapter class will be polluted with unrelated inherited methods.
 
 -	The amount of logic inside adapter class depends on how much similar the target interface and adaptee class is.
+
+Explain the bridge design pattern?
+
+-	The bridge design pattern is a structural design pattern.
+
+-	The abstraction (used by client) and implementation are tightly coupled in inheritance but using bridge design pattern we can decouple it.
+
+-	It creates two separate inheritance hierarchies one for abstraction and another for implementation.
+
+-	These two hierarchies are connected (bridge) using composition.
+
+-	The abstraction here doesn't mean abstract class or interface but it is used by client code to hide complexity.
+
+Write a note on implementing bridge design pattern?
+
+-	Implementing abstraction and implementation hierarchies.
+
+-	Abstraction is composed of concrete implementation instance.
+
+-	We must accept the implementation instance as constructor arguement for abstraction class.
+
+Example:
+
+public interface FifoCollection<T> {
+
+	void offer(T t);
+
+	T poll();
+}
+
+public class Queue<T> implements FifoCollection<T> {
+
+	private LinkedList<T> list;
+
+	public Queue(LinkedList<T> list) {
+		this.list = list;
+	}
+
+	@Override
+	public void offer(T t) {
+		list.addLast(t);
+	}
+
+	@Override
+	public T poll() {
+		return list.removeFirst();
+	}
+}
+
+public interface LinkedList<T> {
+
+	void addFirst(T t);
+
+	T removeFirst();
+
+	void addLast(T t);
+
+	T removeLast(T t);
+}
+
+public class SinglyLinkedList<T> implements LinkedList<T> {
+
+	private class Node {
+		T data;
+		Node next;
+
+		private Node(T data, Node next) {
+			this.data = data;
+			this.next = next;
+		}
+	}
+
+	private Node top;
+	private Node last;
+	private int size;
+
+	@Override
+	public void addFirst(T t) {
+		Node temp = new Node(t, null);
+		if (size == 0) {
+			top = temp;
+			last = temp;
+		} else {
+			temp.next = top;
+			top = temp;
+		}
+		size++;
+	}
+
+	@Override
+	public T removeFirst() {
+		if (size == 0) {
+			return null;
+		}
+		Node temp = top;
+		if (size == 1) {
+			top = null;
+			last = null;
+		} else {
+			top = temp.next;
+		}
+		size--;
+		return temp.data;
+	}
+
+	@Override
+	public void addLast(T t) {
+		Node temp = new Node(t, null);
+		if (size == 0) {
+			top = temp;
+			last = temp;
+		} else {
+			last.next = temp;
+			last = temp;
+		}
+		size++;
+	}
+
+	@Override
+	public T removeLast(T t) {
+		if (size == 0) {
+			return null;
+		}
+		Node temp = last;
+		if (size == 1) {
+			top = null;
+			last = null;
+		} else {
+			Node i = top;
+			while (i.next != last) {
+				i = i.next;
+			}
+			last = i;
+			last.next = null;
+		}
+		size--;
+		return temp.data;
+	}
+}
+
+public class Client {
+
+	public static void main(String[] args) {
+
+		FifoCollection<Integer> collection = new Queue<>(new SinglyLinkedList<>());
+		collection.offer(10);
+		collection.offer(20);
+		collection.offer(30);
+
+		System.out.println(collection.poll());
+		System.out.println(collection.poll());
+		System.out.println(collection.poll());
+	}
+}
+
+Write a note on design consideration for bridge design pattern?
+
+-	Abstraction might be a concrete class and not abstract class or interface.
+
+-	Both abstraction and implementation can be changed independent of each other.
+
+What is difference between bridge and adapter design pattern?
+
+-	The bridge design pattern allows the abstraction and implementation to vary independently.
+
+-	It needs to be designed from beginning.
+
+-	The adapter design pattern allows unrelated classes to work togther.
+
+-	It is used when a legacy code is to be integrated with new code.
+
+Write a note on pitfalls of bridge design pattern?
+
+-	Complex to understand and implement.
+
+-	It needs to be designed from beginning and adding it to legacy code is difficult.
+
+Explain the decorator design pattern?
+
+-	The decorator design pattern is a structural design pattern.
+
+-	It is used to enhance functionality of an existing instance dynamically.
+
+-	It wraps an instance within itself and provides same interface as the wrapped instance.
+
+-	It provides an alternative to child class of an existing concrete class.
+
+-	A decorator instance can compose of an instance of concrete implementation or another decorator (recursive composition) also.
+
+Write a note on implementing decorator design pattern?
+
+-	Implementing concrete class and decorator class which extends the interface.
+
+-	A decorator can be abstract and have child class implementations for varieties of enhancements.
+
+-	We must accept the implementation instance or another decorator instance as constructor arguement for decorator class.
+
+Example:
+
+public interface Message {
+
+	String getContent();
+}
+
+public class TextMessage implements Message {
+
+	private String content;
+
+	public TextMessage(String content) {
+		this.content = content;
+	}
+
+	@Override
+	public String getContent() {
+		return content;
+	}
+}
+
+public class Base64EncodedMessage implements Message {
+
+	private Message message;
+
+	public Base64EncodedMessage(Message message) {
+		this.message = message;
+	}
+
+	@Override
+	public String getContent() {
+		byte[] content = message.getContent().getBytes();
+		return Base64.getEncoder().encodeToString(content);
+	}
+}
+
+public class Client {
+
+	public static void main(String[] args) {
+		Message message = new TextMessage("welcome");
+		Message decorator = new Base64EncodedMessage(message);
+		System.out.println(decorator.getContent());
+	}
+}
+
+Write a note on design consideration for decorator design pattern?
+
+-	A large state in base class will inherit it to decorator class where it may be of no use.
+
+-	A decision needs to be made whether a decorated instance is equal (equals and hashcode) to another instance without decorator.
+
+-	A recursive composition may cause too many instances for minor enhancements.
+
+-	With decorators we can dynamically compose the behavior at runtime.
+
+-	A decorator must do only minor enhancement and not change the complete behavior.
+
+Write a note on pitfalls of decorator design pattern?
+
+-	A recursive composition may cause too many instances for minor enhancements.
+
+-	It is not a replacement to inheritance, it is to do only minor enhancement and not change the complete behavior.
+
+Explain the composite design pattern?
+
+-	The composite design pattern is a structural design pattern.
+
+-	It is used when there is a part-whole or parent-child relationship between instances.
+
+-	It is used to treat a hierarchy (tree) of instances (both leaf and composite) uniformly.
+
+-	It is enhancement to object oriented programming's composition.
+
+Write a note on implementing composite design pattern?
+
+-	Implementing leaf class and composite class which extends the interface.
+
+-	Implementing in a way that algorithm should work irrespective of instance being of type leaf or composite.
+
+-	The leaf class may need to provide implementation for children management methods which it doesn't support. 
+
+-	The composite instance will delegate the responsibility to leaf instance.
+
+Example:
+
+public abstract class File {
+
+	private String name;
+
+	public File(String name) {
+		this.name = name;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public abstract void ls();
+
+	public abstract void addFile(File file);
+
+	public abstract File[] getFiles();
+
+	public abstract boolean removeFile(File file);
+}
+
+public class BinaryFile extends File {
+
+	private long size;
+
+	public BinaryFile(String name, long size) {
+		super(name);
+		this.size = size;
+	}
+
+	@Override
+	public void ls() {
+		System.out.println("Name=" + getName() + " Size=" + size);
+	}
+
+	@Override
+	public void addFile(File file) {
+		throw new UnsupportedOperationException("Leaf node doesn't support add operation");
+	}
+
+	@Override
+	public File[] getFiles() {
+		throw new UnsupportedOperationException("Leaf node doesn't support add operation");
+	}
+
+	@Override
+	public boolean removeFile(File file) {
+		throw new UnsupportedOperationException("Leaf node doesn't support add operation");
+	}
+}
+
+public class Directory extends File {
+
+	private List<File> children = new ArrayList<>();
+
+	public Directory(String name) {
+		super(name);
+	}
+
+	@Override
+	public void ls() {
+		System.out.println("Name=" + getName() + " Size=" + children.size());
+		for (File child : children) {
+			child.ls();
+		}
+	}
+
+	@Override
+	public void addFile(File file) {
+		children.add(file);
+	}
+
+	@Override
+	public File[] getFiles() {
+		return children.toArray(new File[children.size()]);
+	}
+
+	@Override
+	public boolean removeFile(File file) {
+		return children.remove(file);
+	}
+}
+
+public class Client {
+
+	public static void main(String[] args) {
+		File root = new Directory("javahub");
+		File dir = new Directory("structural");
+		dir.addFile(new BinaryFile("adpater", 0));
+		dir.addFile(new BinaryFile("bridge", 0));
+		dir.addFile(new BinaryFile("decorator", 0));
+		dir.addFile(new BinaryFile("composite", 0));
+		root.addFile(dir);
+		root.ls();
+	}
+}
+
+Write a note on design consideration for composite design pattern?
+
+-	It is recommended to provide method to access the root of instance tree.
+
+-	It is possible to maintain children collection inside parent abstract class.
+
+-	Frequently used instances from tree may be cached.
+
+-	Decision needs to be made where the children management methods must be declared.
+
+-	The client code must be able to use abstract layer without any need to distinguish between leaf and composite instances.
+
+Write a note on pitfalls of composite design pattern?
+
+-	Multiple type of leaf added to tree might need client code to do runtime check if an operation is supported by leaf instance or not.
+
+-	Building instance tree is complex.
+
+-	Too many instances and using cache is complex.
+
+Explain the facade design pattern?
+
+-	The facade design pattern is a structural design pattern.
+
+-	It is used when client code needs to interact with large number of interfaces and classes (subsystem). The client code is tightly coupled with them.
+
+-	The facade design pattern provide a simple and unified interface to the subsystem.
+
+-	It is not a one to one method forwarding to other classes.
+
+Write a note on implementing facade design pattern?
+
+-	Implementing facade class and include methods considering overall usecase of the subsystem by client code.
+
+Example:
+
+public class Order {
+
+	private String id;
+
+	private double total;
+
+	public Order(String id, double total) {
+		this.id = id;
+		this.total = total;
+	}
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	public double getTotal() {
+		return total;
+	}
+
+	public void setTotal(double total) {
+		this.total = total;
+	}
+}
+
+public class EmailFacade {
+
+	public boolean sendOrderEmail(Order order) {
+		Template template = TemplateFactory.createTemplateFor(TemplateType.Email);
+		Stationary stationary = StationaryFactory.createStationary();
+		Email email = Email.getBuilder().withTemplate(template).withStationary(stationary).forObject(order).build();
+		Mailer mailer = Mailer.getMailer();
+		return mailer.send(email);
+	}
+}
+
+public class Client {
+
+	public static void main(String[] args) {
+		EmailFacade facade = new EmailFacade();
+		facade.sendOrderEmail(new Order("ORD1001", 7501.35d));
+	}
+}
+
+Write a note on design consideration for facade design pattern?
+
+-	The facade should minimize the complexity of subsystem and provide usable interface.
+
+-	We can use an interface for facade and client code can use different facade implementations to interact with different subsystem implementations.
+
+-	The subsystem classes must still remain usable by client code whenever required.
+
+-	It must simplify and weaken the coupling between two subsystems.
+
+-	When the requirement is to weaken the coupling between client code and subsystem and not to simplify the interaction we must use abstract factory design pattern.
+
+Write a note on pitfalls of facade design pattern?
+
+-	Needing a facade pattern indicates subsystem designed is too complex.
+
+-	Most commonly misued as a container of related methods.
