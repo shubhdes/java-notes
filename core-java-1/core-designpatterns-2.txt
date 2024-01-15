@@ -17,6 +17,10 @@ Explain and enlist structural design pattern?
 	-	composite
 	
 	-	facade
+	
+	-	flyweight
+	
+	-	proxy
 
 Explain the adapter design pattern?
 
@@ -633,3 +637,230 @@ Write a note on pitfalls of facade design pattern?
 -	Needing a facade pattern indicates subsystem designed is too complex.
 
 -	Most commonly misued as a container of related methods.
+
+Explain the flyweight design pattern?
+
+-	The flyweight design pattern is a structural design pattern.
+
+-	It is used when a large number of instances of a class are required but maintaining these instances are performance concern.
+
+-	It allows us to cache and share an instance in multiple context.
+
+-	An instance state is divided into two parts they are instrinsic state and extrinsic state.
+
+-	An instrinsic state of an instance doesn't change but its extrinsic state may change.
+
+-	The extrinsic state is provided by client code.
+
+-	It uses simple factory to avoid client code from knowing the complexity of instance creation and sharing.
+
+Write a note on implementing flyweight design pattern?
+
+-	Identifying the instrinsic and extrinsic state of an instance.
+
+-	Implementing an interface with method which accept extrinsic state from client code.
+
+-	Implementing flyweight factory.
+
+Example:
+
+public interface ErrorMessage {
+
+	String getText(String errorCode);
+}
+
+public class SystemErrorMessage implements ErrorMessage {
+
+	private String messageTemplate;
+
+	private String helpBaseUrl;
+
+	public SystemErrorMessage(String messageTemplate, String helpBaseUrl) {
+		this.messageTemplate = messageTemplate;
+		this.helpBaseUrl = helpBaseUrl;
+	}
+
+	@Override
+	public String getText(String errorCode) {
+		return messageTemplate.replace("$errorCode", errorCode) + helpBaseUrl + errorCode;
+	}
+}
+
+public class ErrorMessageFactory {
+
+	public enum ErrorType {
+		GenericSystemError, PageNotFoundError, ServerError
+	}
+
+	private static Map<ErrorType, SystemErrorMessage> errorsMessages = new HashMap<>();
+
+	static {
+		errorsMessages.put(ErrorType.GenericSystemError, new SystemErrorMessage(
+				"A generic error of type $errorCode occured, please refer ", "http://somedomain.com?errorCode="));
+		errorsMessages.put(ErrorType.PageNotFoundError, new SystemErrorMessage(
+				"Page not found error of type $errorCode occured, please refer ", "http://somedomain.com?errorCode="));
+		errorsMessages.put(ErrorType.ServerError,
+				new SystemErrorMessage("An internal server error of type $errorCode occured, please refer ",
+						"http://somedomain.com?errorCode="));
+	}
+
+	public static ErrorMessage getError(ErrorType errorType) {
+		return errorsMessages.get(errorType);
+	}
+}
+
+public class Client {
+
+	public static void main(String[] args) {
+		ErrorMessage errorMessage = ErrorMessageFactory.getError(ErrorType.GenericSystemError);
+		System.out.println(errorMessage.getText("E231001"));
+	}
+}
+
+Write a note on design consideration for flyweight design pattern?
+
+-	A factory is necessary to hide the complexity of instance creation and sharing.
+
+-	The instrinsic state must be immutable.
+
+-	The extrinsic state must be moved out of the class and provided by client.
+
+Write a note on pitfalls of flyweight design pattern?
+
+-	The client code needs to maintain or compute the extrinsic state everytime. This will affect the performance.
+
+-	It is difficult to find a perfect candidate for flyweight.
+
+Explain the proxy design pattern?
+
+-	The proxy design pattern is a structural design pattern.
+
+-	It is used when we need a surrogate to another instance.
+
+-	The client code is unaware of the surrogate instance.
+
+-	The surrogate implementation will delegate the responsibility to concrete class instance.
+
+-	But concrete class instance may be created immediately or delayed and created on demand.
+
+-	It is used for access control, remote access or delay instance creation unless absolutely necessary.
+
+Write a note on implementing proxy design pattern?
+
+-	Implementing proxy class by and concrete class which extends the interface.
+
+-	The proxy can accept concrete class instance as constructor arguement or create it later.
+
+-	It uses simple factory to avoid client code from knowing about surrogate instance.
+
+-	A dynamic proxy allows to provide surrogate implementation at runtime.
+
+Example:
+
+public interface Image {
+
+	void setLocation(Point2D location);
+
+	Point2D getLocation();
+
+	void render();
+}
+
+public class BitmapImage implements Image {
+
+	private String name;
+
+	private Point2D location;
+
+	public BitmapImage(String name) {
+		this.name = name;
+	}
+
+	@Override
+	public void setLocation(Point2D location) {
+		this.location = location;
+	}
+
+	@Override
+	public Point2D getLocation() {
+		return location;
+	}
+
+	@Override
+	public void render() {
+		System.out.println("Rendering image = " + name);
+	}
+}
+
+public class ImageProxy implements Image {
+
+	private String name;
+
+	private Point2D location;
+
+	private Image image;
+
+	public ImageProxy(String name) {
+		this.name = name;
+	}
+
+	@Override
+	public void setLocation(Point2D location) {
+		if (image != null) {
+			image.setLocation(location);
+		} else {
+			this.location = location;
+		}
+	}
+
+	@Override
+	public Point2D getLocation() {
+		if (image != null) {
+			return image.getLocation();
+		}
+		return location;
+	}
+
+	@Override
+	public void render() {
+		if (image == null) {
+			image = new BitmapImage(name);
+			image.setLocation(location);
+		}
+		image.render();
+	}
+}
+
+public class ImageFactory {
+
+	public static Image getImage(String name) {
+		return new ImageProxy(name);
+	}
+}
+
+public class Client {
+
+	public static void main(String[] args) {
+		Image image = ImageFactory.getImage("javahub.bmp");
+		image.setLocation(new Point2D(10, 10));
+		image.render();
+	}
+}
+
+Write a note on design consideration for proxy design pattern?
+
+-	The concrete class instance may be created as soon as surrogate instance is created or created later on demand.
+
+-	The surrogate instance may also maintain some state on behalf of concrete class instance.
+
+-	We must consider performance cost of proxy instance and also sometimes a proxy may need to be implemented as synchronized.
+
+-	A proxy may use remote service without using any real concrete class instance.
+
+Write a note on pitfalls of proxy design pattern?
+
+-	The dynamic proxy needs concrete class to implement atleast one interface.
+
+-	Multiple surrogate instance on one concrete class instance may be difficult to manage.
+
+-	The static design pattern is quiet similar to adapter and decorator design pattern and might be confusing.
