@@ -1,0 +1,117 @@
+core java - solid principles
+
+Enlist different SOLID design principles?
+
+-	Below are different SOLID design principles,
+
+	-	single responsibility
+	
+	-	open closed
+
+What is single responsibility design principle?
+
+-	The single responsibility design principle says never be more than one reason for a class to change.
+
+-	A class must provide very focused functionality or it must address specific concern of the desired functionality.
+
+-	This allows changing the code in an organized manner.
+
+Example:
+
+class UserController {
+
+	public void createUser(String userJSON) {
+		...
+		store.insert(userDTO);
+		...
+	}
+	
+	public void isUserValid(UserDTO user) {}
+}
+
+-	A controller class is responsibile to accept incoming request only. 
+
+-	But in above example it accept incoming request, validate request body and insert user record in store.
+
+-	Any changes to JSON schema and any change to persistent store will require change in UserController class.
+
+-	An ideal solution is to move the code for validation in a separate class UserValidator and code for persistent store in a separate class UserService. 
+
+Example:
+
+class UserController {
+
+	public void createUser(String userJSON) {}
+}
+
+class UserValidator {
+	
+	public void isUserValid(UserDTO user) {}
+}
+
+class UserService {
+	
+	public void save(UserDTO user) {}
+}
+
+What is open closed design principle?
+
+-	The open closed design principle says software entities should be open for extension but closed for modifications.
+
+-	The code must be open for enhancement but existing code must remain unchanged.
+
+-	Using inheritance we must override the behavior of a parent class in its child class but should not change existing tested code of parent class.
+
+Example:
+
+class PhoneSubscriber {
+
+	...
+	double baseRate;
+	long phone;
+	...
+
+	double calculateBill() {}
+}
+
+class ISPSubscriber {
+
+	...
+	double baseRate;
+	long phone;
+	...
+
+	double calculateBill() {}
+}
+
+-	In above example both classes PhoneSubscriber and ISPSubscriber have common attributes. 
+
+-	These attributes also will be required by any newly introduced class VOIPSubscriber.
+
+-	These attributes can be moved to parent class Subscriber which cannot be changed later.
+
+-	But the code to compute bill is different for both PhoneSubscriber and ISPSubscriber child classes.
+
+-	This behavior must be overriden in both PhoneSubscriber and ISPSubscriber child classes.
+
+Example:
+
+abstract class Subscriber {
+
+	...
+	double baseRate;
+	long phone;
+	...
+
+	abstract double calculateBill();
+}
+
+class PhoneSubscriber extends Subscriber {
+
+	double calculateBill() {}
+}
+
+class ISPSubscriber extends Subscriber {
+
+	double calculateBill() {}
+}
