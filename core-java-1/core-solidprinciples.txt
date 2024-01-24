@@ -7,6 +7,10 @@ Enlist different SOLID design principles?
 	-	single responsibility
 	
 	-	open closed
+	
+	-	liskov substitution
+	
+	-	interface segregation
 
 What is single responsibility design principle?
 
@@ -115,3 +119,192 @@ class ISPSubscriber extends Subscriber {
 
 	double calculateBill() {}
 }
+
+What is liskov substitution design principle?
+
+-	The liskov substitution design principle says we should be able to substitute parent class instance with child class instance.
+
+-	This substitution must not change program's behavior.
+
+Example:
+
+class Rectangle {
+
+	private float length;
+	
+	private float breadth;
+
+	public Rectangle(float length, float breadth) {
+		this.length = length;
+		this.breadth = breadth;
+	}
+	
+	public void setLength(float length) {
+		this.length = length;
+	}
+	
+	public void setBreadth(float breadth) {
+		this.breadth = breadth;
+	}
+	
+	public float getLength() {
+		return this.length;
+	}
+	
+	public float getBreadth() {
+		return this.breadth;
+	}
+}
+
+class Square extends Rectangle {
+
+	public Square(float side) {
+		super(side, side);
+	}
+	
+	public void setLength(float length) {
+		setSide(length);
+	}
+	
+	public void setBreadth(float breadth) {
+		setSide(breadth);
+	}
+	
+	public void setSide(float side) {
+		super.setLength(side);
+		super.setBreadth(side);
+	}
+}
+
+class Client {
+	
+	public static void main(String[] args) {
+		Square square = new Square(10);
+	}
+	
+	public static void useRectangle(Rectangle rectangle) {
+		rectangle.setLength(15);
+		rectangle.setBreadth(20);
+		assertEquals(15, rectangle.getLength());
+	}
+}
+
+-	In the above example child class Square instance used as an substitute for parent class Rectangle instance.
+
+-	But this causes change in the length of rectangle when breadth is altered and change in breadth of rectangle when length is altered.
+
+-	This happens because the behavior of parent class Rectangle is overriden in child class Square.
+
+-	This is violation of liskov substitution principle. This can be fixed by eliminating the parent child relationship between both classes.
+
+Example:
+
+interface Shape {
+
+	float computeArea();
+}
+
+class Rectangle implements Shape {
+
+	private float length;
+	
+	private float breadth;
+
+	public Rectangle(float length, float breadth) {
+		this.length = length;
+		this.breadth = breadth;
+	}
+	
+	public void setLength(float length) {
+		this.length = length;
+	}
+	
+	public void setBreadth(float breadth) {
+		this.breadth = breadth;
+	}
+	
+	public float getLength() {
+		return this.length;
+	}
+	
+	public float getBreadth() {
+		return this.breadth;
+	}
+
+	public float computeArea() {
+		return length * breadth;
+	}
+}
+
+class Shape implements Shape {
+
+	private float side;
+
+	public Square(float side) {
+		super(side, side);
+	}
+	
+	public void setSide(float side) {
+		this.side = side;
+	}
+	
+	public float computeArea() {
+		return side * side;
+	}
+}
+
+What is interface segregation design principle?
+
+-	The interface segregation design principle says client code must not be forced to depend on methods which they don't use.
+
+-	It says we must not include unrelated methods inside single interface and cause interface pollution.
+
+-	Because of interface pollution many implementation methods in child class have empty body, throw UnsupportedOperationException or return null.
+
+Example:
+
+interface PersistenceService<T> {
+
+	void save(T entity);
+	
+	void update(T entity);
+	
+	void delete(T entity);
+	
+	T findById(long id);
+	
+	T findByName(String name);
+}
+
+
+class UserService implements PersistenceService<User> {
+
+	void save(User entity) {...}
+	
+	void update(User entity) {...}
+	
+	void delete(User entity) {...}
+	
+	User findById(long id) {...}
+	
+	User findByName(String name) {...}
+}
+
+class OrderService implements PersistenceService<User> {
+
+	void save(Order entity) {...}
+	
+	void update(Order entity) {...}
+	
+	void delete(Order entity) {...}
+	
+	Order findById(long id) {...}
+	
+	Order findByName(String name) { throw new UnsupportedOperationException("Method findByName is not allowed for class Order");}
+}
+
+-	In the above example a user can be queried by name but an order cannot.
+
+-	However both classes UserService and OrderService implement the PersistenceService interface and need to override all abstract methods inherited.
+
+-	An ideal solution is to move findById from PersistenceService to UserService or to break PersistenceService interface into multiple interfaces.
