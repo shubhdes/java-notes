@@ -281,11 +281,7 @@ class UserService implements PersistenceService<User> {
 
 	void save(User entity) {...}
 	
-	void update(User entity) {...}
-	
-	void delete(User entity) {...}
-	
-	User findById(long id) {...}
+	...
 	
 	User findByName(String name) {...}
 }
@@ -294,11 +290,7 @@ class OrderService implements PersistenceService<User> {
 
 	void save(Order entity) {...}
 	
-	void update(Order entity) {...}
-	
-	void delete(Order entity) {...}
-	
-	Order findById(long id) {...}
+	...
 	
 	Order findByName(String name) { throw new UnsupportedOperationException("Method findByName is not allowed for class Order");}
 }
@@ -308,3 +300,36 @@ class OrderService implements PersistenceService<User> {
 -	However both classes UserService and OrderService implement the PersistenceService interface and need to override all abstract methods inherited.
 
 -	An ideal solution is to move findById from PersistenceService to UserService or to break PersistenceService interface into multiple interfaces.
+
+What is dependency inversion design principle?
+
+-	The dependency inversion design principle says high level module should not depend on low level module but both should depend on abstraction. Abstraction should not depend on details but details should depend on abstraction.
+
+Example:
+
+class MessagePrinter {
+
+
+	public void writeMessage(Message message, String file) {
+		...
+		Formatter formatter = new JSONFormatter();
+		...
+		PrintWriter writer = new PrintWriter();
+		...
+	}
+}
+
+-	The above code is tightly coupled with two implementations JSONFormatter and PrintWriter.
+
+-	To change the message format or message destination we need to change the code everytime.
+
+-	To fix this we will use abstraction and allow client code to instantiate the dependency.
+
+Example:
+
+class MessagePrinter {
+
+	public void writeMessage(Message message, String file, Formatter formatter, Writer writer) {
+		...
+	}
+}
