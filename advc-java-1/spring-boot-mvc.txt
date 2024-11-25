@@ -20,7 +20,7 @@ How does the spring mvc framework work?
 
 -	When the dispatcher servlet is identified then container will perform servlet loading, instantiation and initialization at the time of server startup.
 	
--	As part of dispatcher servlet initialization IOC container object will be created and to this IOC container object.
+-	As part of dispatcher servlet initialization IOC container object will be created.
 
 -	Once IOC container identify entire configuration from stereotype annotation then IOC container will create spring bean object.
 

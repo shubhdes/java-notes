@@ -51,6 +51,12 @@ Write a note on implementing singleton design pattern?
 -	It requires synchronization and volatile to ensure multiple threads do not create multiple instance.
 
 -	This implementation introduces double check locking problem, which can removed by using implementation with lazy initialization holder.  
+							
+						   <<concrete class>> 		<<concrete inner class>>
+	Client			       LazyRegistry				Registry
+	-------------		   --------------           -------------		
+	|			|--------->|			|--------(+)|			|
+    -------------		   --------------           -------------
 
 Example:
 
@@ -113,6 +119,29 @@ Write a note on implementing prototype design pattern?
 -	Implementing the intialise method to reset state of cloned instance and not use exact state from prototype.
 
 -	Inheriting the abstract prototype class.
+
+							Cloneable <<interface>>
+							-------------
+                            |			|
+                            -------------
+									 ^	
+									/ \
+									---
+									 .
+									 .	
+							GameUnit . <<abstract class>>			
+							-------------	
+							|			|
+							-------------
+									 ^	
+								    / \
+									---
+									 .
+									 .	
+    Client			        SwordsMan. <<concrete class>>		
+    -------------		    ------------- 
+    |			|---------->|		    |
+    -------------		    -------------
 
 Example:
 
@@ -208,6 +237,12 @@ Write a note on implementing builder design pattern?
 -	Creating an nested static builder class with methods to initialize parts of an instance.
 
 -	Implementing build method to assemble an instance of the class. 
+
+						   <<concrete class>> 		<<concrete inner class>>
+	Client			       Person					PersonBuilder
+	-------------		   --------------           -------------		
+	|			|--------->|			|--------(+)|			|
+    -------------		   --------------           -------------
 
 Example:
 
@@ -365,6 +400,21 @@ Write a note on implementing simple factory design pattern?
 
 -	Implementing a factory class with static method.
 
+							<<concrete classes>>
+	Client					PostFactory				  Post			     <<interface>>
+	-------------			---------------			  -------------            					
+	|			|---------->|			  |---------->|			  |            
+	-------------			---------------			  -------------
+														^       ^   
+													   / \     / \
+													   ---	   ---		
+														.       .
+														.       .
+											  -------------	  -------------
+                    						  |			  |   |		      |
+											  -------------   -------------
+											  NewsPost		  BlogPost		 <<concrete classes>>
+											  
 Example:
 
 public class Post {
@@ -520,7 +570,25 @@ Explain the factory method design pattern?
 Write a note on implementing factory method design pattern?
 
 -	Implementing an abstract creator class and its child class.
-
+	
+							<<interface>>					<<interface>>
+	Client					MessageCreator					Message				
+	-------------			---------------					-------------            				
+	|			|---------->|			  |					|			|            
+	-------------			---------------					-------------
+							 ^         ^             		  ^       ^   
+							/ \       / \           		 / \     / \
+                            ---		  ---					 ---	 ---		
+		                     .         .             		  .       .
+							 .         .          	  		  .       .
+				   -------------	 -------------   -------------	-------------
+                   | 		   |   	 |  		 |   |  		 |  |			|
+                   -------------   	 -------------   -------------  -------------
+				   TextMsgCreator    JSONMsgCreator  TextMsg        JSONMsg       <<concrete classes>>
+				        |					|			^				 ^
+						|-------------------------------|				 |
+						                    |-----------------------------
+											
 Example:
 
 public abstract class Message {
@@ -604,6 +672,48 @@ Write a note on implementing abstract factory design pattern?
 
 -	Use factory method design pattern with multiple methods to create instances of concrete class belonging to one kit.
 
+								<<concrete classes>>      <<interface>>
+								Client				  	  ResourceFactory								
+							    ---------------		 	  -------------            					
+							    |		      |---------->| 		  |            
+							    ---------------		  	  -------------
+													        ^       ^   
+														   / \     / \
+														   ---	   ---		
+														    .       .
+														    .       .
+												  -------------   -------------
+						GoogleResourceFactory  ---| 		  |   |		     |---	AwsResourceFactory 	<<concrete classes>>
+											   |  -------------   -------------  |
+											   |		                         |
+											   |		  <<interface>>	 		 |
+											   |		  Instance	 		     |
+                                               |		  -------------          |  					
+											   |		  |			  |          |  
+                                               |		  -------------          |
+                                               |			^       ^            |
+                                               |		   / \     / \           |
+                                               |		   ---	   ---		     |
+                                               |			.       .            |
+                                               |			.       .			 | 
+                                               |  -------------	  -------------  |
+                                  GCEInstance  -> |			  |   |		     |  <-	EC2Instance   <<concrete classes>>
+                                               |  -------------   -------------	 |	
+                            				   |								 |
+							                   | 		  <<interface>>			 |	
+                                               | 		  Storage				 | 					                          	
+                                               | 		  -------------          |  					
+                        					   |		  |			  |          |  
+                                               | 		  -------------          |
+                                               | 			^       ^            |
+                                               | 		   / \     / \           |
+                                               | 		   ---	   ---		     |
+                                               | 			.       .            |
+                                               | 			.       .            |
+                                               |  -------------   -------------	 |
+                                    S3Storage  |->|		      |   |		      |<-|  GCStorage    <<concrete classes>>
+                                                  -------------   -------------
+                                                								
 Example:
 
 public interface Instance {
@@ -709,6 +819,28 @@ Write a note on implementing object pool design pattern?
 -	Concrete class must provide method to reset instance state before returning it to the pool.
 
 -	Either an instance can be created or the acquiring thread must wait if no instance is available in pool.
+
+								<<concrete class>>        <<interface>>
+	  Client					ObjectPool				  Poolable								
+	  ---------------			---------------		 	  -------------            					
+	  | 		    |---------->|		      |---------->| 		  |            
+	  ---------------			---------------		  	  -------------
+																^     
+															   / \  
+														       ---			
+														        .   
+														        .   
+														  ------------- 
+														  | 		  | Image <<interface>>
+											     		  ------------- 
+														  		^     
+                                                          	   / \  
+                                                               ---			
+                                                                .   
+                                                                .   
+                                                          ------------- 
+                                                          | 		  | BitmapImage <<concrete class>>
+                                                          ------------- 
 
 Example:
 

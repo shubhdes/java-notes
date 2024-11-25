@@ -27,11 +27,11 @@ For spring rest application how does spring rest framework convert response into
 
 -	Also when the request url matches but request method does not match we get runtime exception saying HttpRequestMethodNotSupportedException.	
 
--	Again for a given request when the content type parameter in request header does not match with the produces annotation parameter media-type then we get 
-	runtime exception saying HttpMediaTypeNotAcceptableException.
+-	Again for a given request when the content type parameter in request header does not match with the consumes annotation parameter media-type then we get 
+	runtime exception saying HttpMediaTypeNotSupportedException.
 
--	Again for a given request when the accept parameter in request header does not match with the consumes annotation parameter media-type then we get runtime
-	exception saying HttpMediaTypeNotSupportedException.
+-	Again for a given request when the accept parameter in request header does not match with the produces annotation parameter media-type then we get runtime
+	exception saying HttpMediaTypeNotAcceptableException.
 
 -	Once the request handler identifies the method the dispatcher-servlet is responsible to call that method and pass request body information to that method.
 
@@ -43,7 +43,7 @@ For spring rest application how does spring rest framework convert response into
 	b)	For method parameter of type collection or java object and content-type header of type application/json or application/xml request object is initialized 
 		by performing required conversion to media-type format.
 
-	c)	For request object of type collection or java object and content-type header of type plain/text conversion will fail with runtime exception saying
+	c)	For method parameter of type collection or java object and content-type header of type plain/text conversion will fail with runtime exception saying
 		HttpMediaTypeNotSupportedException.
 	
 -	Once the required method execution is completed then http-message-converter will convert the returned object is converted to required media-type format based 
@@ -138,7 +138,7 @@ How to implement server side data validation using spring framework?
 	
 		public boolean supports(Class class) {
 		
-			return this.getClass().equals(class);
+			return Employee.class.equals(class);
 		}
 		
 		public void validate(Object obj, Errors errors) {

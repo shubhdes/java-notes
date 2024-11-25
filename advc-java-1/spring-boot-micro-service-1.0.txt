@@ -2,7 +2,7 @@ spring boot - micro-service-1.0 [< 2.4 ]
 
 What is micro-service?
 
--	A micro-service is a web-application that is developed as collection web-service.
+-	A micro-service is a web-application that is developed as collection of web-services.
 
 -	Each web-service communicate with another using rest web-service communication.
 
@@ -24,7 +24,7 @@ What are challenges for micro-service?
 
 What is spring cloud?
 
--	The spring cloud is collection of spring boot project.
+-	The spring cloud is collection of spring boot projects.
 
 -	One such project is spring-cloud-netflix project that allow easy integration of spring boot project with micro-service components provided by netflix.
 	

@@ -104,7 +104,7 @@ What is a thread pool?
 -	Whenever a thread object is created we require to assign job to thread and start the thread also kill thread after job is completed. These thread mechanics
 	are overhead activities to be performed for every single thread.
 
--	In case of a thread pool thread objects creation is responsibility of the pool and we need to just assign job to pool and when the task given to the 
+-	In case of a thread pool thread objects creation is responsibility of the pool and we need to just assign jobs to pool and when the task given to the 
 	thread object is completed new job from queue is assigned to same thread this means thread in thread pool are reusable.
 
 How to create a thread pool in java?
@@ -115,7 +115,7 @@ How to create a thread pool in java?
 -	For example,
 	ExecutorsService es = Executors.newFixedSizedThreadPool(n); 
 
--	ExecutorsService is an sub interface java.util.concurrent.Executor interface and ExecutorsService is super interface to all different types of thread pool.
+-	ExecutorsService is an super interface to all different types of thread pool.
 -	Executors is class that provides factory methods to create different types of thread pool.
 
 -	Every thread pool maintains a queue of jobs assigned to it, when a job from the queue is assigned to thread from the pool, thread leaves the pool and 

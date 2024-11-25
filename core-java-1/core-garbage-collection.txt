@@ -136,7 +136,7 @@ Explain island of isolation in garbage collection?
 												|______________|
 	
 
-	stack heap structure after line c, all object eligible for garbage collection as there is no direct or indirect reference from stack for any object.
+	stack heap structure after line 3, all object eligible for garbage collection as there is no direct or indirect reference from stack for any object.
 	
 												________________
 											    |	           |

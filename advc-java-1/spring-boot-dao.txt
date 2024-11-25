@@ -166,10 +166,8 @@ What is purpose of @Transactional annotation in spring dao framework?
 		public void save(Employee employee){
 		
 			//transaction management pre-processing logic
-		
-			EmployeeRepositoryImpl employeeRepositoryImpl = new EmployeeRepositoryImpl();
 			
-			employeeRepositoryImpl.save(employee);
+			super.save(employee);
 			
 			//transaction management post-processing logic
 		}

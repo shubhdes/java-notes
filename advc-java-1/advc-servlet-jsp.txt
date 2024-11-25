@@ -124,7 +124,7 @@ Explain the how web-server and web-container handle web-request?
 																					4) It will load, read and validate /login-app/WEB-INF/web.xml																			
 	5) client-web-browser will generate web-request									
 	-----------------  																|---------------------------------------------------- web-server
-	| -------------	|  	7) The client-web-browser send web-request to procotcol		| --------------------------------------------------- web-container	
+	| -------------	|  	7) The client-web-browser send web-request to protocol		| --------------------------------------------------- web-container	
 	|				| 	----------													| |	/bin /conf /lib /logs /temp /work 
 	|				|	|H|B	 |http-request										| |		
 	|				|	----------													| | ------------------------------------------------- /webapp
@@ -141,7 +141,7 @@ Explain the how web-server and web-container handle web-request?
 		return the web-resource inside web-response but when the web-request is for	| | | | |
 		dynamic web-resource then web-server will forward it to web-container.		| | | | |
 	9)  The web-container will find web-servlet for the web-request-url from web.xml| | | |	|				
-	10)  It will load the web-servlet(Class.forName("my-servlet-class"))			| |	| | |
+	10) It will load the web-servlet(Class.forName("my-servlet-class"))				| |	| | |
 	11) It will create an object of the web-servlet (class.newInstance())			| |	| |	 --------------------------------------------				
 	12) Now web-container will create servlet-config object for web-servlet.		| |	| |----------------------------------------------
 	13) Further web-container will call following method using servlet object,		| | |------------------------------------------------
@@ -300,7 +300,7 @@ Explain the servlet-communication process?
 							  |												    		  						|																						   |
 		--------------------------------------------------										-----------------------------
 		|				 	  |							 |										|				 	   		|
-	reaquest-response	 error-message		 	 request-redirection					include-mechanism			 forward-mechanism
+	request-response	 error-message		 	 request-redirection					include-mechanism			 forward-mechanism
 														 |
 							-------------------------------------------------------------					
 							|							 |								|

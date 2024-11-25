@@ -234,7 +234,7 @@ What is a consumer group?
 	
 	kafka-console-consumer.bat --bootstrap-server localhost:9092 --topic my-topic-001 --group my-group-001
 	
--	When consumer is created without group then it kafka will create new group and consume to that consumer group.	
+-	When consumer is created without group then it kafka will create new group and add consumer to that consumer group.	
 
 -	Following command must be used to list all the consumer groups present inside broker.
 
@@ -310,7 +310,7 @@ How to create cluster?
 
 	example:
 	
-	kafka-server-start.bat ..\..\config\server.001properties
+	kafka-server-start.bat ..\..\config\server001.properties
 	
 Explain how topic is distributed across cluster?
 
@@ -420,7 +420,7 @@ Explain the layers through which message record must pass before it reaches the 
 
 How to implement kafka producer in java?
 
--	To implement kafka producer we need to add the following mavena dependency inside pom.xml file.
+-	To implement kafka producer we need to add the following maven dependency inside pom.xml file.
 
 	example:
 	
@@ -514,7 +514,7 @@ Explain important producer configurations?
 
 How to implement kafka consumer in java?
 
--	To implement kafka consumer we need to add the following mavena dependency inside pom.xml file.
+-	To implement kafka consumer we need to add the following maven dependency inside pom.xml file.
 
 	example:
 	
@@ -576,7 +576,7 @@ Explain important consumer configurations?
 	
 	latest		-	Pull only new message records, this is the default value.
 	
--	Poll intevral property define the time interval between two consecutive pull operations.	
+-	Poll interval property define the time interval between two consecutive pull operations.	
 
 -	It is defined using following configuration property.	
 	

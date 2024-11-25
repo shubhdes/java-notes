@@ -230,7 +230,7 @@ How to create an image manually for the spring boot application and run it?
 
 	#docker container run -dit openjdk:8-jdk-alpine
 
--	The open -it means create interactive container which can execute command when container state is running.
+-	The option -it means create interactive container which can execute command when container state is running.
 
 -	Copy the jar file for the spring boot application inside image /tmp folder.
 
@@ -641,7 +641,7 @@ What is docker compose?
 
 -	It follow instruction mentioned inside docker-compose.yaml file.
 
--	These instruction can be used to multiple images together.
+-	These instruction can be used to pull multiple images together.
 
 -	Also using docker compose we can create and run multiple containers together.
 

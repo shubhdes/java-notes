@@ -24,7 +24,7 @@ How is stream is different from collection?
 
 How to create stream?
 
--	To create stream from array we need to use method with name of from Stream interface.
+-	To create stream from array we need to use method of from Stream interface.
 
 	Example:
 	

@@ -419,7 +419,6 @@ Explain strictfp modifier?
 	we will get platform independent results.
 -	We can declare abstract and strictfp modifier combination at class level because strictfp at class level applies only to concrete methods of that class.
 
-
 Explain scope of private, protected, <default> and public access modifiers?
 
 -	If a member is declared as public then it can be accessed from anywhere i.e from inside and outside the package (provided it is declared in public class).
@@ -629,7 +628,7 @@ Explain native modifier at method level in java?
 -	The native modifier applicable only for methods it cannot be applied on variables or classes.
 -	Modifier native imply that method is implemented in non java (mostly in c or c++) programming language. This method is also called foreign methods.
 
--	Performance wise java does not meet expectations. In such case we can implement solution in in non java programming languages and support it in java
+-	Performance wise java does not meet expectations. In such case we can implement solution in non java programming languages and support it in java
 	using native modifier.	
 
 -	Java cannot directly communicate with machine/memory. Java is programmer friendly but not machine friendly. 	
@@ -671,7 +670,7 @@ Explain native modifier at method level in java?
 -	Use of native method in java we lose the platform independent nature of java because the native method may or may not be implemented in platform independent
 	programming language.
 
-Explain volatile modifier at method level in java?
+Explain volatile modifier at variable level in java?
 
 -	The volatile modifier is applicable only for variables it cannot be applied on method or classes.
 -	If a variable is declared volatile this means value of variable will be continuously updated by multiple threads.

@@ -17,10 +17,10 @@ What is generic and why is it required?
 			String s1 = "java";
 			
 			arr.add(i1);
-			arr.add(i2);
+			arr.add(s1);
 			
-			Integer i1 = (Integer) arr.get(0);	
-			Integer i2 = (Integer) arr.get(1);	/**runtime exception saying ClassCastException as String object cannot be casted to Integer*/
+			Integer i2 = (Integer) arr.get(0);	
+			Integer i3 = (Integer) arr.get(1);	/**runtime exception saying ClassCastException as String object cannot be casted to Integer*/
 		}
 	}
 
@@ -33,7 +33,7 @@ What is generic and why is it required?
 	
 		public static void main(String[] args) {
 		
-			List<Integer> arr = new ArrayList<Integer>();
+			List<Integer> arr = new ArrayList<>();
 			
 			Integer i1 = 10;
 			String s1 = "java";
@@ -63,7 +63,7 @@ How does type parameter	introduces type-safety?
 	}
 
 -	When we create an object of ArrayList using type parameter as below all type-parameter in above class declaration gets replaced with Integer.
-	ArrayList<Integer> arr = new ArrayList<Integer>();
+	ArrayList<Integer> arr = new ArrayList<>();
 	
 -	The type-parameter can be declared at class level and method level also, when type-parameter exist at class level the that type-parameter is available 
 	within the entire class i.e. to all fields and method of that class but when type-parameter is declared at method level it is available to only specific
@@ -115,7 +115,7 @@ Explain why generics do not support polymorphism with respect to type parameter?
 		}
 	}
 	
--	When polymorphism rule works for type-parameter in collection then to collection of Child1 object we can also add Child2 object and now while iterating
+-	When polymorphism rule works for type-parameter in collection then to collection of Child1 objects we can also add Child2 object and now while iterating
 	the collection object we must perform explicit type-casting and purpose of generic is lost.	
 
 -	But when we have collection object for with type-parameter as parent class we can add elements of type child to it.

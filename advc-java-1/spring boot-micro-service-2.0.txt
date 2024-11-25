@@ -285,7 +285,7 @@ What is fault tolerance and how to implement it?
 
 -	The fallback method must accept one parameter of type Throwable.
 
--	We can overload the fallback method such that we can have different versions of method to be called for different raise runtime exception raised.
+-	We can overload the fallback method such that we can have different versions of method to be called for different runtime exception raised.
 
 	Example:
 	

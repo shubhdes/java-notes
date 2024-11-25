@@ -163,7 +163,7 @@ What is synchronization in multi-threading?
 		}
 	}
 
--	The increment operation is not atomic and includes several operations like reading value of count, evaluvating count + 1 and assigning new value to count.  
+-	The increment operation is not atomic and includes several operations like reading value of count, evaluating count + 1 and assigning new value to count.  
 -	It is possible that two or more thread may overlap the above steps and result into data inconsistency.
 	Example:
 	Assume thread-1 reads count as 0 and JVM switches to thread-2 which reads count as 0 and evaluvates count + 1 to 1. Now again JVM switches to thread-1
@@ -226,7 +226,7 @@ What are different scenarios of synchronization?
 		synchronized method m1() on object x but needs to wait for  thread-1 to release lock.
 	-	But thread-3 wants to execute static synchronized method m2() hence it gets lock on Test.class and begins execution, now thread-4 wants to execute 
 		static non-synchronized method m3() as it do not require any lock it can begin its execution.
-	-	Now thread-5  wants to execute static synchronized method m4() but cannot get lock on Test.class and needs to wait till thread-3 releases the lock.
+	-	Now thread-5 wants to execute static synchronized method m4() but cannot get lock on Test.class and needs to wait till thread-3 releases the lock.
 
 What is inter-thread communication in multi-threading?
 

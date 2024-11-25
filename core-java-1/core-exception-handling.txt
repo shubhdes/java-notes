@@ -140,13 +140,19 @@ What is purpose of throw keyword?
 
 What is purpose of throws keyword?
 
--	The keyword throws delegates responsibility of checked exception handling to caller method also throws keyword can be used to throw unchecked exception 
+-	The keyword throws delegates responsibility of checked exception handling to caller method also throws keyword can be used to delegate unchecked exception 
 	which does not require exception handling by caller method.
 
 -	In case of public static void main(String[] args) method throws exception then responsibility of exception handling is delegated to JVM.
 
--	We will not get any compile time error when the throw keyword throws an exception which actually is never raised.
+-	We will not get any compile time error when the throws keyword delegates an exception which actually is never raised.
 
+	Example:
+	
+	public static void main(String[] args) throws FileNotFoundException /**although main method never raises FileNotFoundException but no compile time error **/ {			
+				
+	}
+		
 What is ExceptionInInitializerError?
 
 -	ExceptionInInitializerError is unchecked exception which child class of java.lang.Error it is raised by JVM if any exception occurs while executing 

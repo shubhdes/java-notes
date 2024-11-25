@@ -603,7 +603,7 @@ What is polymorphism?
 	
 What are coupling as advanced features of object oriented programming?
 
--	The degree of dependency between components is called as coupling. If dependency is more then it is considered as tight coupling and if dependency is less \
+-	The degree of dependency between components is called as coupling. If dependency is more then it is considered as tight coupling and if dependency is less 
 	then it is considered as loose coupling.
 -	Tight coupling is bad programming practise whereas loose coupling is good programming practise.
 
@@ -1203,7 +1203,7 @@ What is super() or super(params) or this() or this(params)?
 
 What is super or this?
 
--	The keyword super is used to refer parent class instance members whereas this is used to refer child class instance member and	these keywords cannot be 
+-	The keyword super is used to refer parent class instance members whereas this is used to refer child class instance member and these keywords cannot be 
 	used in static methods or static blocks.
 
 What is recursive constructor call?
