@@ -26,9 +26,9 @@ Explain the adapter design pattern?
 
 -	The adapter design pattern is a structural design pattern.
 
--	An existing instance (adaptee) provides functionality required by client code, but client code expects instance to be of another interface type (target).
+-	An existing instance (BusinessCardDesigner) provides functionality required, but it expects instance to be of another interface type (Customer).
 
--	Using adapter design pattern the existing instance can work with client code by adapting the instance to expected interface type.
+-	Using adapter design pattern the existing instance (Employee) can work with existing code (BusinessCardDesigner) by adapting the instance to expected interface type (Customer).
 
 -	It is also called as wrapper.
 
@@ -36,17 +36,39 @@ Explain the adapter design pattern?
 
 Write a note on implementing adapter design pattern?
 
--	Implementing adapter class as child class of the target interface.
+-	Implementing adapter class as child class of the target interface (Customer).
 
 -	For class adapter, the adapter class must extend the adaptee class.
 
 -	From the adapter class call inherited method of adaptee class. A class adapter design pattern is also called as two way adapter.
 
--	For object adapter, the adapter class must compose of adaptee class instance.
+-	For object adapter, the adapter class must compose of adaptee class instance (Employee).
 
 -	From the adapter class call method of adaptee class.
 
 -	We must accept the adaptee instance as constructor arguement for adapter class.
+
+								<<concrete class>>        <<interface>> <<target>>
+	  Client					BusinessCardDesigner	  Customer								
+	  ---------------			---------------		 	  -------------            					
+	  | 		    |---------->|		      |---------->| 		  |            
+	  ---------------			---------------		  	  -------------
+																^     
+															   / \  
+														       ---			
+														        .   
+														        .   
+														  ------------- 
+														  | 		  | EmployeeObjectAdapter <<concrete class>> <<adpater>>
+											     		  ------------- 
+														  		^     
+                                                          	   / \  
+                                                               \ /			
+                                                                |   
+                                                                |   
+                                                          ------------- 
+                                                          | 		  | Employee <<concrete class>> <<adaptee>>
+                                                          ------------- 
 
 Example:
 
@@ -174,6 +196,22 @@ Write a note on implementing bridge design pattern?
 -	Abstraction is composed of concrete implementation instance.
 
 -	We must accept the implementation instance as constructor arguement for abstraction class.
+
+								<<abstraction hierarchy>> <<implementation hierarchy>>
+
+								<<interface>>        	  <<interface>> <<target>>
+	  Client					FifoCollection	 	 	  LinkedList								
+	  ---------------			---------------		 	  -------------            					
+	  | 		    |---------->|		      |<>---------| 		  |            
+	  ---------------			---------------		  	  -------------
+									  ^							^     
+									 / \					   / \  
+									 ---					   ---			
+							  		  .					        .   
+									  .					        .   
+								-------------			  ------------- 
+	   Queue <<concrete class>> |			|			  | 		  | SinglyLinkedList <<concrete class>>
+								-------------	  		  ------------- 
 
 Example:
 
