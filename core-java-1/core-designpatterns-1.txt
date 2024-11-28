@@ -55,7 +55,7 @@ Write a note on implementing singleton design pattern?
 						   <<concrete class>> 		<<concrete inner class>>
 	Client			       LazyRegistry				Registry
 	-------------		   --------------           -------------		
-	|			|--------->|			|--------(+)|			|
+	|			|--------->|			|(+)--------|			|
     -------------		   --------------           -------------
 
 Example:
@@ -124,21 +124,19 @@ Write a note on implementing prototype design pattern?
 							-------------
                             |			|
                             -------------
-									 ^	
-									/ \
-									---
-									 .
-									 .	
-							GameUnit . <<abstract class>>			
+								  ^	
+								 ---
+								  .
+								  .	
+							      . GameUnit <<abstract class>>			
 							-------------	
 							|			|
 							-------------
-									 ^	
-								    / \
-									---
-									 .
-									 .	
-    Client			        SwordsMan. <<concrete class>>		
+								 ^	
+								---
+								 .
+								 .	
+    Client			             . SwordsMan <<concrete class>>		
     -------------		    ------------- 
     |			|---------->|		    |
     -------------		    -------------
@@ -241,8 +239,10 @@ Write a note on implementing builder design pattern?
 						   <<concrete class>> 		<<concrete inner class>>
 	Client			       Person					PersonBuilder
 	-------------		   --------------           -------------		
-	|			|--------->|			|--------(+)|			|
-    -------------		   --------------           -------------
+	|			|		   |			|(+)--------|			|<---
+    -------------		   --------------           -------------	|
+		|															|
+		|------------------------------------------------------------
 
 Example:
 
@@ -406,7 +406,6 @@ Write a note on implementing simple factory design pattern?
 	|			|---------->|			  |---------->|			  |            
 	-------------			---------------			  -------------
 														^       ^   
-													   / \     / \
 													   ---	   ---		
 														.       .
 														.       .
@@ -577,7 +576,6 @@ Write a note on implementing factory method design pattern?
 	|			|---------->|			  |					|			|            
 	-------------			---------------					-------------
 							 ^         ^             		  ^       ^   
-							/ \       / \           		 / \     / \
                             ---		  ---					 ---	 ---		
 		                     .         .             		  .       .
 							 .         .          	  		  .       .
@@ -678,7 +676,6 @@ Write a note on implementing abstract factory design pattern?
 							    |		      |---------->| 		  |            
 							    ---------------		  	  -------------
 													        ^       ^   
-														   / \     / \
 														   ---	   ---		
 														    .       .
 														    .       .
@@ -692,7 +689,6 @@ Write a note on implementing abstract factory design pattern?
 											   |		  |			  |          |  
                                                |		  -------------          |
                                                |			^       ^            |
-                                               |		   / \     / \           |
                                                |		   ---	   ---		     |
                                                |			.       .            |
                                                |			.       .			 | 
@@ -706,7 +702,6 @@ Write a note on implementing abstract factory design pattern?
                         					   |		  |			  |          |  
                                                | 		  -------------          |
                                                | 			^       ^            |
-                                               | 		   / \     / \           |
                                                | 		   ---	   ---		     |
                                                | 			.       .            |
                                                | 			.       .            |
@@ -826,7 +821,6 @@ Write a note on implementing object pool design pattern?
 	  | 		    |---------->|		      |---------->| 		  |            
 	  ---------------			---------------		  	  -------------
 																^     
-															   / \  
 														       ---			
 														        .   
 														        .   
@@ -834,7 +828,6 @@ Write a note on implementing object pool design pattern?
 														  | 		  | Image <<interface>>
 											     		  ------------- 
 														  		^     
-                                                          	   / \  
                                                                ---			
                                                                 .   
                                                                 .   

@@ -48,28 +48,21 @@ Write a note on implementing adapter design pattern?
 
 -	We must accept the adaptee instance as constructor arguement for adapter class.
 
-								<<concrete class>>        <<interface>> <<target>>
-	  Client					BusinessCardDesigner	  Customer								
+								<<concrete class>>        <<interface>> 
+	  Client					BusinessCardDesigner	  Customer	<<target>>							
 	  ---------------			---------------		 	  -------------            					
 	  | 		    |---------->|		      |---------->| 		  |            
 	  ---------------			---------------		  	  -------------
 																^     
-															   / \  
 														       ---			
 														        .   
 														        .   
-														  ------------- 
-														  | 		  | EmployeeObjectAdapter <<concrete class>> <<adpater>>
-											     		  ------------- 
-														  		^     
-                                                          	   / \  
-                                                               \ /			
-                                                                |   
-                                                                |   
-                                                          ------------- 
-                                                          | 		  | Employee <<concrete class>> <<adaptee>>
-                                                          ------------- 
-
+								-------------		  	------------- 
+								|			|--------<*>| 		  	| EmployeeObjectAdapter <<concrete class>> 
+								-------------		  	------------- <<adpater>>
+								Employee <<concrete class>> 
+                                <<adaptee>>                          
+								
 Example:
 
 public class BusinessCardDesigner {
@@ -199,18 +192,17 @@ Write a note on implementing bridge design pattern?
 
 								<<abstraction hierarchy>> <<implementation hierarchy>>
 
-								<<interface>>        	  <<interface>> <<target>>
+								<<interface>>        	  <<interface>>
 	  Client					FifoCollection	 	 	  LinkedList								
 	  ---------------			---------------		 	  -------------            					
-	  | 		    |---------->|		      |<>---------| 		  |            
-	  ---------------			---------------		  	  -------------
-									  ^							^     
-									 / \					   / \  
-									 ---					   ---			
-							  		  .					        .   
-									  .					        .   
-								-------------			  ------------- 
-	   Queue <<concrete class>> |			|			  | 		  | SinglyLinkedList <<concrete class>>
+	  | 		    |---------->|		      |     ------| 		  |            
+	  ---------------			---------------		|  	  -------------
+									  ^				|			^     
+									 ---			|		   ---			
+							  		  .				|	        .   
+									  .				|	        .   
+								-------------		|	  ------------- 
+	   Queue <<concrete class>> |			|<*>-----	  | 		  | SinglyLinkedList <<concrete class>>
 								-------------	  		  ------------- 
 
 Example:
@@ -389,6 +381,19 @@ Write a note on implementing decorator design pattern?
 
 -	We must accept the implementation instance or another decorator instance as constructor arguement for decorator class.
 
+										<<interface>>
+			  Client				    Message				
+			  ---------------		    -------------            				
+	          | 		    |---------->|			|------------|
+	          ---------------		    -------------			 |
+                                 		  ^       ^   			 |			
+                                		 ---	 ---			 |	
+                                 		  .       .				 |
+                                  		  .       .				 |
+                                 -------------	-------------	 |
+                                 |  		 |  |			|<*>--
+                                 -------------  -------------
+                                 TextMsg        Base64EncodedMsg       <<concrete classes>>
 Example:
 
 public interface Message {
@@ -471,6 +476,20 @@ Write a note on implementing composite design pattern?
 -	The leaf class may need to provide implementation for children management methods which it doesn't support. 
 
 -	The composite instance will delegate the responsibility to leaf instance.
+
+										<<abstract class>>
+			  Client				    File				
+			  ---------------		    -------------            				
+	          | 		    |---------->|			|------------|
+	          ---------------		    -------------			 |
+                                 		  ^       ^   			 |			
+                                		 ---	 ---			 |	
+                                 		  .       .				 |
+                                  		  .       .				 |
+                                -------------	-------------	 |
+                                |  		    |  	|			|<>---
+                                -------------   -------------
+                                BinaryFile      Directory       <<concrete classes>>
 
 Example:
 
