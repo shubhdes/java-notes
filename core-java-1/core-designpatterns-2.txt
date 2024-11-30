@@ -938,9 +938,9 @@ Write a note on design consideration for proxy design pattern?
 
 -	The surrogate instance may also maintain some state on behalf of concrete class instance.
 
--	We must consider performance cost of proxy instance and also sometimes a proxy may need to be implemented as synchronized.
+-	We must consider performance cost of proxy instance especially when it is implemented as synchronized.
 
--	A proxy may use remote service without using any real concrete class instance.
+-	A proxy may use remote service without using concrete class instance.
 
 Write a note on pitfalls of proxy design pattern?
 
