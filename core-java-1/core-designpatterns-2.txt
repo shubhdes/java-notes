@@ -628,6 +628,12 @@ Write a note on implementing facade design pattern?
 
 -	Implementing facade class and include methods considering overall usecase of the subsystem by client code.
 
+						   <<concrete class>> 		
+	Client			       EmailFacade				<<subsystem>>
+	-------------		   --------------           -------------		
+	|			|--------->|			|---------->|			|
+    -------------		   --------------           -------------
+
 Example:
 
 public class Order {
@@ -719,6 +725,20 @@ Write a note on implementing flyweight design pattern?
 
 -	Implementing flyweight factory.
 
+							<<concrete classes>>	  <<interface>>
+	Client					ErrorMessageFactory		  ErrorMessage			
+	-------------			---------------			  -------------            					
+	|			|---------->|			  |<>---------|			  |            
+	-------------			---------------			  -------------
+															^   
+							---------------				   ---		
+							|			  |					.
+							---------------					.
+							<<enum>>				  -------------
+							ErrorType				  |		      |
+													  -------------
+													  <<concrete class>>
+													  SystemErrorMessage
 Example:
 
 public interface ErrorMessage {
@@ -804,13 +824,27 @@ Explain the proxy design pattern?
 
 Write a note on implementing proxy design pattern?
 
--	Implementing proxy class by and concrete class which extends the interface.
+-	Implementing proxy class and concrete class which extends the interface.
 
 -	The proxy can accept concrete class instance as constructor arguement or create it later.
 
 -	It uses simple factory to avoid client code from knowing about surrogate instance.
 
 -	A dynamic proxy allows to provide surrogate implementation at runtime.
+
+													  <<interface>>
+	Client					ImageFactory		  	  Image				
+	-------------			---------------		      -------------            				
+	|			|---------->| 		      |---------->|			  |------------|
+	-------------			---------------		      -------------			   |
+														^       ^   		   |			
+													   ---     ---			   |	
+														.       .			   |
+														.       .			   |
+											  -------------	  -------------	   |
+											  |   		  |   | 		  |<*>--
+                                              -------------   -------------
+											  BitmapImage     ImageProxy       <<concrete classes>>
 
 Example:
 
@@ -831,6 +865,7 @@ public class BitmapImage implements Image {
 
 	public BitmapImage(String name) {
 		this.name = name;
+		// code to load image from harddisk by doing io operation
 	}
 
 	@Override
@@ -863,18 +898,11 @@ public class ImageProxy implements Image {
 
 	@Override
 	public void setLocation(Point2D location) {
-		if (image != null) {
-			image.setLocation(location);
-		} else {
-			this.location = location;
-		}
+		this.location = location;
 	}
 
 	@Override
 	public Point2D getLocation() {
-		if (image != null) {
-			return image.getLocation();
-		}
 		return location;
 	}
 
@@ -920,4 +948,4 @@ Write a note on pitfalls of proxy design pattern?
 
 -	Multiple surrogate instance on one concrete class instance may be difficult to manage.
 
--	The static design pattern is quiet similar to adapter and decorator design pattern and might be confusing.
+-	The static proxy design pattern is quiet similar to adapter and decorator design pattern and might be confusing.
