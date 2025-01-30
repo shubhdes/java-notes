@@ -940,7 +940,7 @@ Write a note on design consideration for proxy design pattern?
 
 -	We must consider performance cost of proxy instance especially when it is implemented as synchronized.
 
--	A proxy may use remote service without using concrete class instance.
+-	All proxies may not use concrete class object instead it may call remote service.
 
 Write a note on pitfalls of proxy design pattern?
 

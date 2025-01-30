@@ -1,0 +1,310 @@
+core java - problem solving array datastructure
+
+Explain the single number problem with solution?
+
+-	The problem statement is given an array of numbers with each number occurring even number of times except one, we have to find it.
+
+-	The solution to this problem is using the XOR operator.
+
+-	The XOR operator in java is a bitwise operator.
+
+-	When the operator is used between two integer operands it converts the decimal operands into binary and does the computation.
+
+-	When binary representation of both operands is identical then the result is binary representation of 0.
+
+-	When one of the operand is 0 the result is binary representation of other operand.
+
+-	Using the above property we will create and XOR chain of all the elements present inside given array.
+
+-	The binary representation duplicate elements will reduce to binary representation of 0.
+
+-	The binary representation of 0 XOR with binary representation of single number will reduce to binary representation of single number.
+
+	Example:
+	
+	result = result ^ nums[i];
+
+Explain the majority element problem with solution?
+
+-	The problem statement is given an array of size n find an element from it which occurs more than n / 2 times.
+
+-	This element is called as majority element.
+
+-	The solution to this problem is using Moore's voting algorithm.
+
+-	More than half of the space in array is occupied by an single element.
+
+-	For every occurence of that element we add vote of 1 and for every occurence of another element subtract vote of 1.
+
+-	Once entire array is traversed the majority element will have vote value more than 1.
+
+	Example:
+	
+	for (int i = 0; i < nums.length; i++) {
+		if (count == 0) {
+			candidate = nums[i];
+			count = 1;
+		} else if (candidate == nums[i]) {
+			count++;
+		} else {
+			count--;
+		}
+	}
+
+Explain the rotate array problem with solution?
+
+-	The problem statement is given an array and an positive integer k rotate the elements of array towards right direction by k position.
+
+-	The algorithm must use O(1) space complexity.
+
+-	The solution to this problem is in three steps.
+
+-	The first step is to rotate the entire array.
+
+-	The second step is to rotate the first k elements in the array.
+
+-	The third step is to rotate the remaining elements in the array.
+
+	Example:
+	
+	int endIndex = nums.length - 1;
+	reverse(nums, startIndex, endIndex);
+	reverse(nums, startIndex, k - 1); 
+	reverse(nums, k, endIndex);
+
+Explain the search inside rotated sorted array problem with solution?
+
+-	The problem statement is given an array which is sorted and rotated of numbers and a target integer.
+
+-	Find the target inside the array and return its index otherwise return -1.
+
+-	The solution to this problem is using binary search.
+
+-	For every middle element in array there are two possibilities.
+
+-	The either of the left and right array is sorted or both are sorted.
+
+-	First determine which array is sorted then determine whether target element will be present inside it or not.
+
+	Example:
+	
+	if (nums[sindex] <= nums[mindex]) {
+		if (nums[sindex] <= target && nums[mindex] >= target) {
+			eindex = mindex - 1;
+		} else {
+			sindex = mindex + 1;
+		}
+	} else {
+		if (nums[mindex] <= target && nums[eindex] >= target) {
+			sindex = mindex + 1;
+		} else {
+			eindex = mindex - 1;
+		}
+	}
+
+Explain the maximum sum subarray problem with solution?
+
+-	The problem statement is given an array of numbers find the subarray with maximum sum.
+
+-	The solution to this problem is using Kadane's algorithm.
+
+-	Calculate the sum from left and right directions in an array.
+
+-	At each step we calculate the maximum sum at that index.
+
+-	It could be either sum of elements array elements and current element or only current element whichever is greater.
+
+-	Also determine the final maximum sum.
+
+	Example:
+	
+	currentSum = Math.max(nums[i], currentSum + nums[i]);
+	maxSum = Math.max(maxSum, currentSum);
+	
+Explain the maximum product subarray problem with solution?
+
+-	The problem statement is given an array of numbers find the subarray with maximum product.
+
+-	The product of subarray is equal to 0 if it has atleast one element equal to 0.
+
+-	The product of a subarray will decrease if the subarray contains odd number of elements equal to negative integers.
+
+-	However the product of a subarray will increase if the subarray contains even number of elements equal to negative integers.
+
+-	The solution to this problem is using Kadane's algorithm.
+
+-	Calculate the product from left and right directions in an array.
+
+-	At each step calculate the maximum product and minimum product at that index.
+
+-	Also determine the final maximum product.
+
+	Example:
+	
+	int tempCurrentMaxProduct = 
+	Math.max(nums[i], Math.max(currentMaxProduct * nums[i], currentMinProduct * nums[i]));
+	currentMinProduct = Math.min(nums[i], Math.min(currentMaxProduct * nums[i], currentMinProduct * nums[i]));
+	currentMaxProduct = tempCurrentMaxProduct;
+	maxProduct = Math.max(maxProduct, currentMaxProduct);
+
+Explain the longest consecutive sequence problem with solution?
+
+-	The problem statement is given an array of numbers find the length of longest consecutive sequence inside it.
+
+-	The solution to problem is copy all array elements inside a hashset.
+
+-	Then each element in array can be a starting element of a sequence only if the element - 1 does not exist inside hashset.
+
+-	Also determine the final maximum sequence length.
+
+	Example:
+
+	for (int i = 0; i < nums.length; i++) {
+		if (!elementSet.contains(nums[i] - 1)) {
+			...
+			while (elementSet.remove(seqElement)) {
+				...
+			}
+			maxSeqLen = Math.max(tempSeqLen, maxSeqLen);
+		}
+	}
+
+Explain the 3 sum problem with solution?
+
+-	The problem statement is given an array of numbers find triplets with sum equals to 0.
+
+-	The solution to problem is to sort the array in ascending order.
+
+-	Then use three pointer i, j and k.
+
+-	Fix the pointer i at start index, j at i + 1 index and k at last index;
+
+-	At each step compute the sum of elements at i, j and k index.
+
+-	Based on the sum adjust the value of j and k index.
+
+	Example:
+	
+    for (int i = 0; i < sorted.length; i++) {
+        ...
+        int j = i + 1;
+        int k = sorted.length - 1;
+        while (j < k) {
+            int sum = sorted[i] + sorted[j] + sorted[k];
+            if (sum == 0) {
+                triplets.add(Arrays.asList(sorted[i], sorted[j], sorted[k]));
+                j++;
+                k--;
+                ...
+            } else if (sum < 0) {
+                j++;
+            } else {
+                k--;
+            }
+        }
+    }
+	
+Explain the first missing positive problem with solution?
+
+-	The problem statement is given an array of numbers find smallest missing positive number from it.
+
+-	The solution to problem is to arrange the element e which is e > 0 and e <= array.length at index i such that i = e - 1.
+
+-	Now we iterate again over the array to find the first index i with value not equal to e - 1.
+
+-	The i + 1 index is the first missing positive element from the array.
+
+	Example:
+    
+	while (nums[i] > 0 && nums[i] <= nums.length && nums[nums[i] - 1] != nums[i]) {
+		temp = nums[nums[i] - 1];
+        nums[nums[i] - 1] = nums[i];
+        nums[i] = temp;
+    }
+
+Explain the subarray sum problem equals to target with solution?
+
+-	The problem statement is given an array of numbers and integer target find the count of subarray with sum equals to target.
+
+-	The solution to this problem is using prefix sum.
+
+-	Given an array if the sum of all elements from index 0 to index j is equal to x. 
+
+-	The sum of elements from index i to index j will be equal to target where i < j only when the sum of elements from index 0 to index i - 1 is equal to x - target .
+
+	Example:
+	
+	count = count + prefixSumMap.getOrDefault(prefixSum - k, 0);
+    prefixSumMap.put(prefixSum, prefixSumMap.getOrDefault(prefixSum, 0) + 1);
+	
+Explain the continuous subarray sum problem with solution?
+
+-	The problem statement is given an array of numbers and integer target find the whether a subarray with atleast two elements exist with sum as multiple of target.
+
+-	The solution to this problem is using prefix sum.
+
+-	Given an array if the sum of all elements from index 0 to index j is equal to x when divided by target gives remainder as r. 
+
+-	The sum of elements from index i to index j will be multiple of target where i < j only when the sum of elements from index 0 to index i - 1 when divided by target gives remainder as r. 
+
+	Example:
+	
+	remainder = prefixSum % k;
+    if (remainderMap.containsKey(remainder) && i - remainderMap.get(remainder) >= 2) {
+        return true;
+    }
+
+Explain the subarray with k distinct integers problem with solution?
+
+-	The problem statement is given an array of numbers and integer k find the count of subarrays with k distinct elements.
+
+-	The possible solution to this problem is using sliding window or two pointers to traverse the array.
+
+-	To compute the total distinct elements between the left and right pointers of a subarray we use hashset.
+
+-	Fix the left pointer at one index and move the right pointer to traverse the array.
+
+-	Consider below case where k = 2 and right pointer reaches an element at which the subarray has more than k distinct elements. 
+
+	1 2 1 3 3 2 4 1 2 5 3
+	^			^
+	l			r
+
+-	Hence we move the left pointer at position of right pointer.
+
+	1 2 1 3 3 2 4 1 2 5 3
+				^
+				r
+				l
+				
+-	This might cause loss of count of other subarrays with distinct elements between left and right pointers.
+
+-	It is unclear whether the window must expand or shrink, therefore the sliding window or two pointers strategy will not work.
+
+-	Another possible solution is to generate all possibile subarrays with k distinct elements using nested loop.
+
+-	This will result into time complexity of O(n^2). 
+
+-	Hence we modify the problem to find the count of subarrays with less than or equal to k distinct elements.
+
+-	When right pointer reaches an element after which the subarray has more than k distinct elements we remove all the occurence of element at left pointer from the subarray. 
+
+-	Then we compute count of subarrays with less than or equal to k distinct elements.
+
+-	Then we compute count of subarrays with less than or equal to k - 1 distinct elements. 
+
+-	The difference between both the count will compute the count of subarrays with k distinct elements.
+
+	Example:
+	while (rightPtr < nums.length) {
+        elementFrequencyMap.put(nums[rightPtr], elementFrequencyMap.getOrDefault(nums[rightPtr], 0) + 1);
+        while (elementFrequencyMap.size() > k) {
+            elementFrequencyMap.put(nums[leftPtr], elementFrequencyMap.get(nums[leftPtr]) - 1);
+            if (elementFrequencyMap.get(nums[leftPtr]) == 0) {
+                elementFrequencyMap.remove(nums[leftPtr]);
+            }
+            leftPtr++;
+        }
+        count = count + (rightPtr - leftPtr + 1); 
+        rightPtr++;
+    }

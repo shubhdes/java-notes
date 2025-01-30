@@ -1,0 +1,30 @@
+core java - problem solving using dynamic programming
+
+What is recursion?
+
+-	A recursion is a problem solving technique in which solution to one larger problem is derived from solution to one or more smaller and similar problem.
+
+-	It involves breaking a large problem into smaller problems.
+
+-	Every problem can be solved using iteration or recursion.
+
+-	Using recursion a method calls itself.
+
+-	It becomes necessary to include a base condition inside the method to exit from the recursive method calls. 
+
+What is backtracking?
+
+-	Backtracking is a form of recursion.
+
+-	It is used to solve constraint satisfaction problems i.e. finding all possible solutions for a problem.
+
+-	These problem can be solved using a tree structure called as game tree or potential search tree.
+
+-	Each child node differ from its parent by a single extension only.
+
+-	Each leaf node cannot be extended further.
+
+-	The backtracking algorithm traverse the tree from root to leaf using depth first search.
+
+-	It is better than brute force because within one method call it can eliminate one or more bad states.
+

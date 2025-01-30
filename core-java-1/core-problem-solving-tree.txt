@@ -1,0 +1,207 @@
+core java - problem solving tree datastructure
+
+Explain the diameter of a binary tree problem with solution?
+
+-	Every node in a tree has zero or more nodes on its left and zero or more nodes on its right.
+
+-	For any node, considering it as root the length of longest path to its leaf node is called as height of the node.
+
+-	For any node, considering it as root the sum of longest path on left and longest path on right is called as diameter.
+
+-	The problem statement is given a binary tree find its longest diameter.
+
+-	The longest diameter may include the root node.
+
+	Example:
+	
+			1
+		   / \
+          2   3
+		 / \
+        4	5
+
+-	In the above example the longest diameter includes nodes 4 > 2 > 1 > 3 or 5 > 2 > 1 > 3 i.e. including the root node.
+
+	Example:
+
+			 1
+		    /
+           2
+		 /   \
+        3	  4
+	   / \   / \ 
+      5   6 7   8
+	       \
+            9		  
+
+-	In the above example the longest diameter includes nodes 9 > 6 > 3 > 2 > 4 > 8 or 9 > 6 > 3 > 2 > 4 > 7 but not including the root node.
+
+-	The solution to this problem is traverse from the leaf node to the root node.
+
+-	At each step calculate the longest path on left and longest path on right of each node. 
+
+-	Also calculate the diameter at each node using the longest path on left and longest path on right of it.
+
+-	The result is saved inside a global variable because the diameter at root node might not be longest.
+
+	Example:
+	
+    private int getHeight(TreeNode node) {
+
+		...
+        int leftHt = getHeight(node.left);
+        int rightHt = getHeight(node.right);
+
+        diameter = Math.max(diameter, leftHt + rightHt);
+
+        return 1 + Math.max(leftHt, rightHt);
+    }
+
+Explain the kth smallest element of a binary tree problem with solution?
+
+-	The problem statement is given a binary tree and positive integer k find the kth smallest element from it.
+
+-	The solution to this problem to do an inorder traversal of binary tree which returns the result of node values in ascending order.
+
+-	These values are kept inside an array, after the traversal is complete return k - 1 element of the array.
+
+	Example:
+	private void inorderTraversal(TreeNode node, List<Integer> elementList) {
+		...
+		inorderTraversal(node.left, elementList);
+		elementList.add(node.val);
+		...
+		inorderTraversal(node.right, elementList);
+	}
+	
+Explain the populating next pointer to each element in a binary tree problem with solution?
+
+-	The problem statement is given a perfect binary tree set the next pointer of each node to a value equal to the right node.
+
+	Example:
+
+		   1->
+		   |
+           2->
+		 /   \
+        3---->4->
+	   / \   / \ 
+       5->6->7->8->	
+
+-	The solution to this problem is recursively traverse to the child nodes of a node.
+
+-	Then connect the left node with the right node of same parent, right node to left node of different parent and left node with the right node of same parent.
+
+	Example:
+	private void setNextPointers(Node leftNode, Node rightNode) {
+		...
+		leftNode.next = rightNode;
+		setNextPointers(leftNode.left, leftNode.right);
+		setNextPointers(leftNode.right, rightNode.left);
+		setNextPointers(rightNode.left, rightNode.right);
+	}
+
+Explain the right side view of a binary tree problem with solution?
+	
+-	The problem statement is given a binary tree find the right side view of it.
+
+-	The solution to this problem is to traverse the tree using breadth first search.
+
+-	Offer all nodes at one level inside a queue.
+
+-	The last node inside the queue is the right side view at that level.
+
+	Example:
+	
+	queue.offer(root);
+	while(!queue.isEmpty()) {
+		elementList.add(queue.peekLast().val);
+		int size = queue.size();
+		while (size > 0) {
+			...
+			queue.offer(node.left);
+			...
+			queue.offer(node.right);
+			size--;
+		}
+	}
+
+Explain the second minimum node in a binary tree problem with solution?
+
+-	The problem statement is given a binary tree find the second minimum node from it.
+
+-	Every node in a binary tree is equal to one of its child node and less than equal to other child node.
+
+-	From the problem statement we can conclude that the first minimum node is the root node itself.
+
+-	The solution to this problem is to traverse the tree using depth first search.
+
+-	At each step when the current node value is greater than the first minimum then calculate second minimum.
+
+-	Calculate the final second minimum.
+
+	Example:
+	private void depthFirstSearch(TreeNode node) {
+		...
+		if (node.val > firstMin) {
+			secondMin = (secondMin == -1) ? node.val : Math.min(secondMin, node.val);
+		}
+		depthFirstSearch(node.left);
+		depthFirstSearch(node.right);
+	}
+	
+Explain the symmetric tree problem with solution?
+
+-	The problem statement is given a binary tree determine whether left half of it is mirror image of right half or not.
+
+-	The solution to this problem is to traverse both left and righ node of a parent node in the tree at a time.
+
+-	Compare the values of both the nodes.
+
+-	Then compare the child node of first node on left with child node of second node on right.
+
+-	Then compare the child node of first node on right with child node of second node on left.
+
+-	Continue comparision until mismatch found or traversal is complete.
+
+	Example:
+	
+	public boolean isTreeSymmetric(TreeNode leftNode, TreeNode rightNode) {
+       ...
+       boolean isValEqual = leftNode.val == rightNode.val;
+       return isValEqual 
+              && isTreeSymmetric(leftNode.left, rightNode.right)
+              && isTreeSymmetric(leftNode.right, rightNode.left);
+    }
+
+Explain the lowest common ancestor inside a binary tree problem with solution?
+
+-	The problem statement is given a binary tree and two nodes inside it determine the lowest common ancestor of them.
+
+-	The solution to this problem is traverse the binary tree using depth first search.
+
+-	At each step compare the current node with both nodes provided.
+
+-	When the current node matches any of the provided node then return it.
+
+-	At the calling method if both nodes are returned it indicates that the current node is lowest common ancestor.
+
+-	Otherwise if only one node is returned it means the other node is direct or indirect child of it.
+
+-	It indicates that the returned node is lowest common ancestor.
+
+	Example:
+	
+	public TreeNode getLowestCommonAncestor(TreeNode node, TreeNode p, TreeNode q) {
+		
+		...
+        if (p == node || q == node) {
+            return node;
+        }
+        TreeNode leftLCA = getLowestCommonAncestor(node.left, p, q);
+        TreeNode rightLCA = getLowestCommonAncestor(node.right, p, q);
+        if (null != leftLCA && null != rightLCA) {
+            return node;
+        }
+        return (null == leftLCA) ? rightLCA : leftLCA;
+    }

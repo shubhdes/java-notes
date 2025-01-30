@@ -1,0 +1,63 @@
+core java - problem solving linkedlist datastructure
+
+Explain the removing Nth node from end of linked list problem with solution?
+
+-	The problem statement is given a linked list remove the Nth node from the end of it.
+
+-	The solution to problem is begin with two pointers called slow and fast.
+
+-	Iterate over the linked list using fast pointer till it reaches the Nth node from the beginning.
+
+-	Then iterate using both slow and fast pointers, this will ensure there is a constant gap of N nodes between two pointers.
+
+-	Hence when fast pointer is at end of the linkedlist the slow pointer will be at the Nth node from the end of it.
+
+	Example:
+	
+	while (n > 0) {
+        fastPtr = fastPtr.next;
+        n--;
+    }
+        
+	...
+	
+    while(null != fastPtr.next) {
+        fastPtr = fastPtr.next;
+        slowPtr = slowPtr.next;
+    }
+	
+Explain the reordering the linked list problem with solution?
+
+-	The problem statement is given a linked list L0 L1 L2...Ln-2 Ln-1 Ln reorder it to L0 Ln L1 Ln-1 L2 Ln-2.
+
+-	The solution to problem is begin with two pointers called slow and fast.
+
+-	Iterate over the linked list using both pointers such that slow pointer takes a one hop and fast pointer takes two hops in one iteration.
+
+-	Hence when fast pointer is at end of the linkedlist the slow pointer will be at the middle of it.
+
+-	From the slow pointer reverse the linkedlist.
+
+-	Now link one node from the head to one node from revered linkedlist.
+
+	Example:
+	
+	while (null != fastPtr && null != fastPtr.next) {
+        slowPtr = slowPtr.next;
+        fastPtr = fastPtr.next.next;
+    }
+	...
+	while (null != current) {
+        temp = current.next;
+        current.next = previous;
+        previous = current;
+        current = temp;
+    }
+	...
+	while (null != previous) {
+        temp = previous.next;
+        previous.next = current.next;
+        current.next = previous;
+        current = previous.next;
+        previous = temp;
+    }

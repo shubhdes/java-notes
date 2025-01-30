@@ -1,0 +1,77 @@
+core java - problem solving hashtable
+
+Explain the longest substring without repeating character problem with solution?
+
+-	The problem statement is given a string find the length of longest substring without repeating characters.
+
+-	The solution to this problem is using sliding window or two pointers to traverse the string.
+
+-	Fix the left pointer at one index and move the right pointer to traverse the string.
+
+-	At each step the occurrence of a character is noted inside a hashmap.
+
+-	Also determine the final maximum length of the substring.
+
+-	When the right pointer reaches an element where the substring contains duplicate character then we move the left pointer to next index after the first occurrence of that duplicate character.
+
+	Example:
+
+    int index = charToIndexMap.getOrDefault(tokens[rightPtr], -1);
+    if (index >= leftPtr) {
+        leftPtr = index + 1;
+    } else {
+        maxLen = Math.max(maxLen, 1 + rightPtr - leftPtr);
+    }
+    charToIndexMap.put(tokens[rightPtr], rightPtr);
+    rightPtr++;
+
+Explain the longest substring with each character repeating atleast k times problem with solution?
+
+-	The problem statement is given a string find the length of longest substring with each character repeating atleast k times.
+
+-	The possible solution to this problem is using sliding window or two pointers to traverse the string.
+
+-	Fix the left pointer at one index and move the right pointer to traverse the string.
+
+-	Consider below case where k = 3 and right pointer reaches an element where count of character 'a' is equal to k. 
+
+	b b a a a c b d
+	^		^
+	l		r
+	
+-	But the count of character 'b' is less than k hence we move the right pointer ahead.
+
+-	Now the count of character 'a' and 'b' both is equal to k but the substring now contains character 'c' with count less than k.
+
+	b b a a a c b d
+	^		    ^
+	l		    r
+
+-	It is unclear whether the window must expand or shrink, therefore the sliding window or two pointers strategy will not work.
+
+-	The solution to this problem is using divide and conquer technique.
+
+-	First step is to traverse the entire string from left to right and noting the ocurrence and latest index of each character inside two different hashmaps.
+
+-	Next find the first character which repeats less than k number of times and find its index i.
+
+-	Divide the string into two parts from index 0 till index i - 1 and index i + 1 till the last index.
+
+-	Recursively repeat the same step until a substring with each character repeating atleast k times is found.
+
+-	Also determine the final maximum length of the substring.
+
+	Example:
+	
+	private void getMaxLengthSubstring(String input, int k) {
+        ...
+        if (null == charWithFreqLessThanK) {
+            maxLength = Math.max(maxLength, input.length()); 
+            return;
+        }
+        int sindex = 0;
+        int eindex = indexMap.get(charWithFreqLessThanK);
+        getMaxLengthSubstring(input.substring(sindex, eindex), k);
+        sindex = eindex + 1;
+        getMaxLengthSubstring(input.substring(sindex), k);
+    }
