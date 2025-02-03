@@ -308,3 +308,77 @@ Explain the subarray with k distinct integers problem with solution?
         count = count + (rightPtr - leftPtr + 1); 
         rightPtr++;
     }
+	
+Explain the median of two sorted arrays problem with solution?
+
+-	The problem statement is given two arrays find the median from them using O(log(m + n)) time complexity where m and n are lengths of the arrays.
+
+-	The solution to this problem is using binary search algorithm.
+
+-	Consider when both arrays are merged we will get an array for length L = m + n.
+
+-	Let's divide the array of length L into two almost equal halves called as left half and right half.
+
+-	Then we need to determine the number of elements from both arrays which will be present in the left half of the merged array.
+
+-	Remaining number of elements from both arrays will be present in the right half of the merged array.
+
+-	This decision is made using binary search algorithm.
+
+-	The algorithm continues to determine until the elements from array of length n in left half are less than or equal to the elements from array of length m in right half.
+
+-	And the elements from array of length m in left half are less than or equal to the elements from array of length n in right half.
+
+-	When the merged array contains odd number of elements the median is equal to the element at exact middle index.
+
+-	And when the merged array contains even number of elements the median is equal to the average of elements present at exact two middle indexes.
+
+	Example:
+	
+	while (low <= high) {
+		...
+        if (maxLeft1 <= minRight2 && maxLeft2 <= minRight1) {
+            if ((len1 + len2) % 2 == 0) {
+                return (Math.max(maxLeft1, maxLeft2) + Math.min(minRight1, minRight2)) / 2.0d;
+            } else {
+                return Math.max(maxLeft1, maxLeft2);
+            }
+        } else if (maxLeft1 > minRight2) {
+            high = partition1 - 1;
+        } else {
+            low = partition1 + 1;
+        }
+    }
+	
+Explain the count of smaller elements after self problem with solution?
+
+-	The problem statement is given an input array which contains element nums[i] at an index i, create an output array.
+
+-	It contains an element at index i equal to the count of elements in input array lesser than nums[i] it at an index greater than i.
+
+-	The solution to this problem is using merge sort algorithm.
+
+-	In merge sort the output array is filled using two arrays called as left and right.
+
+-	If the element in left array is less than the element in right array then the element from left array is used to fill the output array.
+
+-	Also if the element in right array is less than the element in left array then the element from right array is used to fill the output array.
+
+-	At this step we will note the count of elements in right array lesser than the each element in left array.
+
+	Example:
+	
+	if (left[i].value > right[j].value) {
+        lhsGreaterThanRHS++;
+        ...
+    } else {
+        smallerElementsCountList.set(left[i].index, smallerElementsCountList.get(left[i].index) + lhsGreaterThanRHS);
+        ...        
+    }
+    ...
+    }
+        
+    while (i < left.length) {
+		smallerElementsCountList.set(left[i].index, smallerElementsCountList.get(left[i].index) + lhsGreaterThanRHS);
+		...
+    }

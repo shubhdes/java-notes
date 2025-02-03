@@ -56,6 +56,35 @@ Explain the diameter of a binary tree problem with solution?
 
         return 1 + Math.max(leftHt, rightHt);
     }
+	
+Explain the maximum path sum of a binary tree problem with solution?	
+
+-	The problem statement is given a binary tree find its maximum path sum.
+
+-	The solution to this problem is traverse from the leaf node to the root node.
+
+-	At each step calculate the maximum path sum on left and maximum path sum on right of each node. 
+
+-	Also calculate the path sum at each node using current node path sum, the maximum path sum on left and maximum path sum on right of it.
+
+-	The result is saved inside a global variable because the path sum at root node might not be longest.
+
+-	The sum of two negative operands always is a value lesser than the operands.
+
+-	Therefore when the maximum path sum on left or maximum path sum on right is negative its value is ignored.
+
+	Example:
+
+    public int getHeight(TreeNode node) {
+		
+		...
+        int leftPathSum = Math.max(0, getHeight(node.left));
+        int rightPathSum = Math.max(0, getHeight(node.right));
+
+        pathSum = Math.max(pathSum, node.val + leftPathSum + rightPathSum);
+
+        return node.val + (Math.max(leftPathSum, rightPathSum));
+    }
 
 Explain the kth smallest element of a binary tree problem with solution?
 

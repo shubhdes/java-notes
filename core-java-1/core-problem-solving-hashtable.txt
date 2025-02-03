@@ -75,3 +75,59 @@ Explain the longest substring with each character repeating atleast k times prob
         sindex = eindex + 1;
         getMaxLengthSubstring(input.substring(sindex), k);
     }
+	
+Explain the longest duplicate substring  problem with solution?
+
+-	The problem statement is given a string find the longest duplicate substring.
+
+-	The solution to this problem is using binary search algorithm and Rabin Karp's algorithm.
+
+-	Using binary search we determine the window length for a substring.
+
+-	It depends on the idea that if a duplicate substring of length N exist then we must check for duplicate substring of length N + 1.
+
+-	If duplicate substring of length N + 1 exist we must check for duplicate substring of length N + 2, this continues till the length of entire string.
+
+-	But if a duplicate substring of length N + 1 doesn't exist then duplicate substring of length N is longest duplicate substring.
+
+-	Rabin Karp's algorithm uses the principle of hashing to compare two substrings and determine whether they are identical or not.
+
+-	Consider a string 'banana' and window of length 3. Therefore the hash of substring 'ban' is calculated as below using a random prime number.
+
+	b								a								n 
+	Math.pow(PRIME, 2) * 'b' 	+	Math.pow(PRIME, 1) * 'a' 	+ 	Math.pow(PRIME, 0) * 'n' = hash
+	
+-	For the first substring the hash calculation time complexity is equal to O(n) where n is the substring length.
+
+-	For every next substring the hash calculation time complexity is equal to O(1) as we can reuse the previous computed hash.
+
+	hash = hash - Math.pow(PRIME, 2) * 'b' 
+
+	hash = hash * PRIME
+
+	hash = hash + Math.pow(PRIME, 0) * 'a'
+
+	Example:
+	
+	...
+    while (low < high) {
+		...
+        String duplicate = getDuplicateString(input, mid);
+        if (null != duplicate) {
+            low = mid + 1;
+            longestDuplicate = duplicate;
+        } else {
+            high = mid;
+        }
+    }
+	
+     
+    private String getDuplicateString(String input, int len) {
+		...
+		Pair<Long, Long> hashPowerPair = getHashPowerPair(input.substring(0, len));
+		...
+		hash = getNextHash(hash, power, input.charAt(i - 1), input.charAt(i + len - 1));
+		if (hashStore.contains(hash)) {
+			return input.substring(i, i + len);
+		}
+    }

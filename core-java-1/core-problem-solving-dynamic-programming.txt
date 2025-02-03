@@ -28,3 +28,9 @@ What is backtracking?
 
 -	It is better than brute force because within one method call it can eliminate one or more bad states.
 
+	Example:
+	
+	N-Queen problem
+	
+	Finding all possible subset from an array
+	
