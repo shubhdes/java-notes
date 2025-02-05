@@ -290,22 +290,12 @@ Explain PriorityQueue and its internal working?
 
 -	Queue is child interface of Collection interface in java.util package.
 
--	It is used to represent group of individual objects prior to processing.
-
--	In which order we added objects in same order the objects must be processed i.e. first in first out requirement.
-
--	Usually queue follows first in first out order but based on our requirement we can implement our own priority order also.
-
 -	PriorityQueue is a class in java.util package and its internal data-structure is queue.
 
--	Elements are arranged according to some priority.
+-	We can represent a group of individual objects before processing according to some priority.
 
--	We can use natural priority order or can create our own priority order.
+-	The priority can be default natural sorting order or customised priority.
 
--	Insertion order is preserved.
-
--	Duplicate values are allowed.
-
--	Null values are not allowed.
+-	It doesn't preserve insertion order also it doesn't allow duplicate objects and null object.
 
 -	Some operating systems wont provide proper support for PriorityQueue.
