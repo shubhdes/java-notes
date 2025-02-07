@@ -281,7 +281,7 @@ Explain the subarray with k distinct integers problem with solution?
 
 -	It is unclear whether the window must expand or shrink, therefore the sliding window or two pointers strategy will not work.
 
--	Another possible solution is to generate all possibile subarrays with k distinct elements using nested loop.
+-	Another possible solution is to generate all possible subarrays with k distinct elements using nested loop.
 
 -	This will result into time complexity of O(n^2). 
 
@@ -381,4 +381,76 @@ Explain the count of smaller elements after self problem with solution?
     while (i < left.length) {
 		smallerElementsCountList.set(left[i].index, smallerElementsCountList.get(left[i].index) + lhsGreaterThanRHS);
 		...
+    }
+
+Explain the kth largest element inside an array problem with solution?
+
+-	The problem statement is given an input array find the kth largest element inside it without using sorting.
+
+-	The solution to this problem is using heap.
+
+-	Using heap we can sort elements in either ascending or descending order.
+
+-	Then depending upon the sorting order we can find the kth element from begining or from the ending inside the heap.
+
+-	Another solution to this problem is using quick select algorithm to sorting in descending order.
+
+-	We continue to find the right index for pivot element.
+
+-	When the index is kth index we have found the kth largest element at that index.
+
+	Example:
+	
+	for (int i = 0; i < nums.length; i++) {
+        minHeap.add(nums[i]);
+    }
+	...
+	int loopCounter = minHeap.size() - k;
+    while (loopCounter >= 0) {
+        element = minHeap.poll();
+        loopCounter --;
+    }
+	
+Explain the container with maximum water problem with solution?
+
+-	The problem statement is given an input array representing heights, calculate the maximum water that can exist between two heights.
+
+-	The solution to this problem is using two pointers or sliding window.
+
+-	The amount of water between two heights is equal to the area of rectangle formed by two heights.
+
+-	For maximum water to be contained we need to find the maximum possible heights.
+
+-	Therefore either left pointer or right pointer whichever is shorter in height shrinks.
+
+	Example:
+	
+	maxWater = Math.max(maxWater, Math.min(height[leftPtr], height[rightPtr]) * (rightPtr - leftPtr));
+    if (height[leftPtr] < height[rightPtr]) {
+        leftPtr++;
+    } else {
+        rightPtr--;
+    }
+
+Explain the longest increasing subsequence problem with solution?
+
+-	The problem statement is given an input array find the length of longest increasing subsequence.
+
+-	The solution to this problem is using binary search.
+
+-	Traverse the input array and copy the array elements inside a array list.
+
+-	If the current element is greater than the previous element inside array list add it to the array list.
+
+-	But if the current element is lesser than the previous element inside array list then using binary search find the exact index for it inside array list.
+
+-	At the end of array traversal the array list might not have correct sequence but it will contain the correct sequence length.
+
+	Example:
+	
+	if (nums[i] > elementList.get(elementList.size() - 1)) {
+        elementList.add(nums[i]); 
+    } else {
+        int index = binarySearch(elementList, nums[i]);
+        elementList.set(index, nums[i]);
     }
