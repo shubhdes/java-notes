@@ -13,3 +13,45 @@ Explain the power of three problem with solution?
 	Example:
 	
 	return (n > 0) ? (1162261467 % n == 0) : false;
+	
+Explain the word ladder transformation problem with solution?
+
+-	The problem statement is given a begin word, end word and list of words construct a sequence from them.
+
+-	The sequence starts with begin word and terminates at end word. It also uses zero or more words from the list in between.
+
+-	Each word in sequence must differ from previous word in a single letter only. Find the shortest transformation sequence.
+
+-	The solution to this problem is to use a queue datastructure and add the begin word with assigned step number.
+
+-	Then generate all possible words from the begin by changing one of its character at a time.	
+
+-	If the generated word exists in list of words add it to the queue and assign a step number.
+
+-	All possible words generated from single word which are added to the queue are assigned equal step number.
+
+-	When the generated word is equal to end word the step number will be the shortest transformation sequence.
+
+	Example:
+	
+	queue.offer(new Pair<>(beginWord, 1));
+    wordSet.remove(beginWord);
+
+    while (!queue.isEmpty()) {
+		...
+        if (currentWord.equals(endWord)) {
+            return step;
+        }
+        ...
+        while (i < currentWordArray.length) {
+            ...
+            for (int j = 'a'; j <= 'z'; j++) {
+				...
+                if (wordSet.contains(nextWord)) {
+                    wordSet.remove(nextWord);
+                    queue.offer(new Pair<>(nextWord, step + 1));
+                }
+            }
+            ...
+        }
+    }

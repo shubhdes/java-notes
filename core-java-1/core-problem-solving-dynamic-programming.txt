@@ -1,36 +1,31 @@
 core java - problem solving using dynamic programming
 
-What is recursion?
+What is dynamic programming?
 
--	A recursion is a problem solving technique in which solution to one larger problem is derived from solution to one or more smaller and similar problem.
+-	Recursion is breaking the main problem into subproblems and compute solution for each.
 
--	It involves breaking a large problem into smaller problems.
+-	Then use the computed solution of each subproblem to compute the solution of main problem.
 
--	Every problem can be solved using iteration or recursion.
+-	Consider an example of recursive way to compute whether a string is palindrome or not.
 
--	Using recursion a method calls itself.
+-	At each step the character at first index and last index of substring is compared.
 
--	It becomes necessary to include a base condition inside the method to exit from the recursive method calls. 
+-	Then the computed result is use to determine whether the algorithm execution must continue or not.
 
-What is backtracking?
+-	Such problems are called as optimal substructures.
 
--	Backtracking is a form of recursion.
+-	Dynamic programming is an optimisation over recursion.
 
--	It is used to solve constraint satisfaction problems i.e. finding all possible solutions for a problem.
+-	It is used to solve optimal substructures and overlapping subproblems.
 
--	These problem can be solved using a tree structure called as game tree or potential search tree.
+-	In overlapping subproblems we reuse the computed solution of a subproblem to compute solution of another similar overlapping subproblem.
 
--	Each child node differ from its parent by a single extension only.
+-	Consider an example of recursive way to compute fibonacci series.
 
--	Each leaf node cannot be extended further.
+-	The recursive method is called using the same parameter multiple times.
 
--	The backtracking algorithm traverse the tree from root to leaf using depth first search.
+-	With dynamic programming we can save the result inside a datastructure.
 
--	It is better than brute force because within one method call it can eliminate one or more bad states.
+-	When the recursive method is called using the same parameter we will reuse the result from the datastructure instead recomputing it.
 
-	Example:
-	
-	N-Queen problem
-	
-	Finding all possible subset from an array
-	
+-	There are two ways to implement dynamic programming called as memoisation or top down and tabulation or bottom up.
