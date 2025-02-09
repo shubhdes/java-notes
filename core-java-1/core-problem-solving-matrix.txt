@@ -1,0 +1,31 @@
+core java - problem solving matrix datastructure
+
+Explain the rotate image problem with solution?
+
+-	The problem statement is given a matrix of numbers rotate it by 90 degrees.
+
+-	The solution to this problem is using matrix transpose and columns swapping.
+
+-	First compute the transpose of the matrix.
+
+-	Then swap columns using using two pointers, left pointer on the first column and right pointer on last column of the matrix.
+
+-	Increase the left pointer and decrease the right pointer.
+
+	Example:
+	
+	 for (int rowNum = 0; rowNum < matrix.length; rowNum++) {
+        for (int colNum = rowNum + 1; colNum < matrix[rowNum].length; colNum++) {
+            int temp = matrix[rowNum][colNum];
+            matrix[rowNum][colNum] = matrix[colNum][rowNum];
+            matrix[colNum][rowNum] = temp;
+        }
+    }
+    ...
+    while (leftCol < rightCol) {
+        for (int rowNum = 0; rowNum < matrix.length; rowNum++) {
+                ...
+        }
+        leftCol++;
+        rightCol--;
+    }

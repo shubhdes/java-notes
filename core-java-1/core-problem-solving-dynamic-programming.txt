@@ -2,30 +2,85 @@ core java - problem solving using dynamic programming
 
 What is dynamic programming?
 
--	Recursion is breaking the main problem into subproblems and compute solution for each.
+-	Recursion is breaking the main problem into subproblems and then computing solution for each.
 
 -	Then use the computed solution of each subproblem to compute the solution of main problem.
 
--	Consider an example of recursive way to compute whether a string is palindrome or not.
-
--	At each step the character at first index and last index of substring is compared.
-
--	Then the computed result is use to determine whether the algorithm execution must continue or not.
-
--	Such problems are called as optimal substructures.
-
 -	Dynamic programming is an optimisation over recursion.
 
--	It is used to solve optimal substructures and overlapping subproblems.
-
--	In overlapping subproblems we reuse the computed solution of a subproblem to compute solution of another similar overlapping subproblem.
-
--	Consider an example of recursive way to compute fibonacci series.
-
--	The recursive method is called using the same parameter multiple times.
-
--	With dynamic programming we can save the result inside a datastructure.
-
--	When the recursive method is called using the same parameter we will reuse the result from the datastructure instead recomputing it.
-
 -	There are two ways to implement dynamic programming called as memoisation or top down and tabulation or bottom up.
+
+When should we use dynamic programming?
+
+-	Dynamic programming is used to solve optimal substructures and overlapping subproblems.
+
+-	In optimal substructures, the computed solution of each subproblem to compute the solution of main problem.
+
+-	Consider an example to find the distance between two points A and B. 
+
+-	The solution will be sum of distance between all intermediate points between two points A and B.
+
+-	In overlapping subproblems we reuse the computed solution of a subproblem to compute solution of another occurence of same subproblem.
+
+-	Consider an example of recursive way to compute fibonacci series for an integer 5.
+	
+-	The recursive method is called multiple times to compute fibonacci series for an integer 2.
+
+-	Instead the result can be saved inside a lookup table and reused to eliminate multiple recursive method calls.
+
+Explain memoisation or top down way of implementing dynamic programming?
+
+-	Memoisation of top down way is a recursive way.
+
+-	It involves breaking the main problem into subproblems and compute solution for each.
+
+-	The solution is saved inside a lookup table for future reuse.
+
+-	In recursive method first checks if solution to the problem exists inside the lookup table.
+
+-	If it exists then the solution is used otherwise the remaining recursive method is executed.
+
+-	This reduces the time complexity but increases the space complexity compared to ordinary recursion.
+
+-	Consider an example of recursive way to compute fibonacci series for an integer 5.
+	
+-	The recursive method is called multiple times to compute fibonacci series for an integer 2.
+
+-	Instead the result can be saved inside a lookup table and reused to eliminate multiple recursive method calls.
+
+	Example:
+	
+	public int fibo(int n) {
+	
+		if (lookup[n] != -1) {
+			return lookup[n];
+		}
+		
+		if (n == 0 || n == 1) {
+			return n;
+		}
+		
+		return fibo(n - 1) + fibo(n - 2);
+	}
+	
+Explain tabulation or bottom up way of implementing dynamic programming?
+
+-	Tabulation of bottom up way is iterative way.
+
+-	It involves finding the solution to subproblems first and then using it to find the solution to main problem.
+
+-	The solution of subproblems is saved inside a table.
+
+-	Then solution from the table is used to compute solution for next subproblem.
+
+-	Consider an example of iterative way to compute fibonacci series for an integer 5.
+	
+-	The fibonacci of 3 and 4 is comuted first and saved inside a table.
+
+-	The fibonacci for 3 and 4 from the table is used to compute the fibonacci of 5.
+
+	Example:
+	
+	for (int i = 2; i <= n; i++) {
+		table[i] = table[i - 1] + table[i - 2];
+	}
