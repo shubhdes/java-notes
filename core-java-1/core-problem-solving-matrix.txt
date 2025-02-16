@@ -29,3 +29,48 @@ Explain the rotate image problem with solution?
         leftCol++;
         rightCol--;
     }
+	
+Explain the set matrix zero problem with solution?
+
+-	The problem statement is given a matrix of numbers if any element is equal to 0 then modify all elements inside corresponding row and column to 0.
+	
+-	The solution to this problem is considering first row and first column as marker.
+
+-	First step is to identify if any element from first row is equal to 0.
+
+-	Next step is to identify if first element of any column is equal to 0.
+
+-	Traverse the matrix and if any element is equal to 0 modify the first element in the corresponding row and first element of the corresponding column to 0.
+
+-   Traverse the matrix again if the first element in the corresponding row or first element of the corresponding column is 0 modify the element to 0.
+
+-	If any element from first row was equal to 0 orignally then modify all elements of the row to 0.
+
+-	If any element from first column was equal to 0 orignally then modify all elements of the column to 0.
+
+	Example:
+	
+	...
+    for (int rowNum = 1; rowNum < matrix.length; rowNum++) {
+        for (int colNum = 1; colNum < matrix[rowNum].length; colNum++) {
+            if (matrix[rowNum][colNum] == 0) {
+                matrix[rowNum][0] = 0;
+                matrix[0][colNum] = 0;
+                break;
+            }
+        }
+    }
+
+    for (int rowNum = 1; rowNum < matrix.length; rowNum++) {
+        for (int colNum = 1; colNum < matrix[rowNum].length; colNum++) {
+            ...
+        }
+    }
+
+    if (firstRowHasZero) {
+        ...
+    }
+
+    if (firstColHasZero) {
+        ...
+	}

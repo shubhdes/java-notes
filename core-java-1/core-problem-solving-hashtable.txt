@@ -131,3 +131,56 @@ Explain the longest duplicate substring  problem with solution?
 			return input.substring(i, i + len);
 		}
     }
+	
+Explain the minimum window substring problem with solution?
+
+-	The problem statement is given two strings input and target find the minimum window substring.
+
+-	Find the minimum length substring from input string which contains all characters of target string.
+
+-	The solution to this problem is using sliding window or two pointers.
+
+-	First step is to note all characters and their occurrence in target string inside a hashmap.
+
+-	Using left pointer and right pointer traverse the input string.
+
+-	When a character with positive occurrence count is encountered it means the same character exist inside target string.
+
+-	Increment the character from target string found counter value.
+
+-	For every character in input string reduce its occurrence count inside the hashmap.
+
+-	When the character from target string found counter value is equal to target string length it means substring between left pointer and right pointer is the required substring.
+
+-	Next step is to shrink the substring by moving the left pointer until character from target string found counter value doesn't decrease.
+
+-	As we move the left pointer for every character in substring increase its occurrence count inside the hashmap.
+
+-	As the ocurrence count changes to positive again it means the substring cannot be shrinked further.
+
+-	Decrement the character from target string found counter value.
+
+	Example:
+	
+	while (rightPtr < input1.length()) {
+        int freq = charFreqMap.getOrDefault(input1.charAt(rightPtr), 0);
+        if (freq > 0) {
+            foundCharCount++;
+        }
+        freq--;
+        charFreqMap.put(input1.charAt(rightPtr), freq);
+        while (foundCharCount == input2.length()) {
+            String tempSubstr = input1.substring(leftPtr, rightPtr + 1);
+            if ("".equals(substr) || tempSubstr.length() < substr.length()) {
+                substr = tempSubstr;
+            }
+            freq = charFreqMap.get(input1.charAt(leftPtr));
+            freq++;
+            if (freq > 0) {
+                foundCharCount--;
+            }
+            charFreqMap.put(input1.charAt(leftPtr), freq);
+            leftPtr++;
+        }   
+		rightPtr++;
+    }

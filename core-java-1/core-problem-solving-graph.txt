@@ -1,0 +1,109 @@
+core java - problem solving graph datastructure
+
+What is topological sorting?
+
+-	A topological sorting is a technique to generate linear order of a graph.
+
+-	It works only on directed acyclic graph.
+
+-	A linear order is sequence of vertices, consider there exist a directed edge from vertex u to vertex v.
+
+-	Then inside any linear order the vertex u will always appear before vertex v.
+
+-	A graph can have multiple linear order sequence.
+
+-	There are two algorithms to generate a linear order called as depth first search and breadth first search.
+
+Explain the depth first search algorithm for topological sorting?
+
+-	The depth first search algorithm traverses over the adjaceny list of graph.
+
+-	For each vertex, it visits the its connected vertices recursively.
+
+-	If all the connected vertices of an vertex are visited the vertex is pushed inside a stack.
+
+-	An array is used to prevent duplicate visit to an vertex.
+
+-	When all recursive method calls are complete the elements from stack are poped out to get then linear order.
+
+	Example:
+
+	public class DepthFirstSearch {
+
+		private void dfs(int currentVertex, List<List<Integer>> adjacencyList, int[] visitedVertices,
+				Stack<Integer> linearOrderStack) {
+			if (visitedVertices[currentVertex] == 1) {
+				return;
+			}
+			visitedVertices[currentVertex] = 1;
+			List<Integer> nextVertices = adjacencyList.get(currentVertex);
+			for (Integer nextVertex : nextVertices) {
+				dfs(nextVertex, adjacencyList, visitedVertices, linearOrderStack);
+			}
+			linearOrderStack.push(currentVertex);
+		}
+
+		private void topologicalSort(List<List<Integer>> adjacencyList) {
+			int[] visitedVertices = new int[adjacencyList.size()];
+			Stack<Integer> linearOrderStack = new Stack<>();
+			for (int currentVertex = 0; currentVertex < adjacencyList.size(); currentVertex++) {
+				dfs(currentVertex, adjacencyList, visitedVertices, linearOrderStack);
+			}
+			while (!linearOrderStack.isEmpty()) {
+				System.out.println(linearOrderStack.pop());
+			}
+		}
+	}
+
+Explain the breadth first search algorithm for topological sorting?
+
+-	The breadth first search algorithm for topological sorting is also called as Kahn's algorithm.
+
+-	The breadth first search algorithm traverses over the adjaceny list of graph and constructs an indegree array for each vertex.
+
+-	An indegree of a vertex is a count which is equal to the number of edges directed on it.
+
+-	There exists atleast one vertex with indegree count equal to zero.
+
+-	These vertices are offered inside queue.
+
+-	Next until the queue is empty, find the connected vertices for the vertex present inside queue.
+
+-	Decrement the indegree count for each vertex.
+
+-	When the indegree count becomes equal to zero then offer the vertex inside queue.
+
+	Example:
+	
+	public class BreadthFirstSearch {
+
+		private void topologicalSort(List<List<Integer>> adjacencyList) {
+
+			int[] inDegree = new int[adjacencyList.size()];
+			for (int currentVertex = 0; currentVertex < inDegree.length; currentVertex++) {
+				List<Integer> nextVertices = adjacencyList.get(currentVertex);
+				for (Integer nextVertex : nextVertices) {
+					inDegree[nextVertex]++;
+				}
+			}
+
+			Queue<Integer> queue = new LinkedList<>();
+			for (int currentVertex = 0; currentVertex < inDegree.length; currentVertex++) {
+				if (inDegree[currentVertex] == 0) {
+					queue.offer(currentVertex);
+				}
+			}
+
+			while (!queue.isEmpty()) {
+				int currentVertex = queue.poll();
+				System.out.println(currentVertex);
+				List<Integer> nextVertices = adjacencyList.get(currentVertex);
+				for (Integer nextVertex : nextVertices) {
+					inDegree[nextVertex]--;
+					if (inDegree[nextVertex] == 0) {
+						queue.offer(nextVertex);
+					}
+				}
+			}
+		}
+	}

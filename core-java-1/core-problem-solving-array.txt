@@ -454,3 +454,52 @@ Explain the longest increasing subsequence problem with solution?
         int index = binarySearch(elementList, nums[i]);
         elementList.set(index, nums[i]);
     }
+
+Explain the duplicate number problem with solution?
+
+-	The problem statement is given an input array of length n having elements from 1 to n and one duplicate.
+
+-	Find the duplicate element from it.
+
+-	The solution to this problem is using binary search.
+
+-	First compute the middle element and then count the number of element less than equal to the middle element.
+
+-	If the count is greater than the middle element the duplicate element is inside the first half otherwise it is inside the second half.
+
+	Example:
+	
+	while (low < high) {
+        ... 
+		int count = 0;
+        for (int i = 0; i < nums.length; i++) {
+            if (nums[i] <= mid) {
+                count++;
+            }
+        }
+        if (count > mid) {
+            high = mid;
+        } else {
+            low = mid + 1;
+        }
+    }
+
+Explain the duplicate number problem with solution?
+
+-	The problem statement is given an input array of non negative numbers arrange them in a form to generate largest number.
+
+-	The solution to this problem is using string comparision.
+
+-	First step is to stringify the elements and add it to an array list.
+
+-	Sort the elements of this array list in descending order using custom comparator.
+
+-	To decide the order in which the stringified elements must be added to array list, concate elements and compare.
+
+-	The comparator method return 1 if order of parameters is incorrect, -1 if the order of parameters is correct and 0 if both parameters are equal.
+
+	Example:
+	
+	Collections.sort(elements, (element1, element2) -> (element2 + element1).compareTo(element1 + element2));
+    ...
+	return String.join("", elements);    
