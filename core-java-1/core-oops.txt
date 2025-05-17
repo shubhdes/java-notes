@@ -932,7 +932,7 @@ What is static control flow in inheritance?
 	child first static block
 	j value:0
 	i value:10
-	parent second static block
+	child second static block
 	j value:20
 	i value:10
 	

@@ -267,16 +267,16 @@ Explain the subarray with k distinct integers problem with solution?
 -	Consider below case where k = 2 and right pointer reaches an element at which the subarray has more than k distinct elements. 
 
 	1 2 1 3 3 2 4 1 2 5 3
-	^			^
-	l			r
+	^	  ^
+	l	  r
 
 -	Hence we move the left pointer at position of right pointer.
 
 	1 2 1 3 3 2 4 1 2 5 3
-				^
-				r
-				l
-				
+		  ^
+		  r
+		  l
+		  
 -	This might cause loss of count of other subarrays with distinct elements between left and right pointers.
 
 -	It is unclear whether the window must expand or shrink, therefore the sliding window or two pointers strategy will not work.
@@ -502,4 +502,50 @@ Explain the duplicate number problem with solution?
 	
 	Collections.sort(elements, (element1, element2) -> (element2 + element1).compareTo(element1 + element2));
     ...
-	return String.join("", elements);    
+	return String.join("", elements);   
+
+Explain the next permutation problem with solution?
+
+-	The problem statement is given an input array the next possible permutation sequence of it.
+
+-	The solution to this problem to traverse the input array from its last index to first index and find the breakpoint.
+
+-	The breakpoint is an element at index i which is lesser than the element at index i + 1.
+
+-	If no breakpoint exist then reverse all the array elements and return.
+
+-	Otherwise swap the element at i index with an element which is greater than it but not the largest element present from i + 1 index to last index.	
+
+-	Reverse the array elements from i + 1 index to last index and return.
+	
+	Example:
+
+	int breakpoint = -1;
+    for (int i = nums.length - 2; i >= 0; i--) {
+        if (nums[i] < nums[i + 1]) {
+            breakpoint = i;
+            break;
+        }
+    }
+
+    if (breakpoint == -1) {
+        ...
+        return;
+    }
+    for (int i = nums.length - 1; i > breakpoint; i--) {
+        if (nums[i] > nums[breakpoint]) {
+            int temp = nums[i];
+            nums[i] = nums[index];
+            nums[breakpoint] = temp;
+            break;
+        }
+    }
+	...
+    int temp;
+    while (sindex < eindex) {
+        temp = nums[sindex];
+        nums[sindex] = nums[eindex];
+        nums[eindex] = temp;
+        sindex++;
+        eindex--;
+    }

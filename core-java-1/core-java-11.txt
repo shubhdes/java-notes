@@ -1,0 +1,127 @@
+core java - java 11 features
+
+What is openjdk?
+
+-	The openjdk is a free version of java available from java 11 onwards.
+
+Explain how to run a java program?
+
+-	Till java 10 version we need to compile the java program and then execute it.
+
+-	We use javac command with file name to compile the java program and java command with class name to execute it.
+
+	Example:
+	
+	# javac Myprogram.java
+	# java Myprogram
+
+-	From java 11 version onwards we can execute java program directly without compilation by using java command with file name.
+
+	Example:
+	
+	# java Myprogram.java
+	
+-	The single java command does both compilation and execution.
+
+-	However with backward compatibility, we can use javac command with file name to compile the java program and java command with class name to execute it.
+
+-	There is a possibility of multiple non public classes with main method exists inside single java file.
+
+-	Then upon execution jvm will search for main method inside each class defined from top to bottom inside the java file.
+
+-	Then jvm executes the main method of first found class with main method inside it. 
+
+	Example:
+	
+	Myprogram.java
+	
+	class A {
+	
+	}
+	
+	class B {
+	
+		public static void main(String[] args) {
+			
+			System.out.println("Inside main method of class B");
+		}
+	}
+	
+	class C {
+	
+		public static void main(String[] args) {
+			
+			System.out.println("Inside main method of class C");
+		}
+	}
+	
+	class D {
+	
+		public static void main(String[] args) {
+			
+			System.out.println("Inside main method of class D");
+		}
+	}
+	
+	# java Myprogram.java
+	
+	Inside main method of class B
+	
+Explain the utility methods inside String class?
+
+-	Below are different utility methods inside String class.
+
+-	public String repeat(int count)
+
+-	This method returns a result string object after repeated concatenation for count number of times of the input string object.
+
+	Example:
+	
+	String input = "durga";
+	
+	input.repeat(5);	//durgadurgadurgadurgadurga
+
+-	When the count parameter is zero then this method returns empty string object.
+
+-	When the count parameter is negative then we will get runtime exception saying IllegalArguementException.
+
+-	public boolean isBlank()
+
+-	This method returns true when input string object is empty or has only white spaces otherwise returns false. 
+
+-	Another method public boolean isEmpty() was introduced in java version 6.
+
+-	It returns true if the input string object length is zero otherwise it enters false.
+
+-	However input string object has only white spaces then this method will return false.
+
+	Example:
+	
+	String input = "    ";
+	
+	input.isBlank();	//true
+
+	input.isEmpty();	//false
+
+-	public String strip()
+
+-	This method returns a result string object after removing white spaces at both beginning and end of the input string object.
+
+-	public String stripLeading()
+
+-	This method returns a result string object after removing white spaces at beginning of the input string object.
+
+-	public String stripTrailing()
+
+-	This method returns a result string object after removing white spaces at end of the input string object.
+
+-	public Stream lines()
+
+-	This method returns a stream of string objects extracted from the input string object separated by line terminator character.
+
+	Example:
+	
+	String input = "durga\nsoftware\nsolutions";
+	
+	Stream<String> streamOfLines = input.lines();
+	

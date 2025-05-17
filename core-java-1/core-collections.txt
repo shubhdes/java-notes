@@ -283,8 +283,7 @@ Explain LinkedList and its internal working?
 
 - 	It allows duplicate values insertion and also allows one or more null values insertion also it maintains insertion order.
 
--	It is suitable for insert, update, delete operation but it is suitable for faster searching of values i.e to search a particular value in linked-list we need to
-	begin from first element of linked-list.
+-	It is suitable for insert, update, delete operation but it is not suitable for faster searching of values.
 
 Explain PriorityQueue and its internal working?
 

@@ -1,5 +1,102 @@
 core java - problem solving graph datastructure
 
+Explain the breadth first search algorithm for traversal inside a graph?
+
+-	The breadth first search algorithm requires a start vertex, queue and an array to note visited vertices.
+
+-	The start vertex is offered inside the queue and marked as visited insided the array.
+
+-	Next until the queue is empty, display the vertex.
+
+-	Find the connected vertices for the vertex present inside queue.
+
+-	If the connected vertex is not visited offer it inside the queue.
+
+-	When all the iterations are complete, all the vertices of the graph will be visited.
+
+	Example:
+	
+	private void traverse(List<List<Integer>> adjacencyList, boolean[] visited, int currentVertex) {
+		Queue<Integer> queue = new LinkedList<>();
+		queue.offer(currentVertex);
+		visited[currentVertex] = true;
+		while (!queue.isEmpty()) {
+			int vertex = queue.poll();
+			System.out.println(vertex);
+			List<Integer> nextVertices = adjacencyList.get(vertex);
+			for (Integer nextVertex : nextVertices) {
+				if (!visited[nextVertex]) {
+					queue.offer(nextVertex);
+					visited[nextVertex] = true;
+				}
+			}
+		}
+	}
+
+
+Explain the depth first search algorithm for traversal inside a graph?
+
+-	The breadth first search algorithm requires a start vertex and an array to note visited vertices.
+
+-	The start vertex is marked as visited insided the array.
+
+-	Find the connected vertices for the current vertex.
+
+-	If the connected vertex is not visited, recursively visit it.
+
+-	For each vertex when all the next vertices are visited recursively then display the it.
+
+	Example:
+	
+	private void traverse(List<List<Integer>> adjacencyList, boolean[] visited, int currentVertex) {
+		visited[currentVertex] = true;
+		List<Integer> nextVertices = adjacencyList.get(currentVertex);
+		for (Integer nextVertex : nextVertices) {
+			if (!visited[nextVertex]) {
+				traverse(adjacencyList, visited, nextVertex);
+			}
+		}
+		System.out.println(currentVertex);
+	}
+
+Explain the rotting of oranges problem with solution?
+
+-	The problem statement is given an matrix with 0 representing empty space, 1 representing orange and 2 representing rotten orange.
+
+-	At every minute a orange rottens its horizontal and vertical neighbors find the time required to rotten all oranges inside the matrix.
+	
+-	Every rotten orange inside matrix will rotten horizontal and vertical neighbors simultaneously.
+
+-	Therefore from a rotten orange we need to visit its horizontal and vertical neighbors first.
+
+-	The solution to this problem is using breadth first search.
+
+-	Along with the cell's row and column number we will offer minute value inside the queue.
+
+	Example:
+	
+	for (int rowNum = 0; rowNum < grid.length; rowNum++) {
+        for (int colNum = 0; colNum < grid[rowNum].length; colNum++) {
+            if (grid[rowNum][colNum] == 1) {
+                freshCount++;
+            } else if (grid[rowNum][colNum] == 2) {
+                queue.offer(Arrays.asList(rowNum, colNum, 0));
+            }
+            ...
+        }      
+    }
+	...
+	while (!queue.isEmpty()) {
+		...
+        for (int i = 0; i < 4; i++) {
+                ...
+            if (newRow != -1 && newRow < gridCopy.length && newCol != -1 && newCol < gridCopy[newRow].length 
+				&& gridCopy[newRow][newCol] == 1) {
+                    ....
+            }
+        }
+	}
+
 What is topological sorting?
 
 -	A topological sorting is a technique to generate linear order of a graph.
@@ -12,48 +109,7 @@ What is topological sorting?
 
 -	A graph can have multiple linear order sequence.
 
--	There are two algorithms to generate a linear order called as depth first search and breadth first search.
-
-Explain the depth first search algorithm for topological sorting?
-
--	The depth first search algorithm traverses over the adjaceny list of graph.
-
--	For each vertex, it visits the its connected vertices recursively.
-
--	If all the connected vertices of an vertex are visited the vertex is pushed inside a stack.
-
--	An array is used to prevent duplicate visit to an vertex.
-
--	When all recursive method calls are complete the elements from stack are poped out to get then linear order.
-
-	Example:
-
-	public class DepthFirstSearch {
-
-		private void dfs(int currentVertex, List<List<Integer>> adjacencyList, int[] visitedVertices,
-				Stack<Integer> linearOrderStack) {
-			if (visitedVertices[currentVertex] == 1) {
-				return;
-			}
-			visitedVertices[currentVertex] = 1;
-			List<Integer> nextVertices = adjacencyList.get(currentVertex);
-			for (Integer nextVertex : nextVertices) {
-				dfs(nextVertex, adjacencyList, visitedVertices, linearOrderStack);
-			}
-			linearOrderStack.push(currentVertex);
-		}
-
-		private void topologicalSort(List<List<Integer>> adjacencyList) {
-			int[] visitedVertices = new int[adjacencyList.size()];
-			Stack<Integer> linearOrderStack = new Stack<>();
-			for (int currentVertex = 0; currentVertex < adjacencyList.size(); currentVertex++) {
-				dfs(currentVertex, adjacencyList, visitedVertices, linearOrderStack);
-			}
-			while (!linearOrderStack.isEmpty()) {
-				System.out.println(linearOrderStack.pop());
-			}
-		}
-	}
+-	There are two algorithms to generate a linear order called as breadth first search and depth first search.
 
 Explain the breadth first search algorithm for topological sorting?
 
@@ -104,6 +160,46 @@ Explain the breadth first search algorithm for topological sorting?
 						queue.offer(nextVertex);
 					}
 				}
+			}
+		}
+	}
+
+Explain the depth first search algorithm for topological sorting?
+
+-	The depth first search algorithm traverses over the adjaceny list of graph.
+
+-	For each vertex, it visits the its connected vertices recursively.
+
+-	If all the connected vertices of an vertex are visited the vertex is pushed inside a stack.
+
+-	An array is used to prevent duplicate visit to an vertex.
+
+-	When all recursive method calls are complete the elements from stack are poped out to get then linear order.
+
+	Example:
+
+	public class DepthFirstSearch {
+		private void dfs(int currentVertex, List<List<Integer>> adjacencyList, int[] visitedVertices,
+				Stack<Integer> linearOrderStack) {
+			if (visitedVertices[currentVertex] == 1) {
+				return;
+			}
+			visitedVertices[currentVertex] = 1;
+			List<Integer> nextVertices = adjacencyList.get(currentVertex);
+			for (Integer nextVertex : nextVertices) {
+				dfs(nextVertex, adjacencyList, visitedVertices, linearOrderStack);
+			}
+			linearOrderStack.push(currentVertex);
+		}
+
+		private void topologicalSort(List<List<Integer>> adjacencyList) {
+			int[] visitedVertices = new int[adjacencyList.size()];
+			Stack<Integer> linearOrderStack = new Stack<>();
+			for (int currentVertex = 0; currentVertex < adjacencyList.size(); currentVertex++) {
+				dfs(currentVertex, adjacencyList, visitedVertices, linearOrderStack);
+			}
+			while (!linearOrderStack.isEmpty()) {
+				System.out.println(linearOrderStack.pop());
 			}
 		}
 	}

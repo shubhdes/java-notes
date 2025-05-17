@@ -11,6 +11,8 @@ Enlist different SOLID design principles?
 	-	liskov substitution
 	
 	-	interface segregation
+	
+	-	dependency inversion
 
 What is single responsibility design principle?
 
