@@ -6,4 +6,160 @@ Explain and enlist behavioral design pattern?
 
 -	Below are different types of behavioral design patterns,
 
+	-	chain of responsibility
 
+Explain the chain of responsibility design pattern?
+
+-	The chain of responsibility is a behavioral design pattern.
+
+-	It is used to avoid coupling the code which sends the request to code which handles the request.
+
+-	It allows more than on object chance to handle the request.
+
+-	Objects are chained together with one object holding the reference to another object inside the chain.
+
+-	The client request the first object in the chain to handle the request.
+
+-	When an object can handle the request it does process it otherwise it passes the request down the chain.
+
+Write a note on implementing chain of responsibility design pattern?
+
+-	Define the abstract class or interface handler (LeaveApprover).
+
+-	Define a methods to accept the incoming request and also access the successor object inside the chain.
+
+-	Implement the concrete handler classes.
+
+-	Create chain of objects.
+
+Example:
+
+public class LeaveApplication {
+
+	private int numOfDays;
+
+	private String approvedBy;
+
+	public LeaveApplication(int numOfDays) {
+		this.numOfDays = numOfDays;
+	}
+
+	public int getNumOfDays() {
+		return numOfDays;
+	}
+
+	public void setApprovedBy(String approvedBy) {
+		this.approvedBy = approvedBy;
+	}
+
+	public String getApprovedBy() {
+		return approvedBy;
+	}
+}
+
+public interface LeaveApprover {
+
+	void processLeaveApplication(int numOfDays);
+
+	String getApproverRole();
+}
+
+public abstract class Employee implements LeaveApprover {
+
+	private String role;
+
+	private LeaveApprover successor;
+
+	public Employee(String role, LeaveApprover successor) {
+		this.role = role;
+		this.successor = successor;
+	}
+
+	@Override
+	public void processLeaveApplication(LeaveApplication application) {
+
+		if (processRequest(application)) {
+			application.setApprovedBy(getApproverRole());
+			return;
+		}
+		successor.processLeaveApplication(application);
+	}
+
+	@Override
+	public String getApproverRole() {
+		return role;
+	}
+
+	public abstract boolean processRequest(LeaveApplication application);
+}
+
+public class Lead extends Employee {
+
+	public Lead(LeaveApprover successor) {
+		super("Lead", successor);
+	}
+
+	@Override
+	public boolean processRequest(LeaveApplication application) {
+		if (application.getNumOfDays() <= 2) {
+			return true;
+		}
+		return false;
+	}
+}
+
+public class Manager extends Employee {
+
+	public Manager(LeaveApprover successor) {
+		super("Manager", successor);
+	}
+
+	@Override
+	public boolean processRequest(LeaveApplication application) {
+		if (application.getNumOfDays() <= 5) {
+			return true;
+		}
+		return false;
+	}
+}
+
+public class Director extends Employee {
+
+	public Director(LeaveApprover successor) {
+		super("Director", successor);
+	}
+
+	@Override
+	public boolean processRequest(LeaveApplication application) {
+		return true;
+	}
+}
+
+public class Client {
+
+	public static void main(String[] args) {
+		Director director = new Director(null);
+		Manager manager = new Manager(director);
+		Lead lead = new Lead(manager);
+
+		LeaveApplication application = new LeaveApplication(4);
+		lead.processLeaveApplication(application);
+		System.out.println(application.ge);
+	}
+}
+
+Write a note on design consideration for chain of responsibility design pattern?
+
+-	It is better to define handler as a interface to avoid worrying about single inheritance rule in java.
+
+-	It is possible that a handler will process the request and still forward it to the successor for further processing.
+
+-	It is better to use XML or JSON based configuration to define chain of responsibilities.
+
+-	An existing composite design pattern can be used as a part of chain.
+
+Write a note on pitfalls of chain of responsibility design pattern?
+
+-	There is no guarantee whether the request will be handled or not.
+
+-	It is easy to misconfigure the chain when connecting the successors.

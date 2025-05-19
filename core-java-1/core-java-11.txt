@@ -25,7 +25,9 @@ Explain how to run a java program?
 
 -	However with backward compatibility, we can use javac command with file name to compile the java program and java command with class name to execute it.
 
--	There is a possibility of multiple non public classes with main method exists inside single java file.
+-	From java 11 version onwards we can define a public class inside a java file with name different from the java file name.
+
+-	There is a possibility of multiple classes with main method exists inside single java file.
 
 -	Then upon execution jvm will search for main method inside each class defined from top to bottom inside the java file.
 
@@ -47,7 +49,7 @@ Explain how to run a java program?
 		}
 	}
 	
-	class C {
+	public class C {
 	
 		public static void main(String[] args) {
 			
@@ -125,3 +127,88 @@ Explain the utility methods inside String class?
 	
 	Stream<String> streamOfLines = input.lines();
 	
+Explain use of var keyword in lambda expression parameters?
+
+-	From java 11 version onwards we can declare the parameters of lambda expression using var keyword.
+
+	Example:
+	
+	Calculator calObj = (var fval, var sval) -> fval + sval;
+	
+-	When any one parameter is declared with var keyword then remaining all parameters must be also declared with var keyword otherwise we will get compilation error.
+
+-	Also when the lambda expression has only one parameter then inorder to use var keyword the parameter must be enclosed inside round brackets otherwise we will get compilation error.
+
+Explain nested based access control?
+
+-	In java every outer class can access the private members of nested inner class.
+
+	Example:
+	
+	class MyProgram {
+	
+		class MyNestedProgram {
+		
+			private int count = 10;
+		}
+		
+		public static void main(String[] args) {
+			
+			MyProgram.MyNestedProgram nestObj = new MyProgram().new MyNestedProgram();
+			
+			System.out.println(nestObj.count);	//	10
+			
+			nestObj.count = 50;
+			
+			System.out.println(nestObj.count);	//	50
+			
+			Field countFld = MyNestedProgram.class.getDeclaredField("count");
+		}
+	}
+
+-	However when the outer class tries to access private members of nested inner class using reflection we get runtime saying IllegalAccessException.
+
+	Example:
+	
+	class MyProgram {
+	
+		class MyNestedProgram {
+		
+			private int count = 10;
+		}
+		
+		public static void main(String[] args) {
+			
+			MyProgram.MyNestedProgram nestObj = new MyProgram().new MyNestedProgram();
+			
+			Field countFld = MyNestedProgram.class.getDeclaredField("count");
+			
+			System.out.println(countFld.get(nestObj));	//	we get runtime saying IllegalAccessException
+			
+			countFld.setInt(nestObj, 50);
+			
+			System.out.println(countFld.get(nestObj));	//	we get runtime saying IllegalAccessException.
+		}
+	}
+	
+-	From java 11 onwards few additional methods are added to reflection package to support handling metadata of nested inner classes.
+
+-	Hence the above code executes without any runtime exception while using java 11.
+
+Explain reading writing string to and from files?
+
+-	Below are different methods inside java.nio.file.Files class to allow writing string to and from files.
+
+-	public static Path writeString(Path path, CharSequence charSeq, OptionOption... options) throws IOException
+
+-	public static Path writeString(Path path, CharSequence charSeq, CharSet charSet, OptionOption... options) throws IOException
+
+-	The above two methods allow writing string object inside a file. 
+
+-	The options parameter determine whether the existing file content must be overriden or new content must be appended to it.
+
+-	public static String readString(Path path) throws IOException
+
+-	public static Path writeString(Path path, CharSet charSet) throws IOException
+
+-	The above two methods allow reading the file contents as string object. 
