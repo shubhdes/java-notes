@@ -7,14 +7,18 @@ Explain and enlist behavioral design pattern?
 -	Below are different types of behavioral design patterns,
 
 	-	chain of responsibility
+	
+	-	command
+	
+	-	interpreter
 
 Explain the chain of responsibility design pattern?
 
--	The chain of responsibility is a behavioral design pattern.
+-	The chain of responsibility design pattern is a behavioral design pattern.
 
 -	It is used to avoid coupling the code which sends the request to code which handles the request.
 
--	It allows more than on object chance to handle the request.
+-	It allows more than one object chance to handle the request.
 
 -	Objects are chained together with one object holding the reference to another object inside the chain.
 
@@ -32,6 +36,31 @@ Write a note on implementing chain of responsibility design pattern?
 
 -	Create chain of objects.
 
+									<<interface>>        	  <<concrete class>>
+		  Client					LeaveApprover	 	 	  LeaveApplication								
+		  ---------------			---------------		 	  -------------            					
+		  | 		    |---------->|		      |     ------| 		  |            
+		  ---------------			---------------		|  	  -------------
+										  ^				|			     
+										 ---			|		   			
+										  .				|	           
+										  .				|	           
+									-------------		|	   
+	Employee						|			|<*>-----
+	<<concrete class>>				-------------	  		  
+									 ^	  ^	   ^
+									---  ---  ---
+									 .	  .	   .
+									 .    .    .
+							------------- .	-------------
+					Lead	|			| . |			| 	Manager 
+		<<concrete class>>	------------- . ------------- <<concrete class>>
+										  .
+									-------------
+									|			|
+									-------------
+									Director 
+									<<concrete class>>
 Example:
 
 public class LeaveApplication {
@@ -163,3 +192,327 @@ Write a note on pitfalls of chain of responsibility design pattern?
 -	There is no guarantee whether the request will be handled or not.
 
 -	It is easy to misconfigure the chain when connecting the successors.
+
+Explain the command design pattern?
+
+-	The command design pattern is a behavioral design pattern.
+
+-	It is used to represent a request or method call as an object.
+
+-	Information about the method parameters and actual operation is encapsulated inside the object called command.
+
+-	The command object can be queued for later execution or send to other part of the code.
+
+Write a note on implementing command design pattern?
+
+-	Define the command interface with no arguement execute method.
+
+-	Implement the command interface for each operation type. We may also implement undo operation if required.
+
+-	Inside concrete implementation define the object on which operation is to be executed (receiver) and parameters.
+
+-	The client code must create command object, receiver object and invoker object.
+
+-	The invoker class may execute in different thread, it uses the command object and executes the operation.
+
+							|---------------------------
+							|						   |	
+							|		<<interface>>      |  	  <<concrete class>>
+		  Client			|		Command	 	 	   |		  MailTaskRunner								
+		  ---------------	|		---------------	   |	  -------------            					
+		  | 		    |---------->|		      |    ------>| 		  |            
+		  ---------------			---------------		  	  -------------
+									 ^	  	     ^
+									---         ---
+									 .	  	     .
+									 .           .
+							------------- 	   -------------
+	    AddMemberCommand	|	   		|	   |		   | 	RemoveMemberCommand 
+	    <<concrete class>>	-------------      ------------- 	<<concrete class>>
+							  <*>					   <*>
+							   |						|
+							   |	  EWSService		|
+							   |	  <<concrete class>>|
+							   |	  -------------		|
+							   |------|			  |------
+									  -------------
+Example:
+
+public interface Command {
+
+	void execute();
+}
+
+public class AddMemberCommand implements Command {
+
+	private String email;
+
+	private String group;
+
+	private EWSService receiver;
+
+	public AddMemberCommand(String email, String group, EWSService receiver) {
+		this.email = email;
+		this.group = group;
+		this.receiver = receiver;
+	}
+
+	@Override
+	public void execute() {
+		receiver.addMember(email, group);
+	}
+}
+
+public class RemoveMemberCommand implements Command {
+
+	private String email;
+
+	private String group;
+
+	private EWSService receiver;
+
+	public RemoveMemberCommand(String email, String group, EWSService receiver) {
+		this.email = email;
+		this.group = group;
+		this.receiver = receiver;
+	}
+
+	@Override
+	public void execute() {
+		receiver.removeMember(email, group);
+	}
+}
+
+public class MailTaskRunner implements Runnable {
+
+	private Queue<Command> queue = new LinkedList<>();
+
+	public void addCommand(Command command) {
+		queue.offer(command);
+	}
+
+	@Override
+	public void run() {
+		while (true) {
+			while (!queue.isEmpty()) {
+				Command command = queue.poll();
+				command.execute();
+			}
+		}
+	}
+}
+
+public class Client {
+
+	public static void main(String[] args) {
+
+		EWSService receiver = new EWSService();
+		Command addMemberCommand = new AddMemberCommand("durga@gmail.com", "durgasoftware", receiver);
+
+		MailTaskRunner invoker = new MailTaskRunner();
+		invoker.addCommand(addMemberCommand);
+
+		new Thread(invoker).start();
+	}
+}
+
+Write a note on design consideration for command design pattern?
+
+-	We may implement the undo or redo in the command implement.
+
+-	A stateless command object can be reused.
+
+-	We must consider the memory occupied by the state of the command object which is queued.
+
+-	A child command class may be inherited from parent command class.
+
+-	One command object may be composed of multiple other command objects on which execute method must be called in a sequence.
+
+-	For undo operation to save state of command object we may use memento design pattern.
+
+Write a note on pitfalls of command design pattern?
+
+-	Complex to implement exception handling and return a value from the execute method.
+
+Explain the interpreter design pattern?
+
+-	The interpreter design pattern is a behavioral design pattern.
+
+-	It is used to process a simple language with rules or grammar.
+
+-	It allows us to represent rules of language or grammar in a data structure and then interpret sentences in that language.
+
+-	Each class in this pattern represent a rule in the language. 
+
+-	Classes provide method to interpret an expression.
+
+Write a note on implementing interpreter design pattern?
+
+-	Begin with studying the rules of the language.
+
+-	Define an abstract class or interface to represent an expression and define a method inside it to interpret the expression.
+
+-	The expression which do not need other expression to interpret becomes terminal expression (Permission).
+
+-	The expression which need other expression to interpret becomes nonterminal expression (AndExpression OrExpression).
+
+-	Each token of the rule is represented as expression.
+
+-	Building the syntax tree can be done by client or inside another separate class (PermissionExpressionBuilder).
+
+-	A context (User) is passed to the interpreter. It will save the sentence to be interpreted and optionally intermediate computation result.
+
+							|---------------------------------------------------------------------------
+							|		<<interface>>         	  <<concrete class>> |	<<concrete class>> | <<concrete class>>
+		  Client			|		PermissionExpression	  ExpressionBuilder	 |	User			   |  Report					
+		  ---------------	|		---------------	    	  -------------      |  -------------	   |  -------------
+		  | 		    |---------->|		      |<*>------->| 		  |      |->|			|	   |->|			  |   
+		  ---------------			---------------		  	  -------------			-------------		  -------------
+									 ^	   ^     ^
+									---   ---   ---
+									 .	   .	 .
+									 .     .     .
+							-------------  .   -------------
+			AndExpression	|	   		|  .   |		   | 	OrExpression 
+		<<concrete class>>	-------------  .   ------------- 	<<concrete class>>
+										   .
+									  -------------		
+									  |			  |	Permission
+									  -------------	<<concrete class>>
+
+Example:
+
+public class Report {
+
+	private String rule;
+
+	public Report(String rule) {
+		this.rule = rule;
+	}
+
+	public String getRule() {
+		return rule;
+	}
+}
+
+public class User {
+
+	private List<String> roles;
+
+	public User(List<String> roles) {
+		this.roles = roles;
+	}
+
+	public List<String> getRoles() {
+		return roles;
+	}
+}
+
+public interface PermissionExpression {
+
+	boolean interpret(User user);
+}
+
+public class Permission implements PermissionExpression {
+
+	private String role;
+
+	public Permission(String role) {
+		this.role = role;
+	}
+
+	@Override
+	public boolean interpret(User user) {
+		return user.getRoles().contains(role);
+	}
+}
+
+public class AndExpression implements PermissionExpression {
+
+	private PermissionExpression expression1;
+
+	private PermissionExpression expression2;
+
+	public AndExpression(PermissionExpression expression1, PermissionExpression expression2) {
+		this.expression1 = expression1;
+		this.expression2 = expression2;
+	}
+
+	@Override
+	public boolean interpret(User user) {
+		return expression1.interpret(user) && expression2.interpret(user);
+	}
+}
+
+public class OrExpression implements PermissionExpression {
+
+	private PermissionExpression expression1;
+
+	private PermissionExpression expression2;
+
+	public OrExpression(PermissionExpression expression1, PermissionExpression expression2) {
+		this.expression1 = expression1;
+		this.expression2 = expression2;
+	}
+
+	@Override
+	public boolean interpret(User user) {
+		return expression1.interpret(user) || expression2.interpret(user);
+	}
+
+}
+
+public class PermissionExpressionBuilder {
+
+	public PermissionExpression build(Report report) {
+
+		String[] tokens = report.getRule().split(" ");
+
+		if (tokens.length == 1) {
+			return new Permission(tokens[0]);
+		}
+
+		if ("and".equals(tokens[1])) {
+			return new AndExpression(new Permission(tokens[0]), new Permission(tokens[2]));
+		} else if ("or".equals(tokens[1])) {
+			return new OrExpression(new Permission(tokens[0]), new Permission(tokens[2]));
+		}
+
+		throw new IllegalArgumentException();
+	}
+}
+
+public class Client {
+
+	public static void main(String[] args) {
+
+		Report report = new Report("admin or durga");
+		PermissionExpressionBuilder builder = new PermissionExpressionBuilder();
+		PermissionExpression expression = builder.build(report);
+
+		User user = new User(Collections.singletonList("durga"));
+		System.out.println(expression.interpret(user));
+	}
+}
+
+Write a note on design consideration for interpreter design pattern?
+
+-	Additional operation such as pretty printing can be included.
+
+-	There is no specific convention for parsing and building syntax tree.
+
+-	Context object can save and access the state of expression.
+
+-	We may use visitor design pattern instead of using interpret method inside expression class.
+
+-	We can use flyweight design pattern for terminal operation.
+
+-	The terminal operation can be reused.
+
+Write a note on pitfalls of interpreter design pattern?
+
+-	Class per rule will result into large number of classes.
+
+-	Interpreter design pattern is not suitable for language with complex grammar rule.
+
+-	It is used to address a particular problem like interpreting language only.

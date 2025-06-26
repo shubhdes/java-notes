@@ -212,3 +212,39 @@ Explain reading writing string to and from files?
 -	public static Path writeString(Path path, CharSet charSet) throws IOException
 
 -	The above two methods allow reading the file contents as string object. 
+
+Explain enhancements to http client?
+
+-	The http client is an API used to send request to server or remote application and receive response from it.
+
+-	It was introduced in java 9 version but it was not completely implemented and streamlined to be use inside java program.
+
+-	But java 11 has provided streamlined and standardised implementation for http client inside package java.net.http.
+
+-	This package contains three classes, they are HttpClient, HttpRequest and HttpResponse.
+
+-	The HttpClient class is responsible to send request to server or remote application and receive response from it using HTTP protocol.
+
+	Example:
+	
+	HttpClient client = HttpClient.newHttpClient();
+	
+-	HttpRequest class is used to manage request details like URL, method, headers, body, timeout and others.
+
+	Example:
+	
+	HttpRequest request = HttpRequest.newBuilder().GET().uri(URI.create("http://durgasoftware.com")).build();
+	
+-	HttpResponse class is used to represent the response sent from the server or remote application to the client.
+
+-	It is used to manage response details like status, headers, body and others.
+
+	Example:
+	
+	HttpResponse response = client.send(request, HttpResponse.BodyHandlers.ofString());
+	
+Explain java flight recorder?
+
+-	The java flight recorder is a profiling tool used to gather profile data, health information and diagnostics of a running java program.
+
+-	It is available only in licensed java 11 version onwards.

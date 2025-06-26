@@ -1,0 +1,222 @@
+core java - java 17 features
+
+Explain local variable type inference?
+
+-	The local variable type inference allows to declare a variable without data type and using word var.
+
+-	The data type of variable is decided by compiler.
+
+	Example:
+	
+	var name = "durga";
+	
+	var rollno = 19;
+
+	var myprog = new MyProgram();
+	
+	var courses = myprog.getCoursesList();
+	
+-	It simplifies the syntax of variable declaration and initialisation.
+
+-	Once the data type of a variable is decided it cannot be change otherwise we will get a compile time error.
+
+	Example:
+	
+	var name = "durga";
+	
+	name = 19;	//	compile time error
+
+-	For backward compatibility the word var is not a keyword.
+
+Explain text blocks?
+
+-	The text blocks are advanced way of writing multiline string.
+
+-	Multiline string are enclosed inside triple quotes.
+
+	Example:
+	
+	String name = "durga	\nsoftware	\nhyderabad		\ntelangana";	//	before java 17
+	
+	String name = """durga 
+						software
+							hyderabad
+								telangana""";							// java 17 onwards
+
+
+-	Incidental whitespaces are ignored.
+
+Explain switch expression?
+
+-	The switch expression is advanced way of writing switch case.
+
+-	Inside switch case the keyword case and break are redundant and this can be avoided using switch expression.
+
+	Example:
+	
+	switch (input) {	// before java 17
+		
+		case 0:
+		case 1:
+			System.out.println("c++");
+			break;
+		case 2:
+			System.out.println("java");
+			break;
+		case 3:
+		case 4:
+		case 5:
+			System.out.println("python");
+			break;
+		default:
+			System.out.println("c");
+			break;
+	}
+	
+	switch (input) {
+		
+		case 0, 1 -> System.out.println("c++");
+		
+		case 2 -> System.out.println("java");
+		
+		case 3, 4, 5 -> System.out.println("python");
+		
+		default -> System.out.println("c");
+	}
+	
+-	From java 17 onwards a switch expression can return a value.
+
+-	Such switch expression must have all possible cases defined or the default case defined otherwise we will get compile time error.
+
+	Example:
+
+	String language = switch (input) {
+						
+						case 0, 1 -> "c++";
+							
+						case 2 -> "java";
+							
+						case 3, 4, 5 -> "python";
+							
+						default -> "c";
+					};
+						
+-	We can use yield keyword to return a value of an expression.
+
+-	When using yield keyword the use of curly brackets for switch case is mandatory otherwise we will get compile time error.
+
+	Example:
+
+	String language = switch (input) {
+						
+						case 0, 1 -> {
+							yield "c" + "++";
+						}
+							
+						case 2 -> {
+							yield "java";
+						}
+						
+						case 3, 4, 5 -> "python";
+						
+						default -> "c";
+					};
+						
+-	A switch expression can return value of different data types.
+
+	Example:
+	
+	var myValue = switch(input) {
+					
+					case 0, 1 -> "durga";
+							
+					case 2 -> 1;
+							
+					case 3, 4, 5 -> 3.5f;
+							
+					default -> true;
+				};
+
+What is a sealed class?
+
+-	The sealed class is used to allow only set of other classes to inherit it.
+
+-	Those other classes must compulsory inherit the sealed class either directly or indirectly.
+
+-	The sealed class and its direct subclass must be present inside same package.
+
+-	The subclass must be final, sealed or non-sealed.
+
+-	A non-sealed class can be inherited by any class.
+
+	Example:
+	
+	public sealed class Vehicle permits Car, Bike, Bus { }
+	
+	public sealed Car extends Vehicle permits Mercedes, Maruti { }
+	
+	public final Bike extends Vehicle extends { }
+	
+	public non-sealed Bus extends Vehicle {	}
+	
+-	An interface can also be sealed.
+
+-	The subinterface must be either sealed or non-sealed.
+
+What is a record?
+
+-	A record is a encapsulated class without boilerplate code.
+
+-	It is secured encapsulation.
+
+-	All constructor, getter, setter, equals and hashcode methods are automatic generated.
+
+-	A record cannot have explicit data members but can have member methods.
+
+-	It can have static data members and member methods.
+
+	Example:
+	
+	public record Student (String name, int rollno, String course);
+	
+-	We can create object of a record and call the member methods.
+
+	Example:
+	
+	Student studObj = new Student("durga", 1, "java");
+
+	System.out.println(studObj.name());
+	
+-	We can override the constructor implementation a inside record. This is called as canonical constructor.
+
+	Example:
+	
+	public record Student (String name, int rollno, String course) {
+	
+		public Student (String name, int rollno, String course) {
+		
+			if (rollno <= 0) {
+				throws new IllegalArguementException();
+			}
+			
+			this.name = name;
+			this.rollno = rollno;
+			this.course = course;
+		} 
+	}
+	
+-	As the constructor implementation is overriden therefore we must explicitly initialise the data members.
+
+-	However the boilerplate code to explicitly initialise the data members can be removed by using compact constructor.
+
+	Example
+	
+	public record Student (String name, int rollno, String course) {
+	
+		public Student {
+		
+			if (rollno <= 0) {
+				throws new IllegalArguementException();
+			}
+		}
+	}
