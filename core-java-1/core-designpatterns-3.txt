@@ -516,3 +516,409 @@ Write a note on pitfalls of interpreter design pattern?
 -	Interpreter design pattern is not suitable for language with complex grammar rule.
 
 -	It is used to address a particular problem like interpreting language only.
+
+Explain the mediator design pattern?
+
+-	The mediator design pattern is a behavioral design pattern.
+
+-	It encapsulates how set of objects interact with each other.
+
+-	The interaction is encapsulated inside the mediator object and interacting objects only know about it.
+
+-	There is a loose coupling between interacting objects.
+
+-	Interaction can now change without changing the participant objects.
+
+-	Changing the mediator allows to add or remove participants in an interaction. 
+
+Write a note on implementing mediator design pattern?
+
+-	Define mediator class.
+
+-	Define method which will be called by participant object to inform its state change.
+
+-	The method must know which data member or participant object is changed.
+
+-	Implement method to interactwith participant objects and inform them about the state changed.
+
+-	Mediator needs to know the participant objects, it can create them or they can register with it.
+
+-	Handle infinite loop resulting from change notify change.
+
+Write a note on design consideration for mediator design pattern?
+
+-	Mediator must identify which participant object's state is changed and must not inform it about the same.
+
+-	If a participant object requires too long to process the state change of another participant object then it may impact the overall performance of mediator.
+
+-	We can extend the mediator and create different possibilities of interactions under different situations.
+
+-	Having abstract mediator instead of concrete is not always required.
+
+-	We can use observer design pattern through which participant objects will inform the mediator about their state change.
+
+							|---------------------------
+							|						   |	
+							|		<<interface>>      |  	  <<concrete class>>
+		  Client			|		UIControl	 	   |	  UIMediator								
+		  ---------------	|		---------------	   |	  -------------            					
+		  | 		    |---------->|		      |--  ------>| 		  |            
+		  ---------------			---------------	|	  	  -------------
+									 ^	  	     ^	|				<>
+									---         --- |----------------|				 
+									 .	  	     .
+									 .           .
+							------------- 	   -------------
+	    Label				|	   		|	   |		   | 	Slider 
+	    <<concrete class>>	-------------      ------------- 	<<concrete class>>
+
+
+Example:
+
+public interface UIControl {
+
+	void controlChanged(UIControl control);
+
+	String getValue();
+}
+
+public class Label implements UIControl {
+
+	private UIMediator mediator;
+
+	private String value;
+
+	public Label(UIMediator mediator) {
+		this.mediator = mediator;
+		mediator.register(this);
+	}
+
+	@Override
+	public void controlChanged(UIControl control) {
+		this.value = control.getValue();
+	}
+
+	@Override
+	public String getValue() {
+		return value;
+	}
+}
+
+public class Slider implements UIControl {
+
+	private UIMediator mediator;
+
+	private String value;
+
+	public Slider(UIMediator mediator) {
+		this.mediator = mediator;
+		mediator.register(this);
+	}
+
+	@Override
+	public void controlChanged(UIControl control) {
+		this.value = control.getValue();
+	}
+
+	@Override
+	public String getValue() {
+		return value;
+	}
+}
+
+public class UIMediator {
+
+	private List<UIControl> participants;
+
+	public UIMediator() {
+		participants = new ArrayList<>();
+	}
+
+	public void register(UIControl control) {
+		participants.add(control);
+	}
+
+	public void valueChanged(UIControl control) {
+		participants.stream().filter(participant -> participant != control)
+				.forEach(participant -> participant.controlChanged(control));
+	}
+}
+
+Write a note on pitfalls of mediator design pattern?
+
+-	Difficult to maintainas mediator complexity grows.
+
+-	Difficult to implement as reusable mediator.
+
+Explain the iterator design pattern?
+
+-	The iterator design pattern is a behavioral design pattern.
+
+-	It allows to access elements of an aggregate object in sequence while hiding the internal data structure.
+
+-	Iterator is stateful i.e. it remembers its position while iterating.
+
+-	It becomes out of sync if underlying aggregate object is changed.
+
+Write a note on implementing iterator design pattern?
+
+-	Declare iterator interface.
+
+-	Implement the iterator as inner class inorder to access tthe elements of aggregate object.
+
+-	Maintain the state to know the position inside the elements aggregate object.
+
+-	Throw exception if aggregate object is changed while iterating.
+
+									   
+		  Client					Iterator <<interface>>	 	 						
+		  ---------------			---------------				
+		  | 		    |---------->|		      |  
+		  ---------------			---------------	
+									 ^	  
+									---   
+									 .	  
+									 .    
+							-------------			------------- 
+	    ThemeColorIterator	|	   		|--------(+)|	   		|	ThemeColor
+	    <<concrete class>>	-------------		    -------------	<<concrete class>>
+
+Example:
+
+public interface Iterator {
+
+	boolean hasNext();
+
+	String next();
+}
+
+public class ThemeColor {
+
+	private String[] colors;
+
+	public ThemeColor() {
+		colors = new String[] { "Red", "Green", "Blue", "Pink" };
+	}
+
+	public Iterator getIterator() {
+		return new ThemeColorIterator();
+	}
+
+	private class ThemeColorIterator implements Iterator {
+
+		private int position;
+
+		@Override
+		public boolean hasNext() {
+			return position < colors.length;
+		}
+
+		@Override
+		public String next() {
+			return colors[position++];
+		}
+
+	}
+}
+
+public class Client {
+
+	public static void main(String[] args) {
+
+		ThemeColor themeColor = new ThemeColor();
+		Iterator iterator = themeColor.getIterator();
+
+		while (iterator.hasNext()) {
+			System.out.println(iterator.next());
+		}
+	}
+}
+
+Write a note on design consideration for iterator design pattern?
+
+-	Identifying changes to underlying aggregate object while client is using iterator is important.
+
+-	Iterator implementation as inner class is recommended as it makes it easy to access elements of aggregate object.
+
+-	Use iterator interface and hide the implementation from the client.
+
+-	Iterator can be used in use cases without collection as well.
+
+Write a note on pitfalls of iterator design pattern?
+
+-	Access to index isn't available to client while iterating.
+
+-	Changes to the aggregate object makes iterator invalid.
+
+Explain the memento design pattern?
+
+-	The memento design pattern is a behavioral design pattern.
+
+-	It allows to save the object's state (originator) without exposing exposing the internal details.
+
+-	We can restore the object's state to previously saved state.
+
+-	The object can return its state as a sealed object which doesn't allow state modification.
+
+-	It is used along with command design pattern to provide the undo functionality.
+
+Write a note on implementing memento design pattern?
+
+-	Find the originator state which needs to be saved.
+
+-	Memento must not be allowed to be changed and read outside originator.
+
+-	The originator class must provide method which records snapshot and provides object of memento.
+
+-	Also another method to restore the originator state to memento state.
+
+																														<<interface>>
+		  Client																										Command	    						
+		  ---------------																								---------------				
+		  | 		    |---------------------------------------------------------------------------------------------->|		      |  
+		  ---------------								|																---------------	
+														|																	   ^	  
+														|																	  ---
+														|																	   .				   
+														|																	   .	  
+														V																	   .    
+							-------------			------------- 						-------------					---------------   
+	    Memento				|	   		|--------(+)|	   		|<*>--------------------|		    |				    |		      |		AddWorkflowCommand	
+	    <<concrete class>>	-------------		    -------------	  					-------------   	        	---------------		<<concrete class>>
+                                  |                       | 	WorkflowDesigner        Workflow    						  <*>	 
+                                  |                       |     <<concrete class>>      <<concrete class>>        			   |
+							      |						  |																	   |
+								  ----------------------------------------------------------------------------------------------
+
+Example:
+
+public class Workflow {
+
+	private String name;
+
+	private LinkedList<String> steps;
+
+	public Workflow(String name, LinkedList<String> steps) {
+		this.name = name;
+		this.steps = new LinkedList<>(steps);
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public LinkedList<String> getSteps() {
+		return steps;
+	}
+}
+
+public class WorkflowDesigner {
+
+	private Workflow workflow;
+
+	public WorkflowDesigner(String name) {
+		this.workflow = new Workflow(name, new LinkedList<String>());
+	}
+
+	public Memento geMemento() {
+		return new Memento(workflow.getName(), workflow.getSteps());
+	}
+
+	public void setMemento(Memento memento) {
+		this.workflow = new Workflow(memento.getName(), new LinkedList<String>(memento.getSteps()));
+	}
+
+	public void addStep(String step) {
+		workflow.getSteps().add(step);
+	}
+
+	public void show() {
+		System.out.println(workflow.getSteps());
+	}
+
+	public class Memento {
+
+		private String name;
+
+		private LinkedList<String> steps;
+
+		private Memento(String name, LinkedList<String> steps) {
+			this.name = name;
+			this.steps = new LinkedList<>(steps);
+		}
+
+		private String getName() {
+			return name;
+		}
+
+		private LinkedList<String> getSteps() {
+			return steps;
+		}
+	}
+}
+
+public interface WorkflowCommand {
+
+	public void execute();
+
+	public void undo();
+}
+
+public class AddWorkflowCommand implements WorkflowCommand {
+
+	private WorkflowDesigner orignator;
+
+	private WorkflowDesigner.Memento memento;
+
+	private String step;
+
+	public AddWorkflowCommand(WorkflowDesigner orignator, String step) {
+		this.orignator = orignator;
+		this.step = step;
+	}
+
+	@Override
+	public void execute() {
+		this.memento = orignator.geMemento();
+		orignator.addStep(step);
+	}
+
+	@Override
+	public void undo() {
+		orignator.setMemento(memento);
+	}
+}
+
+public class Client {
+
+	public static void main(String[] args) {
+
+		WorkflowDesigner orignator = new WorkflowDesigner("Leave workflow");
+
+		WorkflowCommand command1 = new AddWorkflowCommand(orignator, "Create Leave Application");
+		WorkflowCommand command2 = new AddWorkflowCommand(orignator, "Submit Leave Application");
+		WorkflowCommand command3 = new AddWorkflowCommand(orignator, "Leave Application Approved");
+
+		command1.execute();
+		command2.execute();
+		command3.execute();
+
+		orignator.show();
+		command3.undo();
+		orignator.show();
+	}
+}
+
+Write a note on design consideration for memento design pattern?
+
+-	Be careful about the size of memento state. One solution is to discard older saved states.
+
+-	The memento class must be inner class to originator class to ensure it is read only by originator.
+
+-	Restoring to a previous state must consider the effect on the state of another objects.
+
+-	If there is a definite fixed way in which mementos are created (using command design pattern) then only delta states can be saved. 
+
+-	Memento encapsulated inside originator might increase the implementation complexity.
+
+Write a note on pitfalls of memento design pattern?
