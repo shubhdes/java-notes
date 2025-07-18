@@ -922,3 +922,452 @@ Write a note on design consideration for memento design pattern?
 -	Memento encapsulated inside originator might increase the implementation complexity.
 
 Write a note on pitfalls of memento design pattern?
+
+-	Creating a snapshot is not easy if the orignator object encapsulates another objects.
+
+-	Resetting the state of an orignator object might cause other related object's state to become out of sync.
+
+Explain the observer design pattern?
+
+-	The observer design pattern is a behavioral design pattern.
+
+-	It is also called as publisher subscriber or pub sub design pattern.
+
+-	It is used to notify multiple objects (observers) about a state change in an object(observable).
+
+-	There is no tight coupling between the observers and observable.
+
+-	The observer must query to identify the state change inside the observable.
+
+Write a note on implementing observer design pattern?
+
+-	Declare the observer interface.
+
+-	Declare a method to notify observers about state change in observable.
+
+-	A subject can be interface if observers are observing multiple observables otherwise it can be a concrete class.
+
+-	Implement subject to provide functionality to attach and detach from observable, notify registered observers and provide state information to the observers. 
+
+						---------------------------------------------------------------------|
+						|																	 |
+						|				OrderObservable				Order					 |
+			  Client	|				<<interface>>				<<concrete class>>		 |	
+			  ---------------		    -------------				-------------        	 |
+	          | 		    |---------->|			|------------<*>|			|<-----------|
+	          ---------------		    -------------				-------------		
+                                 		  ^       ^   		
+                                		 ---	 ---		
+                                 		  .       .			
+                                  		  .       .			
+                                 -------------	-------------
+            PriceObservable      |  		 |  |			| 	QuantityObservable
+            <<concrete class>>   -------------  -------------	<<concrete class>>
+                                  
+
+Example:
+
+public class Order {
+
+	private int count;
+
+	private double itemCost;
+
+	private List<OrderObserver> observerList;
+
+	public Order() {
+		observerList = new ArrayList<>();
+	}
+
+	public void addItem(int cost) {
+		itemCost = itemCost + cost;
+		count++;
+		observerList.forEach(observer -> observer.updated(this));
+	}
+
+	public double getItemCost() {
+		return itemCost;
+	}
+
+	public int getCount() {
+		return count;
+	}
+
+	public void attach(OrderObserver observer) {
+		observerList.add(observer);
+	}
+
+	public void detach(OrderObserver observer) {
+		observerList.remove(observer);
+	}
+}
+
+public interface OrderObserver {
+
+	void updated(Order order);
+}
+
+public class PriceObserver implements OrderObserver {
+
+	@Override
+	public void updated(Order order) {
+
+		if (order.getItemCost() >= 1000) {
+			System.out.println("Order is eligible for discount");
+		}
+	}
+}
+
+public class QuantityObserver implements OrderObserver {
+
+	@Override
+	public void updated(Order order) {
+
+		if (order.getCount() >= 3) {
+			System.out.println("Order is eligible for free shipping");
+		}
+	}
+}
+
+public class Client {
+
+	public static void main(String[] args) {
+
+		Order order = new Order();
+		PriceObserver priceObserver = new PriceObserver();
+		QuantityObserver quantityObserver = new QuantityObserver();
+
+		order.attach(priceObserver);
+		order.attach(quantityObserver);
+
+		order.addItem(100);
+		order.addItem(200);
+		order.addItem(300);
+		order.addItem(400);
+		order.addItem(500);
+	}
+}
+
+Write a note on design consideration for observer design pattern?
+
+-	In some cases it may encounter circular update loop.
+
+-	An observer can listen for change into multiple observables, hence the observable must pass its reference when notifying.
+
+-	Too many observers and slow observers can make it costly.
+
+-	We can have observer register to observable for specific state change.
+
+-	Instead of observable we can implement client code to send notification.
+
+Write a note on pitfalls of observer design pattern?
+
+-	Every setter method triggering notification may be too much if we have a client setting properties on after another on the observable.
+
+-	Each update become costly if we have too many observers and one or more observer is slow.
+
+-	Complexity increases if the observers query to find exact state change in observable.
+
+Explain the state design pattern?
+
+-	The state design pattern is a behavioral design pattern.
+
+-	It allows the object (context) to behave differently based on its current internal state.
+
+-	It allows to define state specific behavior inside differen classes/
+
+-	 Any operation on the context will delegate it to the state specific implementation.
+
+-	New state and behavior can be added without changing the context class.
+
+Write a note on implementing state design pattern?
+
+-	Identify distinct states of the object.
+
+-	Implement each state as a separate class which provide behavior specific to that state.
+
+-	Implement method inside context class to delegate operation to state class.
+
+-	Identify state transition.
+
+-	The state transition can be done by state implementation or client code.
+
+-	If state  transition is done by state implementation then the client code is unaware of the state classes.
+
+						---------------------------------------------------------------------|
+						|																	 |
+						|				OrderState					Order					 |
+			  Client	|				<<interface>>				<<concrete class>>		 |	
+			  ---------------		    -------------				-------------        	 |
+	          | 		    |			|			|------------<*>|			|<-----------|
+	          ---------------		    -------------				-------------		
+											  ^  	   		
+											 --- 	 		
+                                 		   	  |			
+                -------------------------------------------------------------
+				|			   |			  |				  |				|
+        -------------	-------------	-------------	-------------	-------------
+        |		    |	|		    |	|		    |	|		    |	|		    | 
+        -------------	-------------	-------------	-------------	-------------
+		NewState		PaidState		InTransitState	DeliveredState	CancelledState
+									 <<concrete classes>>	
+Example:
+
+public class Order {
+
+	private OrderState state;
+
+	public Order() {
+		this.state = new NewState();
+	}
+
+	public double cancel() {
+		double charges = state.handleCancellation();
+		this.state = new CancelledState();
+		return charges;
+	}
+
+	public void paymentSuccessful() {
+		this.state = new PaidState();
+	}
+
+	public void dispatched() {
+		this.state = new InTransitState();
+	}
+
+	public void delivered() {
+		this.state = new DeliveredState();
+	}
+}
+
+public interface OrderState {
+
+	double handleCancellation();
+}
+
+public class NewState implements OrderState {
+
+	@Override
+	public double handleCancellation() {
+		return 0;
+	}
+
+}
+
+public class PaidState implements OrderState {
+
+	@Override
+	public double handleCancellation() {
+		return 50;
+	}
+}
+
+public class InTransitState implements OrderState {
+
+	@Override
+	public double handleCancellation() {
+		return 100;
+	}
+}
+
+public class DeliveredState implements OrderState {
+
+	@Override
+	public double handleCancellation() {
+		return 150;
+	}
+}
+
+public class CancelledState implements OrderState {
+
+	@Override
+	public double handleCancellation() {
+		throw new IllegalStateException();
+	}
+
+}
+
+public class Client {
+
+	public static void main(String[] args) {
+
+		Order order = new Order();
+		order.paymentSuccessful();
+		order.dispatched();
+		double charges = order.cancel();
+		System.out.println("Cancellation charges " + charges);
+	}
+}
+
+Write a note on design consideration for state design pattern?
+
+-	We may ask the client code to initialise the context with specific initial state.
+
+-	If state transition is done by state class then it needs to know atleast one state, this requires code change for adding new state.
+
+-	Using flyweight design pattern we can share state objects without data members but only member methods.
+
+-	It is not same as state machine (only transition no behavior).
+
+Write a note on pitfalls of state design pattern?
+
+-	Too many states will result into too many classes which will require unit testing.
+
+-	The state transition may become complex if there are multiple possible states to which a context can be transitined from current state.
+
+-	This may create coupling between the states.
+
+-	We may not identify all possible states at beginning hence we will have to add more states to handle behavior as design evolves.
+
+Explain the strategy design pattern?
+
+-	The strategy design pattern is a behavioral design pattern.
+
+-	It allows to encapsulate an algorithm inside the class.
+
+-	It is useful hen there are multiple algorithms available.
+
+-	It uses inheritance hierarchy to provide implementation for different algorithm.
+
+Write a note on implementing strategy design pattern?
+
+-	Define the strategy interface.
+
+-	The context class supplies necessary parameters to the strategy object.
+
+-	Implement strategy interface using one class per algorithm.
+
+-	The client code will create context object and configure it with one of the strategy implementation object.
+
+						---------------------------------------------------------------------|
+						|																	 |
+						|				OrderPrinter				PrintToFileService		 |
+			  Client	|				<<interface>>				<<concrete class>>		 |	
+			  ---------------		    -------------				-------------        	 |
+	    |-----| 		    |---------->|			|------------<*>|			|<-----------|
+	    |     ---------------		    -------------				-------------		
+        |                            	 ^         ^   				
+        |  		 			       		---	      ---				
+        |                            	 .         .			    
+        |                                .         .			    
+		|  -------------	  -------------	      -------------
+		-->|		   |	  |  		  |       |		      | 	
+		   -------------	  -------------       -------------	
+		   Order			  DetailPrinter	      SummaryPrinter
+		   <<concrete class>> <<concrete class>> <<concrete class>>
+								 
+Example:
+
+public class Order {
+
+	private String id;
+
+	private LocalDate date;
+
+	private Map<String, Double> items;
+
+	public Order(String id, LocalDate date) {
+		this.id = id;
+		this.date = date;
+		this.items = new HashMap<>();
+	}
+
+	public void addItem(String name, double price) {
+		items.put(name, price);
+	}
+
+	public String getId() {
+		return id;
+	}
+
+	public LocalDate getDate() {
+		return date;
+	}
+
+	public Map<String, Double> getItems() {
+		return items;
+	}
+}
+
+public interface OrderPrinter {
+
+	String print(Order order);
+}
+
+public class SummaryPrinter implements OrderPrinter {
+
+	@Override
+	public String print(Order order) {
+		StringBuilder summary = new StringBuilder();
+		return summary.append("Id = ").append(order.getId())
+				.append(" Date = " + order.getDate() + " Items = " + order.getItems().size()).toString();
+	}
+}
+
+public class DetailPrinter implements OrderPrinter {
+
+	@Override
+	public String print(Order order) {
+
+		StringBuilder detail = new StringBuilder();
+		detail.append("Id = ").append(order.getId())
+				.append(" Date = " + order.getDate() + " Items = " + order.getItems().size());
+		detail.append("\n");
+
+		double total = 0;
+		for (Map.Entry<String, Double> item : order.getItems().entrySet()) {
+			detail.append("Name = " + item.getKey() + " Price = " + item.getValue());
+			detail.append("\n");
+			total = total + item.getValue();
+		}
+
+		detail.append("Total = " + total);
+
+		return detail.toString();
+	}
+}
+
+public class PrintToFileService {
+
+	private OrderPrinter orderPrinter;
+
+	public PrintToFileService(OrderPrinter orderPrinter) {
+		this.orderPrinter = orderPrinter;
+	}
+
+	public void printOrder(Order order) {
+		System.out.println(orderPrinter.print(order));
+	}
+}
+
+public class Client {
+
+	public static void main(String[] args) {
+
+		Order order = new Order("O001", LocalDate.now());
+		order.addItem("chips", 120);
+		order.addItem("cookies", 746);
+		order.addItem("soda", 180);
+		order.addItem("fries", 780);
+
+		OrderPrinter orderPrinter = new DetailPrinter();
+		PrintToFileService service = new PrintToFileService(orderPrinter);
+		service.printOrder(order);
+	}
+}
+
+Write a note on design consideration for strategy design pattern?
+
+-	We can implement context object with optional strategy object, this allows reusing context object.
+
+-	If number of parameters supplied by the context object to strategy object are more we can pass strategy object an interface which it can query to get the parameters.
+
+-	A strategy object is stateless and can be shared between context objects using flyweight design pattern.
+
+-	Use inheritance to implement common part of the algorithm into base class and making child class implementation simpler.
+
+Write a note on pitfalls of strategy design pattern?
+
+-	Client code must know all implementations of strategy.
+
+-	Client code needs change when new implementation of strategy is available.

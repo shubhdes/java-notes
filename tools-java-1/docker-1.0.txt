@@ -621,17 +621,17 @@ How docker help deployment inside microservice architecture?
 
 	Example:
 
-	#docker-compose up -d
+	#docker compose up -d
 
 -	Also docker compose allow runtime scale up and scale down for any service.
 
 	Syntax:
 
-	#docker-compose scale {service}={count}
+	#docker compose scale {service}={count}
 
 	Example:
 
-	#docker-compose scale my-app-1=2
+	#docker compose scale my-app-1=2
 
 -	Docker support standard deployment process irrespective of platform used for service development.
 
