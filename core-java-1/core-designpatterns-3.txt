@@ -11,6 +11,24 @@ Explain and enlist behavioral design pattern?
 	-	command
 	
 	-	interpreter
+	
+	-	mediator
+	
+	-	iterator
+	
+	-	memento
+	
+	-	observer
+	
+	-	state
+	
+	-	strategy
+	
+	-	template method
+	
+	-	visitor
+	
+	-	null object
 
 Explain the chain of responsibility design pattern?
 
@@ -1074,7 +1092,7 @@ Explain the state design pattern?
 
 -	It allows the object (context) to behave differently based on its current internal state.
 
--	It allows to define state specific behavior inside differen classes/
+-	It allows to define state specific behavior inside different classes.
 
 -	 Any operation on the context will delegate it to the state specific implementation.
 
@@ -1298,8 +1316,8 @@ public class SummaryPrinter implements OrderPrinter {
 
 	@Override
 	public String print(Order order) {
-		StringBuilder summary = new StringBuilder();
-		return summary.append("Id = ").append(order.getId())
+		StringBuilder builder = new StringBuilder();
+		return builder.append("Id = ").append(order.getId())
 				.append(" Date = " + order.getDate() + " Items = " + order.getItems().size()).toString();
 	}
 }
@@ -1309,21 +1327,21 @@ public class DetailPrinter implements OrderPrinter {
 	@Override
 	public String print(Order order) {
 
-		StringBuilder detail = new StringBuilder();
-		detail.append("Id = ").append(order.getId())
+		StringBuilder builder = new StringBuilder();
+		builder.append("Id = ").append(order.getId())
 				.append(" Date = " + order.getDate() + " Items = " + order.getItems().size());
-		detail.append("\n");
+		builder.append("\n");
 
 		double total = 0;
 		for (Map.Entry<String, Double> item : order.getItems().entrySet()) {
-			detail.append("Name = " + item.getKey() + " Price = " + item.getValue());
-			detail.append("\n");
+			builder.append("Name = " + item.getKey() + " Price = " + item.getValue());
+			builder.append("\n");
 			total = total + item.getValue();
 		}
 
-		detail.append("Total = " + total);
+		builder.append("Total = " + total);
 
-		return detail.toString();
+		return builder.toString();
 	}
 }
 
@@ -1371,3 +1389,600 @@ Write a note on pitfalls of strategy design pattern?
 -	Client code must know all implementations of strategy.
 
 -	Client code needs change when new implementation of strategy is available.
+
+Explain the template method design pattern?
+
+-	The template method design pattern is a behavioral design pattern.
+
+-	It defines an algorithm inside a method (template) as sequence of steps or method calls.
+
+-	It allows child classes to override and provide implementation for these steps.
+
+-	It allow to defer implementation of parts of an algorithm which can change.
+
+-	It is an example of inversion of control principle.
+
+Write a note on implementing template method design pattern?
+
+-	Define the template method with an algorithm.
+
+-	Break the algorithm into multiple steps.
+
+-	Make sure not too many steps or methods to implement inside child classes.
+
+-	Implement the abstract methods inside child classes.
+
+										OrderPrinter
+			  Client					<<interface>>
+			  ---------------		    -------------
+	    |-----| 		    |---------->|			|
+	    |     ---------------		    -------------
+        |                            	 ^         ^ 
+        |  		 			       		---	      ---				
+        |                            	 .         .			    
+        |                                .         .			    
+		|  -------------	  -------------	      -------------
+		-->|		   |	  |  		  |       |		      | 	
+		   -------------	  -------------       -------------	
+		   Order			  HtmlPrinter	      TextPrinter
+		   <<concrete class>> <<concrete class>> <<concrete class>>
+
+
+Example:
+
+public class Order {
+
+	private String id;
+
+	private LocalDate date;
+
+	private Map<String, Double> items;
+
+	public Order(String id, LocalDate date) {
+		this.id = id;
+		this.date = date;
+		this.items = new HashMap<>();
+	}
+
+	public void addItem(String name, double price) {
+		items.put(name, price);
+	}
+
+	public String getId() {
+		return id;
+	}
+
+	public LocalDate getDate() {
+		return date;
+	}
+
+	public Map<String, Double> getItems() {
+		return items;
+	}
+}
+
+public abstract class OrderPrinter {
+
+	public void printOrder(Order order) {
+
+		StringBuilder builder = new StringBuilder();
+		builder.append(start()).append(formatId(order)).append(formatItems(order)).append(formatTotal(order))
+				.append(end());
+
+		System.out.println(builder);
+	}
+
+	protected abstract String start();
+
+	protected abstract String formatId(Order order);
+
+	protected abstract String formatItems(Order order);
+
+	protected abstract String formatTotal(Order order);
+
+	protected abstract String end();
+
+}
+
+public class HtmlOrderPrinter extends OrderPrinter {
+
+	@Override
+	protected String start() {
+		return "<html><head><title>Order Details</title></head><body>";
+	}
+
+	@Override
+	protected String formatId(Order order) {
+		return "<b>Id = " + order.getId() + "</b>";
+	}
+
+	@Override
+	protected String formatItems(Order order) {
+
+		StringBuilder builder = new StringBuilder();
+		builder.append("<table><th><td>Name</td><td>Price</td></th>");
+
+		for (Map.Entry<String, Double> item : order.getItems().entrySet()) {
+			builder.append("<tr>");
+			builder.append("<td>" + item.getKey() + "</td><td>" + item.getValue() + "<td>");
+			builder.append("</tr>");
+		}
+		builder.append("</table>");
+		return builder.toString();
+	}
+
+	@Override
+	protected String formatTotal(Order order) {
+
+		double total = 0;
+		for (Map.Entry<String, Double> item : order.getItems().entrySet()) {
+			total = total + item.getValue();
+		}
+
+		return "<b>Total = " + total + "</b>";
+	}
+
+	@Override
+	protected String end() {
+		return "</body></html>";
+	}
+
+}
+
+public class TextOrderPrinter extends OrderPrinter {
+
+	@Override
+	protected String start() {
+		return "[";
+	}
+
+	@Override
+	protected String formatId(Order order) {
+		return "Id = " + order.getId();
+	}
+
+	@Override
+	protected String formatItems(Order order) {
+
+		StringBuilder builder = new StringBuilder();
+		for (Map.Entry<String, Double> item : order.getItems().entrySet()) {
+			builder.append("Name = " + item.getKey() + " Price = " + item.getValue());
+			builder.append("\n");
+		}
+
+		return builder.toString();
+	}
+
+	@Override
+	protected String formatTotal(Order order) {
+
+		double total = 0;
+		for (Map.Entry<String, Double> item : order.getItems().entrySet()) {
+			total = total + item.getValue();
+		}
+
+		return "Total = " + total;
+	}
+
+	@Override
+	protected String end() {
+		return "]";
+	}
+
+}
+
+public class Client {
+
+	public static void main(String[] args) {
+
+		Order order = new Order("O001", LocalDate.now());
+		order.addItem("chips", 120);
+		order.addItem("cookies", 746);
+		order.addItem("soda", 180);
+		order.addItem("fries", 780);
+
+		OrderPrinter orderPrinter = new HtmlOrderPrinter();
+		orderPrinter.printOrder(order);
+	}
+}
+
+Write a note on design consideration for template method design pattern?
+
+-	A balance must be kept in how much granular we want to keep the algorithm steps.
+
+-	Too many steps will cause the child classes to implement too many methods.
+
+-	Too few steps will cause the child classes to implement major parts of the algorithm.
+
+-	We can prevent the child classes from overriding the template method by using final keyword.
+
+-	We can use multi level and hierarchical inheritance between child classes inorder to reuse steps.
+
+-	Factory method design pattern uses template method design pattern, actual factory method is often called as part of another template method.
+
+Write a note on pitfalls of template method design pattern?
+
+-	It is difficult to track the complete steps executed as part of algorithm which might be present across multiple child classes (multi level inheritance).
+
+-	Unit testing can be difficult as individual step might require some specific state value to be present.
+
+Explain the visitor design pattern?
+
+-	The visitor design pattern is a behavioral design pattern.
+
+-	It allows to define new operation that can be performed on an object without changing the class definition of the object.
+
+-	An object (visitor) visits all other objects in  object structure. 
+
+-	The object calls a specific method on visitor passing itself as arguement.
+
+-	Each time we need a new operation we create a child class of visitor and implement it and visit the object structure.
+
+-	Objects themselves only implement an accept visit where the visitor is passed as an arguement.
+
+-	Objects know that method inside visitor is created specifically for it and call it inside the accept method.
+
+Write a note on implementing visitor design pattern?
+
+-	Declare visitor interface with multiple visit method specific to each concrete class.
+
+-	Implement the visitor interface and provide specific functionality for interested class.
+
+-	Define concrete classes with accept method to use visitor's functionality.
+
+-	Implement the accept method to call functionality of visitor defined specifically for that class.
+
+
+					  |----------------------------------------------------------------
+					  |																  |	
+				--------------			-------------								  |		-------------
+		Client	| 		     |--------->| 		    |	Employee					  |---->|			|	Visitor		
+				--------------		    -------------	<<interface>>				        -------------	<<interface>>
+											  ^													  ^
+											 ---			                                	 ---
+											  | 			                                	  |	
+										-------------                                       	  |  	  
+										|			|	AbstractEmployee                    	  |	 
+										-------------	<<abstract class>>                     	  |			
+											  ^  	   		                                	  |
+											 --- 	 		                                	  |			
+                                 		   	  |			                                    	  |
+                -------------------------------------------------------------               	  |
+				|			   |			  				  |				|               	  |
+        -------------	-------------					-------------	-------------       -------------
+        |		    |	|		    |			    	|		    |	|		    |       |		    |
+        -------------	-------------					-------------	-------------       -------------
+		Programmer		ProjectLead						Manager			VicePresident       PrintVisitor
+									 <<concrete classes>>                                   <<concrete class>>
+
+Example:
+
+public interface Employee {
+
+	String getEmployeeId();
+
+	int getPerformanceRating();
+
+	void setPerformanceRating(int performanceRating);
+
+	Collection<Employee> getDirectReports();
+
+	void accept(Visitor visitor);
+}
+
+public abstract class AbstractEmployee implements Employee {
+
+	private String employeeId;
+
+	private int performanceRating;
+
+	public AbstractEmployee(String employeeId) {
+		this.employeeId = employeeId;
+	}
+
+	@Override
+	public int getPerformanceRating() {
+		return performanceRating;
+	}
+
+	@Override
+	public void setPerformanceRating(int performanceRating) {
+		this.performanceRating = performanceRating;
+
+	}
+
+	@Override
+	public Collection<Employee> getDirectReports() {
+		return Collections.emptyList();
+	}
+
+	@Override
+	public String getEmployeeId() {
+		return employeeId;
+	}
+}
+
+public class Programmer extends AbstractEmployee {
+
+	private String skill;
+
+	public Programmer(String employeeId, String skill) {
+		super(employeeId);
+		this.skill = skill;
+	}
+
+	public String getSkill() {
+		return skill;
+	}
+
+	@Override
+	public void accept(Visitor visitor) {
+		visitor.visit(this);
+	}
+}
+
+public class ProjectLead extends AbstractEmployee {
+
+	private List<Employee> directReportees;
+
+	public ProjectLead(String employeeId, List<Employee> directReportees) {
+		super(employeeId);
+		this.directReportees = new ArrayList<>(directReportees);
+	}
+
+	@Override
+	public Collection<Employee> getDirectReports() {
+		return directReportees;
+	}
+
+	@Override
+	public void accept(Visitor visitor) {
+		visitor.visit(this);
+	}
+}
+
+public class Manager extends AbstractEmployee {
+
+	private List<Employee> directReportees;
+
+	public Manager(String employeeId, List<Employee> directReportees) {
+		super(employeeId);
+		this.directReportees = new ArrayList<>(directReportees);
+	}
+
+	@Override
+	public Collection<Employee> getDirectReports() {
+		return directReportees;
+	}
+
+	@Override
+	public void accept(Visitor visitor) {
+		visitor.visit(this);
+	}
+}
+
+public class VicePresident extends AbstractEmployee {
+
+	private List<Employee> directReportees;
+
+	public VicePresident(String employeeId, List<Employee> directReportees) {
+		super(employeeId);
+		this.directReportees = new ArrayList<>(directReportees);
+	}
+
+	@Override
+	public Collection<Employee> getDirectReports() {
+		return directReportees;
+	}
+
+	@Override
+	public void accept(Visitor visitor) {
+		visitor.visit(this);
+	}
+}
+
+public interface Visitor {
+
+	void visit(Programmer programmer);
+
+	void visit(ProjectLead projectLead);
+
+	void visit(Manager manager);
+
+	void visit(VicePresident vicePresident);
+}
+
+public class PrintVisitor implements Visitor {
+
+	@Override
+	public void visit(Programmer programmer) {
+		System.out.println("Employee " + programmer.getEmployeeId() + " is a " + programmer.getSkill() + " programmer");
+	}
+
+	@Override
+	public void visit(ProjectLead projectLead) {
+		System.out.println("Employee " + projectLead.getEmployeeId() + " is a project lead with "
+				+ projectLead.getDirectReports().size() + " direct reportees");
+	}
+
+	@Override
+	public void visit(Manager manager) {
+		System.out.println("Employee " + manager.getEmployeeId() + " is a manager with "
+				+ manager.getDirectReports().size() + " direct reportees");
+	}
+
+	@Override
+	public void visit(VicePresident vicePresident) {
+		System.out.println("Employee " + vicePresident.getEmployeeId() + " is a vice president with "
+				+ vicePresident.getDirectReports().size() + " direct reportees");
+	}
+}
+
+public class Client {
+
+	public static void main(String[] args) {
+
+		Employee emp = buildOrganisation();
+		Visitor visitor = new PrintVisitor();
+
+		visitOrganisation(emp, visitor);
+	}
+
+	public static Employee buildOrganisation() {
+
+		Programmer programmer1 = new Programmer("PG001", "c");
+		Programmer programmer2 = new Programmer("PG002", "c++");
+		Programmer programmer3 = new Programmer("PG003", "java");
+		Programmer programmer4 = new Programmer("PG004", "python");
+
+		ProjectLead projectLead1 = new ProjectLead("PL001", List.of(programmer1, programmer2));
+		ProjectLead projectLead2 = new ProjectLead("PL002", List.of(programmer3, programmer4));
+
+		Manager manager1 = new Manager("MG001", List.of(projectLead1, projectLead2));
+
+		VicePresident vicePresident = new VicePresident("VP001", List.of(manager1));
+
+		return vicePresident;
+	}
+
+	public static void visitOrganisation(Employee emp, Visitor visitor) {
+		emp.accept(visitor);
+		emp.getDirectReports().forEach(reportee -> visitOrganisation(reportee, visitor));
+	}
+}
+
+Write a note on design consideration for visitor design pattern?
+
+-	Visitor can work with objects of classes which do not have a common parent.
+
+-	But the code which passes our visitor to these object must be aware of these individual classes.
+
+-	Visitor need access to internal state of object therefore we need to expose getter methods.
+
+-	The related functionality is grouped inside single visitor class, so to add a new functionality we need a new visitor implementation.
+
+-	Visitor can accumulate state of different objects inside object structure.
+
+-	Visitor can add new functionality to object structure implemented using composite design pattern or can be used for doing interpretation in interpreter design pattern.
+
+Write a note on pitfalls of visitor design pattern?
+
+-	Visitor needs access to object state, therefore too many getter method are required inside object class which weakens encapsulation.
+
+-	To add new object class we need to change the visitor implementation.
+
+-	Any change in object class will require change in visitor implementation.
+
+-	Complex to understand and implement.
+
+Explain the null object design pattern?
+
+-	The null object design pattern is a behavioral design pattern.
+
+-	It is used to provide an alternate representation to indicate absence of object.
+
+-	It is used to treat absence of a collaborator transparently without null checks.
+
+-	It will do nothing or save nothing when an operation is called on it.
+
+-	It seems like a proxy to real object but it doesn't transform into real object.
+
+Write a note on implementing null object design pattern?
+
+-	Create null class by inheriting from base class or implementing base interface.
+
+-	Implement do nothing methods.
+
+-	Code which creates object of implementing will create and pass null object under specific situation.
+
+
+						---------------------------------------------------------------------|
+						|																	 |
+						|				StorageService				ComplexService 			 |
+			  Client	|				<<concrete class>>			<<concrete class>>		 |	
+			  ---------------		    -------------				-------------        	 |
+	      ----| 		    |---------->|			|<*>------------|			|<-----------|
+	      |   ---------------		    -------------				-------------		
+          |                     		      ^      
+		  |		 						 	 ---	 
+          |                     		      .      
+          |                     		      .      
+	      |  -------------				-------------
+		  |->|			 |				|	  		|
+			 -------------				-------------
+			  Report					NullStorageService
+			  <<concrete class>>		<<concrete class>>
+
+Example:
+
+public class Report {
+
+	private String name;
+
+	private String contents;
+
+	public Report(String name, String contents) {
+		this.name = name;
+		this.contents = contents;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public String getContents() {
+		return contents;
+	}
+}
+
+public class StorageService {
+
+	public void save(Report report) {
+
+		try (PrintWriter writer = new PrintWriter(report.getName())) {
+
+			writer.println(report.getContents());
+		} catch (Exception ex) {
+			System.out.println("Failed to write report");
+		}
+	}
+}
+
+public class NullStorageService extends StorageService {
+
+	@Override
+	public void save(Report report) {
+
+	}
+}
+
+public class ComplexService {
+
+	private StorageService storageService;
+
+	public ComplexService(StorageService storageService) {
+		this.storageService = storageService;
+	}
+
+	public void saveReport(Report report) {
+		storageService.save(report);
+	}
+}
+
+Write a note on design consideration for null object design pattern?
+
+-	Class using null object should not have to do anything special when working with this object.
+
+-	What do nothing means can be different for different classes, especially when a methods are expected to return a value.
+
+-	Whenever there is a need to transform null object into real object use of state design pattern is recommended instead of null object design pattern.
+
+-	The null object can be implemented as singleton object is possible.
+
+-	They are very useful in other design patterns like state and strategy design patterns.
+
+Write a note on pitfalls of null object design pattern?
+
+-	Creating a null object in not possible for all the classes, implementation classes may be expected to cause a change and absence of the change may cause other functionality to fail.
+
+-	Finding what do nothing means is not easy or always possible.
