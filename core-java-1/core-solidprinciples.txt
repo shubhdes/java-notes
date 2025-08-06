@@ -182,6 +182,7 @@ class Client {
 	
 	public static void main(String[] args) {
 		Square square = new Square(10);
+		useRectangle(square);
 	}
 	
 	public static void useRectangle(Rectangle rectangle) {

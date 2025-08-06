@@ -36,7 +36,7 @@ Explain text blocks?
 
 	Example:
 	
-	String name = "durga	\nsoftware	\nhyderabad		\ntelangana";	//	before java 17
+	String name = "durga\n	  software\n	  hyderabad\n		telangana";	//	before java 17
 	
 	String name = """durga 
 						software

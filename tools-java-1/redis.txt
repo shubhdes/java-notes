@@ -1,0 +1,84 @@
+redis
+
+What is redis?
+
+-	Redis is an open source, powerful and high speed inmemory nosql database.
+
+-	It saves data in form of key and value pairs.
+
+-	It allows data to be saved to permanant storage also.
+
+-	It doesn't create default index but supports custom index creation.
+
+-	It doesn't support any query language.
+
+-	It follows master slave replication strategy to eliminate single point of failure.
+
+Explain datatypes in redis?
+
+-	There are five main datatypes supported by redis,
+
+-	string
+
+-	list
+
+-	set
+
+-	sorted set
+
+-	hashes
+
+List and explain different redis commands for string datatype?
+
+-	Below are different redis commands for string datatype
+
+	Command								Description
+	---------------------------------------------------------------
+-	set	keyName	valueName				This command is used to create or update a key value pair.
+								
+										Example:
+										
+										set mykey durga
+										
+										set mykey durgasoftwaresolutions
+										
+										set mykey "durga software solutions"
+
+-	set	keyName	valueName nx			This command is used to create a key value pair only when key doesn't exists.
+								
+										Example:
+										
+										set mykey durga nx
+
+-	set	keyName	valueName xx			This command is used to create a key value pair only when the key exists.
+								
+										Example:
+										
+										set mykey durga xx
+										
+-	set	keyName	valueName ex secs		This command is used to create or update a key value pair with expiry duration.
+								
+										Example:
+										
+										set mykey durga ex 5
+										
+-	get	keyName							This command is used to return the value of specific key parameter.
+										It returns empty if the key parameter doesn't exist.	
+											
+										Example:
+
+										get mykey
+										
+-	keys regex							This command returns all key names matching the regex.	
+
+										Example:
+										
+										keys *
+										
+										keys myk*
+
+-	exists keyName						This command returns whether a key exists or not.
+
+										Example:
+										
+										exists mykey

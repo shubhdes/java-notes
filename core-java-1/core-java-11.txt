@@ -13,6 +13,7 @@ Explain how to run a java program?
 	Example:
 	
 	# javac Myprogram.java
+	
 	# java Myprogram
 
 -	From java 11 version onwards we can execute java program directly without compilation by using java command with file name.
