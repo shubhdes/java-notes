@@ -1,0 +1,217 @@
+elastic search
+
+How does elastic search work?
+
+-	Apache Lucene is a java library which performs storage, indexing and search.
+
+-	Elastic search uses Apache Lucene.
+
+-	It is a distributed server exposing REST endpoints on top of Apache Lucene.
+
+-	When a document is saved inside elastic search, it parses the document.
+
+-	From the parsed result it extracts tokens.
+
+-	These tokens are saved inside a table called inverted index, along with the token name, document identifier and position.
+
+-	Consider below REST endpoints are requested,
+
+	Example:
+	
+	POST products/_doc/1 {
+		"name": "Apple iphone 13"
+	}
+		
+	POST products/_doc/2 {
+		"name": "Samsung galaxy S21"
+	}
+		
+	POST products/_doc/3 {
+		"name": "Apple macbook"
+	}
+	
+-	Now elastic search will parse the document, extract tokens and save them in below format.
+
+	Token					Document				Position
+	--------------------------------------------------------
+	Apple					1,3						[0],[0]
+	iphone					1						[1]
+	13						1						[2]
+	Samsung					2						[0]
+	...						...						...			
+	macbook					3						[1]	
+	
+-	When a search query is made then elastic search tokenises the query parameters.
+
+-	Then it searches for the tokens inside the inverted index.
+
+-	When found it reads the document identifier, then it query the document from the index and return it.
+
+Explain term frequency and document frequency?
+
+-	The term frequency refers to number of times a token repeats inside an document.
+
+-	The document frequency refers to number of documents having the token inside them.
+
+-	Consider below documents are requested,
+
+	Example:
+	
+	{
+		"text": "Sam likes coffee. He always starts his day with coffee. A strong coffee can keep you awake."
+	}
+		
+	{
+		"name": "Some prefer tea over coffee."
+	}
+	
+-	Inside the inverted index the above information is saved inside two tables called term dictionary and posting list.
+
+			Term Dictionary													Posting List	
+
+	Token			Document Frequency						Token			Document Id			Position	
+	----------------------------------						--------------------------------------------		
+	coffee			2-------------------------------------->3/17			1					[2,9,12]
+	tea				1								|------>1/5				2					[4]
+					|-------------------------------------->1/5				2					[2]	
+					
+-	Inside Posting List table the Token column represents number of times a token repeats out of total number of tokens inside a document.
+
+What is segment?
+
+-	A single index is divided into multiple parts called as segment.
+
+-	It is immutable.
+
+-	It is a collection of one or more files containing the documents.
+
+-	Each segment is also an index.
+
+-	It will have its own inverted index.
+
+-	When a new document is saved, it is first inserted inside memory buffer.
+
+-	Then periodically from the memory buffer all the documents are flushed to disk as a segment.
+
+-	This improves write performance, but increases the overhead of search operation.
+
+-	However Apache Lucene periodically merges multiple smaller segments into single larger segment.
+
+-	When a segment is requested to be deleted then it doesn't execute immediately, instead the segment file is marked to be deleted first.
+
+-	The marked segment file is ignored because of the deletion mark from result of every next search request.
+
+-	Later during periodic merge the segment file will be erased permanantly.
+
+-	A segment being immutable is never updated, instead its deleted and reinserted.
+
+Explain the refresh REST endpoint?
+
+-	When a new document is saved, it is first inserted inside memory buffer.
+
+-	Then periodically from the memory buffer all the documents are flushed to disk as a segment.
+
+-	However using below REST endpoint we can forcefully flush the documents from memory buffer to disk immediately.
+
+	Method				Endpoint						Body		Description
+	-------------------------------------------------------------------------------			
+-	POST				/{name}/_refresh				empty		This endpoint is used to forcefully flush the documents from memory buffer to disk immediately.
+
+What is a elastic search cluster?
+
+-	Elastic search operates on multiple nodes at the same time this is called as cluster.
+
+-	This ensures high availability and scalability.
+
+What is sharding?
+
+-	Sharding is dividing an index into smaller manageable units called as primary shards.
+
+-	Each primary shard is present on a different node inside the cluster.
+
+-	Shard is different from segment. One or more segments exists for each shard.
+
+-	The client call REST endpoint exposed by elastic search, it is decided by elastic search to which shard the document must be saved.
+
+-	Below are the REST endpoints exposed by elastic search to query shard,
+
+	Method				Endpoint						Body		Description
+	-------------------------------------------------------------------------------			
+-	GET					/_cat/shards?v								This endpoint is used to return all shards present inside elastic search cluster.
+
+																	Example:
+																	
+																	GET /_cat/shards?v
+
+-	GET					/_cat/shards/{name}?v						This endpoint is used to return all shards belonging to index with supplied name
+																	present inside elastic search cluster.
+
+																	Example:
+																	
+																	GET /_cat/shards/books?v
+
+What is replica shard?
+
+-	Inside elastic search the contents of primary shard are periodically replicated to copy shard.
+
+-	This copy shard is called replica shard or secondary shard.
+
+-	The primary shard and replica shard must not be present on single node.
+
+-	However multiple primary shards belonging to single index can exists on single node.
+
+-	When the primary shard is unavaliable the replica shard is promoted as primary shard.
+
+-	The indexing activity is performed byh primary shard only and replica shard receives indexed contents.
+
+-	However replica shard can accept and process search request.
+
+-	Below are the REST endpoints exposed by elastic search to create an index with shard and replica specification,
+
+	Method				Endpoint						Body		Description
+	-------------------------------------------------------------------------------			
+-	PUT					/{name}							empty		This endpoint is used to create index with supplied name
+																	with number of shard and replica specified.
+
+																	Example:
+																	
+																	PUT /books {
+																	
+																		"settings": {
+																			
+																			"number_of_shards": 2,
+																			"number_of_replicas": 1,
+																		}
+																	}
+
+What is routing?
+
+-	Routing is ability of a node to forward the request on another node.
+
+-	When any request is accepted by a node, however the node cannot process the request because it doesn't consist any corresponding shard.
+
+-	Then it will forward the request to another node which consist the shard.
+
+-	To decided which node to forward the request it uses the below formula when the incoming request contains document identifier,
+
+	shard = hash(identifier) % number_of_primary_shard
+	
+-	When the incoming request doesn't contains document identifier, node uses scatter gather pattern i.e. forwarding the request to all the shards.
+
+-	Then node collects the response from one or more shard returns it to the client.
+
+What are node roles?
+
+-	A node can do one or more roles inside elastic search cluster.
+
+-	Below are different node roles inside elastic search cluster,
+
+	-	master node
+	
+	-	vote only node
+	
+	-	data node
+	
+	-	coordinating node
+	
+	-	ingest node

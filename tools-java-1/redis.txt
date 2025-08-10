@@ -27,13 +27,14 @@ Explain datatypes in redis?
 -	sorted set
 
 -	hashes
-
+										
 List and explain different redis commands for string datatype?
 
--	Below are different redis commands for string datatype
+-	Below are different redis commands for string datatype,
 
 	Command								Description
 	---------------------------------------------------------------
+
 -	set	keyName	valueName				This command is used to create or update a key value pair.
 								
 										Example:
@@ -61,7 +62,15 @@ List and explain different redis commands for string datatype?
 										Example:
 										
 										set mykey durga ex 5
+
+-	mset keyName1 valueName1			This command is used to create or update a key value pair.
+		 keyName2 valueName2		
+		 ...
+		 keyNamen valueNamen	
+										Example:
 										
+										set mykey1 durga mykey2 software mykey3 solutions
+
 -	get	keyName							This command is used to return the value of specific key parameter.
 										It returns empty if the key parameter doesn't exist.	
 											
@@ -69,6 +78,69 @@ List and explain different redis commands for string datatype?
 
 										get mykey
 										
+-	mget keyName1 						This command is used to return the value of specific key parameter.
+		 keyName2 						It returns empty if the key parameter doesn't exist.
+		 ...
+		 keyNamen 	
+										Example:
+										
+										get mykey1 mykey2 mykey3
+
+-	append keyName valueName			This command is used to suffix value to an existing key value. When the key doesn'the
+										exists it creates a key value pair.
+
+										Example:
+										
+										append mykey software										
+
+-	strlen keyName 						This command is used to return the length of value to an existing key. When the key doesn't exists it will return 0.
+
+										Example:
+										
+										strlen mykey	
+
+-	incr keyName						This command is used to increase the value to an existing key by 1. When the key doesn'the
+										exists it creates a key with value 1. Also it fails with an error when the existing value is not an integer.
+ 
+										Example:
+										
+										incr mykey
+
+-	incrby keyName param				This command is used to increase the value to an existing key by param. When the key doesn'the
+										exists it creates a key with value param. Also it fails with an error when the existing value is not an integer.
+ 
+										Example:
+										
+										incrby mykey 10
+
+-	decr keyName						This command is used to decrease the value to an existing key by 1. When the key doesn'the
+										exists it creates a key with value 1. Also it fails with an error when the existing value is not an integer.
+ 
+										Example:
+										
+										decr mykey
+
+-	decrby keyName param				This command is used to decrease the value to an existing key by param. When the key doesn'the
+										exists it creates a key with value param. Also it fails with an error when the existing value is not an integer.
+ 
+										Example:
+										
+										decrby mykey 10
+										
+-	setrange keyName param				This command is used to modify the value string of an existing key from a given index. When the key doesn'the
+										exists it creates a key with random value.
+
+										Example:
+										
+										setrange mykey 5 software
+
+-	getrange keyName param1 param2		This command is used to return value substring of an existing key from a given start index to stop - 1 index. 
+										When the key doesn't exists or incorrect parameter indices are supplied then it returns empty.
+
+										Example:
+										
+										getrange mykey 5 8
+
 -	keys regex							This command returns all key names matching the regex.	
 
 										Example:
@@ -82,3 +154,242 @@ List and explain different redis commands for string datatype?
 										Example:
 										
 										exists mykey
+
+List and explain different redis commands for list datatype?
+
+-	Below are different redis commands for list datatype,
+
+	Command								Description
+	---------------------------------------------------------------
+
+-	lpush keyName element				This command is used to add an element to the beginning of the list. When the keyName doesn't exists
+										it creates a key value pair.
+										
+										Example:
+										
+										lpush courses java
+										
+										lpush courses c++
+										
+										lpush courses c
+										
+-	rpush keyName element				This command is used to add an element to the end of the list. When the keyName doesn't exists
+										it creates a key value pair.
+										
+										Example:
+										
+										rpush courses python
+										
+										rpush courses go
+
+-	lrange keyName start stop			This command is used to return value substlist of an existing keyName from a given start index to stop - 1 index. 
+										When the keyName doesn't exists or incorrect parameter indices are supplied then it returns empty.
+										
+										Example:
+										
+										lrange courses 1 3
+										
+-	llen keyName 		 				This command is used to return the count of values to an existing keyName. When the keyName doesn't exists it will return 0.
+
+										Example:
+										
+										llen courses
+
+-	lset keyName index element			This command is used to set an element on specific index inside value list of an existing keyName. . 
+										When the keyName doesn't exists or incorrect parameter index is supplied then it fails with an error.
+										
+										Example:
+										
+										lset courses 1 ruby
+									
+-	lpop keyName 						This command is used to remove and return an element from the beginning of the list. When the keyName doesn't exists
+										it returns empty.
+										
+										Example:
+										
+										lpop courses
+										
+-	rpop keyName 						This command is used to remove and return an element from the end of the list. When the keyName doesn't exists
+										it returns empty.
+										
+										Example:
+										
+										rpop courses
+										
+-	ltrim keyName start stop			This command is used to remove element of an existing keyName from a given start index to stop - 1 index. 
+										When the keyName doesn't exists or incorrect parameter indices are supplied then it returns empty.
+										
+										Example:
+										
+										ltrim courses 1 3
+
+-	del keyName			 				This command is used to erase the list. When the keyName doesn't exists it returns empty.
+										
+										Example:
+										
+										del courses
+
+List and explain different redis commands for set datatype?
+
+-	Below are different redis commands for set datatype,
+
+	Command								Description
+	---------------------------------------------------------------
+
+-	sadd keyName element				This command is used to add an element to the set. When the keyName doesn't exists it creates a key value pair.
+										
+										Example:
+										
+										sadd courses java
+										
+										sadd courses c++
+										
+										sadd courses c
+																				
+-	scard keyName 		 				This command is used to return the count of values to an existing keyName. When the keyName doesn't exists it will return 0.
+
+										Example:
+										
+										scard courses
+
+-	sdiff keyName1 keyName2				This command is used to return set of elements present in keyName1 but not present in keyName2. When the keyName doesn't exists
+										it considers an empty set and returns the result.
+										
+										Example:
+										
+										sdiff courses1 courses2
+
+-	sunion keyName1 keyName2			This command is used to return set of all elements present in keyName1 and keyName2 both. When the keyName doesn't exists
+										it considers an empty set and returns the result.
+										
+										Example:
+										
+										sunion courses1 courses2
+
+-	sinter keyName1 keyName2			This command is used to return set of common elements present in keyName1 and keyName2 both. When the keyName doesn't exists
+										it considers an empty set and returns the result.
+										
+										Example:
+										
+										sinter courses1 courses2
+
+-	spop keyName 						This command is used to remove and return any random element from the the set. When the keyName doesn't exists it returns empty.
+										
+										Example:
+										
+										spop courses
+
+-	srem keyName element				This command is used to remove element of an existing keyName. When the keyName doesn't exists then it returns empty.
+										
+										Example:
+										
+										srem courses ruby
+
+List and explain different redis commands for ordered set datatype?
+
+-	Below are different redis commands for ordered set datatype,
+
+	Command								Description
+	---------------------------------------------------------------
+
+-	zadd keyName score element 			This command is used to add an element to the of the set. When the keyName doesn't exists
+										it creates a key value pair.
+										
+										Example:
+										
+										zadd courses java 30
+										
+										zadd courses c++ 20
+										
+										zadd courses c 10
+
+-	zrange keyName start stop 			This command is used to return value subset of an existing keyName from a given start index to stop - 1 index. 
+	withscores							When the keyName doesn't exists or incorrect parameter indices are supplied then it returns empty.
+										
+										Example:
+										
+										zrange courses 1 3 withscores
+										
+-	zcard keyName 		 				This command is used to return the count of values to an existing keyName. When the keyName doesn't exists it will return 0.
+
+										Example:
+										
+										zcard courses
+
+-	zrank keyName element 		 		This command is used to return the index of an element to an existing keyName. When the keyName doesn't or the element doesn't
+										exists then it will return empty.
+
+										Example:
+										
+										zrank courses c++
+
+-	zscore keyName element 		 		This command is used to return the score of an element to an existing keyName. When the keyName or the element doesn't exists then it will return empty.
+										
+										Example:
+										
+										zscore courses c++
+
+-	zrem keyName element				This command is used to remove element to an existing keyName. When the keyName or the element doesn't exists then it returns empty.
+										
+										Example:
+										
+										zrem courses ruby
+
+List and explain different redis commands for hash datatype?
+
+-	Below are different redis commands for hash datatype,
+
+	Command								Description
+	---------------------------------------------------------------
+
+-	hset keyName fieldKey fieldValue 	This command is used to add an element to the hash. When the keyName doesn't exists
+										it creates a key value pair. Also if fieldKey doesn't exists it creates fieldKey fieldValue pair.
+										
+										Example:
+										
+										hset courses java 30
+										
+										hset courses c++ 20
+										
+										hset courses c 10
+
+-	hgetall keyName						This command is used to return an element from the hash. When the keyName doesn't exists
+										then it return empty.
+
+										Example:
+										
+										hgetall courses
+
+-	hget keyName fieldKey			 	This command is used to return an element from the hash. When the keyName doesn't exists
+										then it return empty. Also if fieldKey doesn't exists it then it return empty.
+										
+										Example:
+										
+										hget courses java
+
+-	hlen keyName 		 				This command is used to return the count of values to an existing keyName. When the keyName doesn't exists it will return 0.
+
+										Example:
+										
+										hlen courses
+										
+-	hkeys keyName						This command is used to return all fieldKeys from the hash. When the keyName doesn't exists
+										then it return empty.
+
+										Example:
+
+										hkeys courses
+
+-	hvals keyName						This command is used to return all fieldValues from the hash. When the keyName doesn't exists
+										then it return empty.				
+
+										Example:
+										
+										hvals courses
+
+-	hdel keyName element				This command is used to remove element to an existing fieldKey to an existing keyName. When the 
+										keyName or fieldKey doesn't exists then it returns empty.
+										
+										Example:
+										
+										hdel courses ruby																				
