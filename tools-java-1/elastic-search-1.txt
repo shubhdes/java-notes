@@ -38,6 +38,10 @@ What is an index?
 
 -	It is a collection of documents.
 
+-	Creating index is optional in elastic search.
+
+-	When a document is inserted inside an index which doesn't exist then elastic search creates index first and then inserts document inside it.
+
 -	Below are the REST endpoints exposed by elastic search to create an index,
 
 	Method				Endpoint						Body		Description
@@ -212,3 +216,107 @@ Explain scripted update?
 
 -	However scripted update is a string which needs to be evaluated by elastic search therefore causing performance overhead.
 
+Explain concurrency control in elastic search?
+
+-	Elastic search includes two metadata field to every document inside it called as _seq_no and _primary_term.
+
+-	For every insert or update or delete are performed on the index the _seq_no is incremented by 1.
+
+-	When the primary shard is unavailable then master node will elect another shard as primary shard, then _primary_term is incremented by 1.
+
+-	When two different application try to modify the single document simultaneously there is a chance of data inconsistency.
+
+-	Both applications read the below document from elastic search index.
+
+	Example:
+	
+	GET /myindex/_search/3
+
+	{
+		"_id": 3,
+		"_seq_no": 48,
+		"_primary_term": 1,
+		"_source" : {
+			"count": 5
+		}
+	}
+
+-	Then the first application tries to modify it and increase the count field value by 1 i.e. 6.
+
+-	Meanwhile the second application also tries to modify it and increase the count field value by 1 i.e. 6.
+
+	Example:
+	
+	POST /myindex/doc_3 {
+		"count": 6
+	}
+
+-	The final value of the count field must be 7 but because of concurrent request it will be changed to 6.
+
+-	This can be managed by using REST endpoint for update which accepts the _seq_no and _primary_term as query string.
+
+	Example:
+	
+	POST /myindex/doc_3?id_seq_no=48&if_primary_term=1 {
+		"count": 6
+	}
+	
+-	This will cause elastic search to modify the document only when the _seq_no and _primary_term match the parameters of query string.
+
+-	The first application request will be accepted and changes will be made to the document.
+
+-	However after the first request is processed the _seq_no will be incremented by 1 i.e. 49.
+
+-	Then second application request will fail with version_conflict_engine_exception as _seq_no in request will not match the with the _seq_no of document.
+
+Explain elastic search bulk operation?
+
+-	Below REST endpoint allows bulk operation on an index.
+
+	Method				Endpoint						Body		Description
+	-------------------------------------------------------------------------------			
+-	POST				/{name}/_bulk					{ndjson}	This endpoint is used to insert, update or delete multiple documents together.
+
+																	Example:
+
+																	POST /myindex/_bulk 
+																	{ "create": { "_id": 1 }}
+																	{ "name": "c++"}
+																	{ "create": { "_id": 2 }}
+                                                                    { "name": "c++"}
+																	{ "create": { "_id": 3 }}
+                                                                    { "name": "java"}
+																	{ "update": { "_id": 1 }}
+																	{ "name": "c"}
+																	{ "create": { "_id": 4 }}
+                                                                    { "name": "ruby"}
+																	{ "create": { "_id": 5 }}																	
+                                                                    { "name": "python"}
+																	{ "delete": { "_id": 4 }}
+
+-	Below REST endpoint allows bulk operation on multiple indices.
+
+	Method				Endpoint						Body		Description
+	-------------------------------------------------------------------------------			
+-	POST				/{name}/_bulk					{ndjson}	This endpoint is used to insert, update or delete multiple documents together.
+
+																	Example:
+
+																	POST /myindex/_bulk 
+																	{ "create": { "_id": 1, "_index": myindex1 }}
+																	{ "name": "c++"}
+																	{ "create": { "_id": 2, "_index": myindex2 }}
+                                                                    { "name": "c++"}
+																	{ "create": { "_id": 3, "_index": myindex3 }}
+                                                                    { "name": "java"}
+																	{ "update": { "_id": 1, "_index": myindex1 }}
+																	{ "name": "c"}
+																	{ "create": { "_id": 4, "_index": myindex4 }}
+                                                                    { "name": "ruby"}
+																	{ "create": { "_id": 5, "_index": myindex5 }}																	
+                                                                    { "name": "python"}
+																	{ "delete": { "_id": 4, "_index": myindex4 }}
+
+-	The response is generated for each action and document.
+
+-	When any action fails the remaining actions are processed.																	
