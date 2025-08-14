@@ -10,6 +10,8 @@ What is an elastic search?
 
 -	It uses port 9300 for inter-node communication.
 
+-	Elastic search insert, update and delete operations are slow.
+
 What is Kibana?
 
 -	Kibana is data visualisation and management tool designed to interact with elastic search.

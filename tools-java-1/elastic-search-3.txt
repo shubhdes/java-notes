@@ -35,3 +35,5 @@ What is analyzer?
 	Example:
 	
 	durga
+	
+-	Analyzer doesn't modify the orignal source document.	

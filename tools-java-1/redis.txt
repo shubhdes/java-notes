@@ -445,3 +445,48 @@ What is redis sentinel?
 What is redis cluster?
 
 -	The redis cluster is designed to provide sharding and replication.
+
+What are transactions in redis?
+
+-	Redis transactions allow execution multiple commands together as single unit.
+
+-	It ensures atomicity.
+
+-	To begin a transaction we must use command multi.
+
+-	To execute all commands together we use command exec.
+	
+	Example:
+	
+	multi
+	
+	set mykey 10
+	
+	incr mykey
+	
+	incrby mykey 5
+	
+	decrby mykey 2
+	
+	exec
+	
+-	The command discard is used to cancel a transaction before execution.
+
+What is redis client?
+
+-	A client allows to connect to redis database programatically.
+
+	Example:
+	
+	jedis
+
+-	The jedis is lightweight client library in java for redis database.
+
+-	The jedis instance is not thread safe.
+
+-	However jedis pool instance is thread safe.
+
+-	The redis template is an helper class which provides implementation for cache operations.
+
+-	It uses jedis connection pool.
+	
