@@ -319,4 +319,8 @@ Explain elastic search bulk operation?
 
 -	The response is generated for each action and document.
 
--	When any action fails the remaining actions are processed.																	
+-	When any action fails the remaining actions are processed.
+
+-	Elastic search also allows bulk upload using file upload through REST endpoint.
+
+																	

@@ -150,6 +150,10 @@ What is sharding?
 																	
 																	GET /_cat/shards/books?v
 
+-	Once a index is created its shard count cannot be changed.
+
+-	To change shard count we need to create another index with required shard count then copy documents from existing index to new index.
+
 What is replica shard?
 
 -	Inside elastic search the contents of primary shard are periodically replicated to copy shard.

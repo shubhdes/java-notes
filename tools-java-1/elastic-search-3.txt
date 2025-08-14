@@ -1,0 +1,37 @@
+elastic search
+
+What is analyzer?
+
+-	Analyzer is an elastic search component used for text analysis during indexing and searching of text field.
+
+-	It breaks down the entire document into tokens (terms) that can be searched efficiently.
+
+-	Analyzer has three subcomponents character filter, tokenizer and token filter.
+
+-	The character filter performs text normalisation such as removing html tags from the document.
+
+-	It is an optional step.
+
+	Example:
+	
+	<h1> durga software solution</h1>
+	
+	durga software solution
+
+-	The tokenizer breaks the text into tokens or terms.
+
+-	It is a required step.
+
+	Example:
+	
+	durga
+	software
+	solution
+
+-	The token filter collects the token based on criteria such as collect tokens with length less than equal to 5.
+
+-	It is an optional step.
+
+	Example:
+	
+	durga

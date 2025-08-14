@@ -392,4 +392,56 @@ List and explain different redis commands for hash datatype?
 										
 										Example:
 										
-										hdel courses ruby																				
+										hdel courses ruby
+
+How redis can be used as persistent storage?
+
+-	There are three ways using which redis can behave as a persistent storage, they are called as redis database file, append only file and hybrid.
+
+-	In redis database file, a child process periodically runs.
+
+-	It writes current inmemory state inside a database file.
+
+-	Once the write is complete it replaces the existing database file with new file.
+
+-	The interval of execution for the child process can be configured inside redis.config file.
+
+	Example:
+
+	save 300 10			
+
+-	The above configuration means write to database file after every 300 seconds only if there are 10 key changes.
+
+-	We need to use either save or bgsave to create and initiate the write to database file process.
+
+-	Using redis database file there is a chance of data loss, when the redis is unavaliable between two writes.
+
+-	Also heavy writes to database file can cause the child process to keep executing for longer duration.
+
+-	In append only file, each write operation to inmemory state is written to database file simultaneously.
+
+-	There are no chance of data loss.
+
+-	Also when redis restarts it can restore its previous inmemory state from append only file.
+
+-	Every write to both inmemory store and database is expensive.
+
+-	To enable append only file below configuration are required inside redis.config file.
+
+	Example:
+	
+	appendonly yes
+	
+	appendfilename myfile.aof
+	
+-	In hybrid approach, we use both redis database file and append only file.
+
+-	This ensures disaster recovery and restoration to previous inmemory state after redis restart.
+
+What is redis sentinel?
+
+-	The redis sentinel is designed to provide high availability of redis system by monitoring, notifying and providing failover (master slave election).
+
+What is redis cluster?
+
+-	The redis cluster is designed to provide sharding and replication.
