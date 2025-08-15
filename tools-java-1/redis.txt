@@ -486,7 +486,19 @@ What is redis client?
 
 -	However jedis pool instance is thread safe.
 
--	The redis template is an helper class which provides implementation for cache operations.
+-	The RedisTemplate is a predefined helper class in spring data redis.
 
 -	It uses jedis connection pool.
+
+	Example:
 	
+	RedisTemplate<String, String> template = new RedisTemplate<>();
+	template.setConnectionFactory(connectionFactory);
+
+-	It provides implementation for cache operations.
+
+	Example:
+	
+	redisTemplate.opsForValue().set(key, value);
+	
+	redisTemplate.opsForValue().get(key)
