@@ -36,4 +36,5 @@ What is analyzer?
 	
 	durga
 	
--	Analyzer doesn't modify the orignal source document.	
+-	Analyzer doesn't modify the orignal source document.
+

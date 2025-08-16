@@ -218,59 +218,6 @@ Explain scripted update?
 
 -	However scripted update is a string which needs to be evaluated by elastic search therefore causing performance overhead.
 
-Explain concurrency control in elastic search?
-
--	Elastic search includes two metadata field to every document inside it called as _seq_no and _primary_term.
-
--	For every insert or update or delete are performed on the index the _seq_no is incremented by 1.
-
--	When the primary shard is unavailable then master node will elect another shard as primary shard, then _primary_term is incremented by 1.
-
--	When two different application try to modify the single document simultaneously there is a chance of data inconsistency.
-
--	Both applications read the below document from elastic search index.
-
-	Example:
-	
-	GET /myindex/_search/3
-
-	{
-		"_id": 3,
-		"_seq_no": 48,
-		"_primary_term": 1,
-		"_source" : {
-			"count": 5
-		}
-	}
-
--	Then the first application tries to modify it and increase the count field value by 1 i.e. 6.
-
--	Meanwhile the second application also tries to modify it and increase the count field value by 1 i.e. 6.
-
-	Example:
-	
-	POST /myindex/doc_3 {
-		"count": 6
-	}
-
--	The final value of the count field must be 7 but because of concurrent request it will be changed to 6.
-
--	This can be managed by using REST endpoint for update which accepts the _seq_no and _primary_term as query string.
-
-	Example:
-	
-	POST /myindex/doc_3?id_seq_no=48&if_primary_term=1 {
-		"count": 6
-	}
-	
--	This will cause elastic search to modify the document only when the _seq_no and _primary_term match the parameters of query string.
-
--	The first application request will be accepted and changes will be made to the document.
-
--	However after the first request is processed the _seq_no will be incremented by 1 i.e. 49.
-
--	Then second application request will fail with version_conflict_engine_exception as _seq_no in request will not match the with the _seq_no of document.
-
 Explain elastic search bulk operation?
 
 -	Below REST endpoint allows bulk operation on an index.
@@ -325,4 +272,83 @@ Explain elastic search bulk operation?
 
 -	Elastic search also allows bulk upload using file upload through REST endpoint.
 
+What is data mapping?
+
+-	Data mapping is process of defining how a document and its field are saved and indexed.
+
+-	In elastic search data mapping is done using two ways called dynamic mapping and explicit mapping.
+
+-	In dynamic mapping elastic search does mapping itself.
+
+-	In explicit mapping we must provide elastic search with the mapping information.
+
+-	Common used data types in elastic search are byte, short, int, long, float, double, text, keyword, object, nested and others.
+
+-	When a field is declared with text data type, elastic search does text analysis on it.
+
+	Example: description
+
+-	However when a field is declared with keyword data type, elastic search does not do text analysis on it.
+
+	Example: email, phone number, order identifier
+
+-	Numeric fields (byte, short, int, long, float, double) are saved inside balanced k dimensional tree instead on inverted index.
+
+-	This simplifies execution of range based queries.
+
+	Example: age, price, rating
+	
+-	Date fields are converted to long and saved inside balanced k dimensional tree.
+
+-	Every field in elastic search can be initialised with null or value or list of values.
+
+Explain explicit data mapping?
+
+-	In explicit mapping we must provide elastic search with the mapping information.
+
+-	Below is the REST endpoints exposed by elastic search to define and view explicit mapping,
+
+	Method				Endpoint						Body		Description
+	-------------------------------------------------------------------------------			
+-	PUT					/{name}							{document}	This endpoint is used to define an index with explicit mapping.
+
+																	Example:
 																	
+																	PUT /customers {
+																		
+																		"mappings": {
+																			"properties": {
+																				"name": {
+																					"type": "text"
+																				},
+																				"age": {
+																					"type": "integer"
+																				},
+																				"email": {
+																					"type": "keyword"
+																				}
+																			}
+																		}
+																	}
+
+-	PUT					/{name}/_mapping				{document}	This endpoint is used to modify an index with explicit mapping.
+
+																	Example:
+																	
+																	PUT /customers/_mapping {
+																		
+																		"properties": {
+																			"city": {
+																				"type": "text"
+																			}
+																		}
+																	}
+
+
+-	GET					/{name}/_mapping							This endpoint is used to view explicit mapping of an index.
+
+-	A document can be saved with an additional field even when it is not defined in explicit mapping.
+
+-	Once a field is created with an data type we cannot change its data type.
+
+-	To modify field data type we need to create another index with required modifications then copy documents from existing index to new index.											
