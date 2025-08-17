@@ -38,3 +38,213 @@ What is analyzer?
 	
 -	Analyzer doesn't modify the orignal source document.
 
+Explain  queries in elastic search?
+
+-	Elastic search uses query domain specific language.
+
+-	Below are the REST endpoints exposed by elastic search to query a document,
+	
+	Method				Endpoint						Body		Description
+	-------------------------------------------------------------------------------
+-	GET					/{name}/_search								This endpoint is used to return all documents inside index with supplied name.
+			
+-	GET					/{name}/_search?q={name|regex}				This endpoint is used to return all documents with any field matching supplied name 
+																	or regex inside index with supplied name.
+
+-	GET|POST			/{name}/_search					{document}	This endpoint is used to return all documents from the query result.
+
+Explain match all query?
+
+-	The match all query is used to return all documents from the index.
+
+-	It is similar to SELECT * FROM customers query in RDBMS.
+
+	Example:
+	
+	{
+		"query": {
+			"match_all": {}
+		}
+	}
+
+Explain query using identifier?
+
+-	The query by identifier is used to return all documents from the index matching supplied identifier.
+
+-	It is similar to SELECT * FROM customers WHERE ID IN (1, 4) query in RDBMS.
+
+	Example:
+	
+	{
+		"query": {
+			"_ids": {
+				"values": [1, 4]
+			}
+		}
+	}
+
+Explain term query?
+
+-	The term query is used to return all documents from the index matching exact match criteria.
+
+-	It is similar to SELECT * FROM customers WHERE city = 'Mumbai' query in RDBMS.
+
+	Example:
+	
+	{
+		"query": {
+			"term": {
+				"city": {
+					"value": "Mumbai"
+				}
+			}
+		}
+	}
+	
+-	It supports case insensitive search also.
+
+	Example:
+	
+	{
+		"query": {
+			"term": {
+				"city": {
+					"value": "Mumbai"
+					"case_insensitive": true
+				}
+			}
+		}
+	}
+
+-	For multiple exact matches we need to use terms query instead of term query.
+
+-	Terms query is always case sensitive.	
+
+	Example:
+
+	{
+		"query": {
+			"terms": {
+				"city": {
+					"values": ["Mumbai", "Bengaluru"]
+				}
+			}
+		}
+	}
+
+Explain range query?
+
+-	The range query is used to return all documents from the index matching the range criteria.
+
+-	It is similar to SELECT * FROM products WHERE price <= 50 AND price >= 80 query in RDBMS.
+
+-	The field lt means less than and gt means greater than.
+
+-	Also field lte means less than equal and gte means greater than equal.
+
+	Example:
+	
+	{
+		"query": {
+			"range": {
+				"price": {
+					"lte": 50
+					"gte": 80
+				}
+			}
+		}
+	}
+
+Explain prefix and wildcard and regex queries?
+
+-	The prefix query is used to return all documents from the index matching the prefix criteria.
+
+-	It is similar to SELECT * FROM customers WHERE city LIKE 'M%' query in RDBMS.
+
+	Example:
+	
+	{
+		"query": {
+			"prefix": {
+				"city": {
+					"value": "M"
+				}
+			}
+		}
+	}
+	
+-	It supports case insensitive search also.
+
+	Example:
+	
+	{
+		"query": {
+			"prefix": {
+				"city": {
+					"value": "M"
+					"case_insensitive": true
+				}
+			}
+		}
+	}
+
+-	The wildcard query is used to return all documents from the index matching the wildcard criteria.
+
+-	It is similar to SELECT * FROM customers WHERE city LIKE 'M%ai' query in RDBMS.
+
+	Example:
+	
+	{
+		"query": {
+			"wildcard": {
+				"city": {
+					"value": "M*ai"
+				}
+			}
+		}
+	}
+	
+-	It supports case insensitive search also.
+
+	Example:
+	
+	{
+		"query": {
+			"wildcard": {
+				"city": {
+					"value": "M*ai"
+					"case_insensitive": true
+				}
+			}
+		}
+	}
+	
+-	The regex query is used to return all documents from the index matching the regular expression criteria.
+
+	Example:
+	
+	{
+		"query": {
+			"regex": {
+				"city": {
+					"value": "M[a-z]{5}$"
+				}
+			}
+		}
+	}
+	
+Explain exists queries?
+
+-	The prefix query is used to return all documents from the index matching the exist criteria.
+
+-	It is similar to SELECT * FROM customers WHERE city IS NOT NULL query in RDBMS.
+
+	Example:
+	
+	{
+		"query": {
+			"exists": {
+				"field": "city"
+			}
+		}
+	}
