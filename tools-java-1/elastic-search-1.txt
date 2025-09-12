@@ -351,4 +351,69 @@ Explain explicit data mapping?
 
 -	Once a field is created with an data type we cannot change its data type.
 
--	To modify field data type we need to create another index with required modifications then copy documents from existing index to new index.											
+-	To modify field data type we need to create another index with required modifications then copy documents from existing index to new index.
+
+Explain autocomplete?
+
+-	The autocomplete allows to provide search suggestion to users.
+
+-	Elastic search provides autocomplete using either complete suggester or search as you type features.
+
+-	The complete suggester provide search suggestion by searching for the input text as prefix inside the source document field.
+
+-	It requires to declare a field with data type completion.
+
+	Example:
+	
+	{
+		"mappings": {
+			"properties": {
+				"city": {
+					"type": "text"
+					"fields": {
+						"completion": {
+							"type": "completion"
+						}
+					}
+				}
+			}
+		}
+	}
+	
+-	Below is the REST endpoints exposed by elastic search to retrieve search suggestion,
+
+	Method				Endpoint						Body		Description
+	-------------------------------------------------------------------------------			
+-	POST				/{name}_search					{document}	This endpoint is used to retrieve search suggestion.
+
+																	Example:
+																	
+																	POST /customers/_search
+																	{
+																		"suggest": {
+																			"city-suggest": {
+																				"prefix": "M",
+																				"completion": {
+																					"field": "city.completion"
+																				}
+																			}
+																		}
+																	}
+
+-	The search as you type provide search suggestion by searching for the input text everywhere inside the source document field and not just prefix.
+
+-	It requires to declare a field with data type search_as_you_type.
+
+	Example:
+	
+	{
+		"mappings": {
+			"properties": {
+				"city": {
+					"type": "search_as_you_type"
+				}
+			}
+		}
+	}
+
+-	To to retrieve search suggestion we can use bool query.

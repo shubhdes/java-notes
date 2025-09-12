@@ -1,0 +1,163 @@
+elastic search
+
+Explain field selection?
+
+-	The field selection allows to query only specific fields from document instead of entire document.
+
+-	It is similar to SELECT name, age, city FROM customers in RDBMS.
+
+-	We can use _source field to specify the required fields.
+
+	Example:
+	
+	{
+		"query": {
+			"match_all": {}
+		}
+		"_source": ["name", "age", "city"]
+	}
+
+Explain pagination?
+
+-	The pagination allows to read subset of the documents returned by the query.
+
+-	We can use fields from and size, the from field is used to mention the document position inside query result from which size number of document to be returned.
+
+-	We can use formula from = (page - 1) * size.
+
+	Example:
+	
+	{
+		"query": {
+			"match_all": {}
+		}
+		"from" : 0,
+		"size": 2
+	}
+	
+Explain sorting?
+
+-	The sorting allows document to be organized into descending order of relevance score.
+
+-	However elastic search allows user defined sort using field sort.
+
+-	It is similar to SELECT * FROM products ORDER BY rating, price in RDBMS.
+
+	Example:
+	
+	{
+		"query": {
+			"match_all": {}
+		}
+		"sort" : {
+			"rating": {
+				"order": "desc"
+			},
+			"price": {
+				"order": "asc"
+			}
+		}
+	}
+	
+-	Field with text data type cannot be used for sort otherwise we will get illegal_arguement_exception.	
+
+Explain sorting mode?
+
+-	The sorting mode is an aggregate function inside elastic search.
+
+-	It computes a single value from multiple values and uses to sort.
+
+-	It includes min, max, median, avg and sum.
+
+	Example:
+	
+	{
+		"query": {
+			"match_all": {}
+		}
+		"sort" : {
+			"examscore": {
+				"order": "desc"
+				"mode" : "avg"
+			}
+		}
+	}
+
+Explain aggregation?
+
+-	Elastic search allows us to aggregate multiple values of a field into one using one of these function min, max, avg, sum and count.
+
+-	It is similar to SELECT MAX(price) FROM products in RDBMS.
+
+	Example:
+	
+	{
+		"aggs": {
+			"price_max": {
+				"max": {
+					"field": "price"
+				}
+			}
+		}
+	}
+
+Explain bucket term aggregation?
+
+-	Bucket term aggregation allows to group documents together using common field.
+
+-	It is similar to SELECT city, COUNT(*) FROM customers GROUP by city in RDBMS.
+
+	Example:
+
+	{
+		"aggs": {
+			"group_by": {
+				"term": {
+					"field": "city"
+				}
+			}
+		}
+	}
+
+Explain range and histogram aggregation?
+
+-	Range aggregation allows to group documents together which match the range condition.
+
+	Example:
+	
+	{
+		"aggs": {
+			"price_range": {
+				"range": {
+					"field": "price",
+					"ranges": [
+						{
+							"from": 0,
+							"to": 100,
+						},
+						{
+							"from": 100,
+							"to": 200
+						}
+					]
+				}
+			}
+		}
+	}
+
+-	The from field is equivalent to greater than equal to and to field is equivalent to less than.
+
+-	Histogram aggregation is similar to range aggregation but elastic search generates range based on provided interval.
+
+	Example:
+	
+	{
+		"aggs": {
+			"price_histogram": {
+				"histogram": {
+					"field": "price",
+					"interval": 100
+				}
+			}
+		}
+	}

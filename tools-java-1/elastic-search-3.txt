@@ -148,7 +148,7 @@ Explain range query?
 		"query": {
 			"range": {
 				"price": {
-					"lte": 50
+					"lte": 50,
 					"gte": 80
 				}
 			}
@@ -232,7 +232,7 @@ Explain prefix and wildcard and regex queries?
 			}
 		}
 	}
-	
+
 Explain exists queries?
 
 -	The prefix query is used to return all documents from the index matching the exist criteria.
@@ -245,6 +245,285 @@ Explain exists queries?
 		"query": {
 			"exists": {
 				"field": "city"
+			}
+		}
+	}
+
+Explain the match query?
+
+-	The match query is used to return all documents from the index with required tokens present.
+	
+	Example:
+
+	{
+		"query": {
+			"match": {
+				"description": {
+					"query": "durga solution" 
+				}
+			}
+		}
+	}	
+
+-	Elastic search will return document with atleast any one token present.
+
+-	However we can use and operator field to ensure the query result contains documents with all tokens present.
+
+	Example:
+
+	{
+		"query": {
+			"match": {
+				"description": {
+					"query": "durga solution"
+					"operator": "and"
+				}
+			}
+		}
+	}	
+	
+Explain the match phrase query?
+
+-	The match phrase query is used to return all documents from the index with required tokens present contigous in specific order.
+	
+	Example:
+
+	{
+		"query": {
+			"match_phrase": {
+				"description": {
+					"query": "durga solution" 
+				}
+			}
+		}
+	}	
+
+-	Elastic search will return document with all the tokens present contigous in specific order.
+
+-	However we can use slop field to include documents where the all the tokens are present in specific order but not contigous.
+
+-	The count of slop determines maximum words allowed between tokens.
+
+	Example:
+
+	{
+		"query": {
+			"match_phrase": {
+				"description": {
+					"query": "durga solution"
+					"slop": "1"
+				}
+			}
+		}
+	}	
+	
+
+What is relevance?
+
+-	Revelance is the measure of how well the results returned by query match the user's intent.
+
+-	Elastic search uses term frequency, document frequency, term sequence and other parameters to calculate relevance score for each document.
+
+-	Then it returns the result based on relevance score i.e. the document with maximum relevance score is present on top of the result.
+
+-	We can use boost query to maximise the relevance score when and condition is evaluated to true and minimise it otherwise.
+
+	Example:
+	
+	"query": {
+		"boosting": {
+			"positive": {
+				"match": {
+					"city": "Mumbai"
+				}
+			}
+			"negative": {
+				"match": {
+					"city": "Pune"
+				}
+				"negative_boost": 0.2
+			}
+		}
+	}
+
+What is fuzziness?
+
+-	Fuziness is the ability of elastic search to handle mispellings and variations during search operation.
+
+-	First elastic search tries to query using query parameter, when query result contains documents elastic search returns it.
+
+-	When the query result doesn't return any document then elastic search uses fuzzy search.
+
+-	It works in different levels called as 0, 1, 2 and auto.
+
+-	Based on these levels elastic search will do number of edits to the query parameter before the search operation. 
+
+-	The default level is 0 which means no edit are allowed in the query parameter.
+
+-	When the default level is 1 then elastic search does 1 edit to query parameter either by removing, adding or replacing 1 character.
+
+-	When level is auto then elastic search decides the number of edit based on the length of query parameters.
+
+	Example:
+
+	{
+		"query": {
+			"match": {
+				"city": {
+					"query": "Bambai",
+					"fuzziness": 2
+				}
+			}
+		}
+	}
+
+Explain bool query?
+
+-	A bool query is a complex query which combines multiple queries into one.
+
+-	It uses four clauses filter, must, must_not and should.
+
+-	The filter clause returns document which match multiple conditions separated by AND operator.
+
+-	It doesn't compute relevance score.
+
+-	It is similar to SELECT * FROM products WHERE price <= 50 AND price >= 80 AND rating >= 4 query in RDBMS.
+
+	Example:
+	
+	{
+		"bool": {
+			"filter": [
+				"range": {
+					"price": {
+						"lte": 50,
+						"gte": 80
+					}
+				},
+				"range": {
+					"rating": {
+						"gte": 4
+					}
+				}
+			]
+		}
+	}
+
+-	The must clause returns document which match multiple conditions separated by AND operator.
+
+-	It does compute relevance score.
+
+-	It is similar to SELECT * FROM products WHERE price <= 50 AND price >= 80 AND rating >= 4 query in RDBMS.
+
+	Example:
+	
+	{
+		"bool": {
+			"must": [
+				"range": {
+					"price": {
+						"lte": 50,
+						"gte": 80
+					}
+				},
+				"range": {
+					"rating": {
+						"gte": 4
+					}
+				}
+			]
+		}
+	}
+
+-	The must_not clause returns documents for which the condition must evaluate to false.
+
+-	It doesn't compute relevance score.
+
+-	It is similar to SELECT * FROM customers WHERE city = 'Mumbai' query in RDBMS.
+
+	Example:
+
+	{
+		"bool": {
+			"must_not": [
+				"term": {
+					"city": {
+						"value": "Pune"
+					}
+				}
+			]
+		}
+	}
+
+-	The should clause returns document which match multiple conditions separated by OR operator.
+
+-	It is similar to SELECT * FROM products WHERE price <= 50 OR price >= 80 OR rating >= 4 query in RDBMS.
+
+-	But when no must or filter clause is used only then should clause filters documents.		
+
+-	It does compute relevance score.
+
+	Example:
+	
+	{
+		"bool": {
+			"should": [
+				"range": {
+					"price": {
+						"lte": 50,
+						"gte": 80
+					}
+				},
+				"range": {
+					"rating": {
+						"gte": 4
+					}
+				}
+			]
+		}
+	}
+	
+	{
+		"bool": {
+			"filter": [
+				match_all: {}
+			],
+			"should": {
+				"match": {
+					"city": "Mumbai"
+				}
+			}
+		}
+	}
+	
+-	In the above query should clause will not filter documents.
+
+-	But it will compute relevance score only for documents with city = "Mumbai".
+
+-	The filter clause provides the mandatory condition but should clause provides preference condition.
+
+-	We can use field minimum_should_match to ensure atleast count number of conditions inside should clause match.
+
+	Example:
+	
+		{
+		"bool": {
+			"filter": [
+				match_all: {}
+			],
+			"should": {
+				"range": {
+					"price": {
+						"lte": 50,
+						"gte": 80
+					}
+				},
+				"range": {
+					"rating": {
+						"gte": 4
+					}
+				}
+				"minimum_should_match": 1
 			}
 		}
 	}
