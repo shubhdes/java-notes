@@ -219,7 +219,7 @@ What is replica shard?
 
 -	When the primary shard is unavaliable the replica shard is promoted as primary shard.
 
--	The indexing activity is performed byh primary shard only and replica shard receives indexed contents.
+-	The indexing activity is performed by primary shard only and replica shard receives indexed contents.
 
 -	However replica shard can accept and process search request.
 

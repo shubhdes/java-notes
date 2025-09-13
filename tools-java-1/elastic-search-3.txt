@@ -82,6 +82,8 @@ Explain query using identifier?
 			}
 		}
 	}
+	
+	searchHits = customersRepository.findByIds(List.of(1, 2));
 
 Explain term query?
 
@@ -100,6 +102,10 @@ Explain term query?
 			}
 		}
 	}
+	
+	Example:
+	
+	searchHits = customersRepository.findByCity("Mumbai");
 	
 -	It supports case insensitive search also.
 
@@ -131,7 +137,11 @@ Explain term query?
 			}
 		}
 	}
-
+	
+	Example:
+	
+	searchHits = customersRepository.findByCities(List.of("Mumbai", "Bengaluru"));
+	
 Explain range query?
 
 -	The range query is used to return all documents from the index matching the range criteria.
@@ -154,6 +164,14 @@ Explain range query?
 			}
 		}
 	}
+	
+	Example:
+	
+	searchHits = productsRepository.findByPriceLessThanEqualTo(50);
+	
+	searchHits = productsRepository.findByPriceGreaterThanEqualTo(80);
+	
+	searchHits = productsRepository.findByPriceBetween(50, 80);
 
 Explain prefix and wildcard and regex queries?
 
@@ -317,6 +335,92 @@ Explain the match phrase query?
 		}
 	}	
 	
+Explain geospatial query?
+
+-	The geospatial query allows to retrieve document using location information.
+
+-	It allows to retrieve documents on a fixed location or at fixed distance from a location.
+
+	Example:
+	
+	"query": {
+		"bool": {
+			"filter": [
+				"geo_distance": {
+					"distance": "10mi"
+					"lat": 32.64,
+					"lon": -96.94,
+				}
+			]
+		}
+	}
+	
+Explain date query?
+
+-	The date query allows to retrieve document using datetime information.
+
+-	It is similar to SELECT * FROM orders WHERE order_date >= '01-01-2025' query in RDBMS.
+
+	Example:
+	
+	"query": {
+		"range": {
+			"order_date": {
+				"gte": "01-01-2025"
+			}
+		}
+	}
+
+-	The keyword now represents current datetime.
+
+	Example:
+	
+	"query": {
+		"range": {
+			"order_date": {
+				"gte": "now-1w"
+			}
+		}
+	}		
+
+Explain inner object query?
+
+-	The inner object query is used to retrieve documents with matching condition on the nested object.
+
+-	The inner object can be a json object or a json array.
+
+-	Consider city as a nested object inside address object inside the document.
+
+	Example:
+	
+	{
+		"query": {
+			"term": {
+				"address.city": {
+					"value": "Mumbai"
+				}
+			}
+		}
+	}
+
+-	Consider subjects as a nested array inside course object inside the document.
+	
+	Example:
+	
+	{
+		"query": {
+			"nested": {
+				"path": "subjects"
+				"query": {
+					"match": {
+						"subjects.professor" {
+							"query": "durga"
+						}
+					}
+				}
+			}
+		}
+	}
 
 What is relevance?
 
@@ -326,22 +430,24 @@ What is relevance?
 
 -	Then it returns the result based on relevance score i.e. the document with maximum relevance score is present on top of the result.
 
--	We can use boost query to maximise the relevance score when and condition is evaluated to true and minimise it otherwise.
+-	We can use boost query to maximise the relevance score when a condition is evaluated to true and minimise it otherwise.
 
 	Example:
 	
-	"query": {
-		"boosting": {
-			"positive": {
-				"match": {
-					"city": "Mumbai"
+	{
+		"query": {
+			"boosting": {
+				"positive": {
+					"match": {
+						"city": "Mumbai"
+					}
 				}
-			}
-			"negative": {
-				"match": {
-					"city": "Pune"
-				}
+				"negative": {
+					"match": {
+						"city": "Pune"
+					}
 				"negative_boost": 0.2
+				}
 			}
 		}
 	}
@@ -391,7 +497,7 @@ Explain bool query?
 
 	Example:
 	
-	{
+	"query": {
 		"bool": {
 			"filter": [
 				"range": {
@@ -417,7 +523,7 @@ Explain bool query?
 
 	Example:
 	
-	{
+	"query": {
 		"bool": {
 			"must": [
 				"range": {
@@ -443,7 +549,7 @@ Explain bool query?
 
 	Example:
 
-	{
+	"query": {
 		"bool": {
 			"must_not": [
 				"term": {
@@ -465,7 +571,7 @@ Explain bool query?
 
 	Example:
 	
-	{
+	"query": {
 		"bool": {
 			"should": [
 				"range": {
@@ -483,7 +589,7 @@ Explain bool query?
 		}
 	}
 	
-	{
+	"query": {
 		"bool": {
 			"filter": [
 				match_all: {}
@@ -506,7 +612,7 @@ Explain bool query?
 
 	Example:
 	
-		{
+	"query": {
 		"bool": {
 			"filter": [
 				match_all: {}

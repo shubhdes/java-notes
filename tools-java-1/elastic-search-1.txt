@@ -66,7 +66,7 @@ What is an index?
 
 	Method				Endpoint						Body		Description
 	-------------------------------------------------------------------------------			
--	DELTE				/{name}							empty		This endpoint is used to delete index with supplied name.
+-	DELETE				/{name}							empty		This endpoint is used to delete index with supplied name.
 																	
 																	Example:
 																	
@@ -77,6 +77,29 @@ What is a document?
 
 -	It is analogous to row inside RDBMS.
 
+-	Using spring data elastic search framework allows a program to communicate with elastic search using object instead of query.
+
+	Example:														
+	
+	@Document(indexName="books")
+	public class Book {
+		
+		@Id
+		private Integer id;
+		
+		@Field(type = FieldType.Text)
+		private String name;
+		
+		@Field(type = FieldType.Keyword)
+		private String category;
+	}
+
+	Example:
+	
+	public interface BooksRepository extends ElasticsearchRepository<Book, Integer> {
+	
+	}	
+	
 -	Below are the REST endpoints exposed by elastic search to create a document,
 
 	Method				Endpoint						Body		Description
@@ -93,6 +116,11 @@ What is a document?
 																		"genre": "Fiction",
 																		"rating": 4.7
 																	}
+																	
+																	Example:
+																	
+																	book.id = null;
+																	booksRepository.save(book);
 
 -	Every document is embedded inside a parent document inside field called as _source.
 
@@ -113,7 +141,12 @@ What is a document?
 																		"year": 1926,
 																		"genre": "Fiction",
 																		"rating": 4.7
-																	}																				
+																	}
+
+																	Example:
+																	
+																	book.id = 3;
+																	booksRepository.save(book);																	
 
 -	Below are the REST endpoints exposed by elastic search to query a document,
 	
@@ -126,6 +159,10 @@ What is a document?
 
 -	GET					/{name}/_doc/{id}							This endpoint is used to return document with supplied id inside index with supplied name.
 
+																	Example:
+																	
+																	booksRepository.findById(3);
+																	
 -	Below are the REST endpoints exposed by elastic search to query a document,
 
 	Method				Endpoint						Body		Description
@@ -144,8 +181,11 @@ What is a document?
 																		"rating": 4.7
 																	}
 
--	POST				/{name}/_update/{id}			{delta}		This endpoint is used to update document with supplied id inside index with supplied name.
+																	Example:
 																	
+																	booksRepository.save(book);																	
+
+-	POST				/{name}/_update/{id}			{delta}		This endpoint is used to update document with supplied id inside index with supplied name.
 																	When the id doesn't exists then the response returns exception document_missing_exception.				
 
 																	Example:
@@ -165,6 +205,10 @@ What is a document?
 	Method				Endpoint						Body		Description
 	-------------------------------------------------------------------------------			
 -	DELETE				/{name}/_doc/{id}				empty		This endpoint is used to delete document with supplied id if it exists inside index with supplied name.
+
+																	Example:
+																	
+																	booksRepository.deleteById(3);																	
 
 Explain scripted update?
 
@@ -242,6 +286,12 @@ Explain elastic search bulk operation?
 																	{ "create": { "_id": 5 }}																	
                                                                     { "name": "python"}
 																	{ "delete": { "_id": 4 }}
+																	
+																	Example:
+																	
+																	booksRepository.saveAll(booksList);
+																	
+																	booksRepository.deleteAllByIds(idList);
 
 -	Below REST endpoint allows bulk operation on multiple indices.
 
@@ -282,7 +332,7 @@ What is data mapping?
 
 -	In explicit mapping we must provide elastic search with the mapping information.
 
--	Common used data types in elastic search are byte, short, int, long, float, double, text, keyword, object, nested and others.
+-	Common used data types in elastic search are byte, short, int, long, float, double, text, keyword, object, nested, geo_point and others.
 
 -	When a field is declared with text data type, elastic search does text analysis on it.
 
@@ -400,7 +450,7 @@ Explain autocomplete?
 																		}
 																	}
 
--	The search as you type provide search suggestion by searching for the input text everywhere inside the source document field and not just prefix.
+-	The search as you type provide search suggestion by searching for the input text everywhere inside the source document field and not only prefix.
 
 -	It requires to declare a field with data type search_as_you_type.
 
@@ -416,4 +466,4 @@ Explain autocomplete?
 		}
 	}
 
--	To to retrieve search suggestion we can use bool query.
+-	To to retrieve search suggestion we need to use bool query.

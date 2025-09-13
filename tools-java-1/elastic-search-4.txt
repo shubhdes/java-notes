@@ -29,11 +29,20 @@ Explain pagination?
 	
 	{
 		"query": {
-			"match_all": {}
+			"range": {
+				"price": {
+					"lte": 50,
+					"gte": 80
+				}
+			}
 		}
 		"from" : 0,
 		"size": 2
 	}
+	
+	Example:
+	
+	searchPage = productsRepository.findByPriceBetween(50, 80, PageRequest.of(0, 2));
 	
 Explain sorting?
 
