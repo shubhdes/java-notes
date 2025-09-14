@@ -449,6 +449,17 @@ Explain autocomplete?
 																			}
 																		}
 																	}
+																	
+																	Example:
+																	
+																	var fieldSuggester = FieldSuggester.of(fieldSuggesterBuilder -> fieldSuggesterBuilder.prefix("M").completion(
+																								.of(completionSuggesterBuilder -> completionSuggesterBuilder.field("city"))));
+
+																	suggester = Suggester.of(suggesterBuilder -> suggesterBuilder.suggesters("city-suggest", fieldSuggester));
+
+																	nativeQuery = NativeQuery.builder().withSuggester(suggester).build();
+
+																	searchHits = elasticSearchOperations.search(nativeQuery, Customers.class);	
 
 -	The search as you type provide search suggestion by searching for the input text everywhere inside the source document field and not only prefix.
 

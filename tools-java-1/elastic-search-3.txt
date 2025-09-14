@@ -83,6 +83,8 @@ Explain query using identifier?
 		}
 	}
 	
+	Example:
+	
 	searchHits = customersRepository.findByIds(List.of(1, 2));
 
 Explain term query?
@@ -158,8 +160,8 @@ Explain range query?
 		"query": {
 			"range": {
 				"price": {
-					"lte": 50,
-					"gte": 80
+					"gte": 50,
+					"lte": 80
 				}
 			}
 		}
@@ -167,11 +169,17 @@ Explain range query?
 	
 	Example:
 	
-	searchHits = productsRepository.findByPriceLessThanEqualTo(50);
+	searchHits = productsRepository.findByPriceGreateThanEqualToAndLessThanEqualTo(50, 80);
 	
-	searchHits = productsRepository.findByPriceGreaterThanEqualTo(80);
+	Example:
 	
-	searchHits = productsRepository.findByPriceBetween(50, 80);
+	Criteria criteria1 = Criteria.with("price").greaterThanEqualTo(50);
+	
+	Criteria criteria2 = Criteria.with("price").lessThanEqualTo(80);
+	
+	query = CriteriaQuery.builder(criteria1.and(criteria1));
+
+	elasticSearchOperations.search(query, Products.class);
 
 Explain prefix and wildcard and regex queries?
 
@@ -269,7 +277,7 @@ Explain exists queries?
 
 Explain the match query?
 
--	The match query is used to return all documents from the index with required tokens present.
+-	The match query is used to return all documents from the index with required tokens present inside single field.
 	
 	Example:
 
@@ -299,10 +307,41 @@ Explain the match query?
 			}
 		}
 	}	
+
+Explain the multi match query?
+
+-	The multi match query is used to return all documents from the index with required tokens present inside multiple fields.
+	
+	Example:
+
+	{
+		"query": {
+			"multi_match": {
+				"query": "durga solution",
+				"fields": ["title", "description"]
+			}
+		}
+	}	
+
+-	Elastic search will return document with atleast any one token present.
+
+-	However we can use and operator field to ensure the query result contains documents with all tokens present.
+
+	Example:
+
+	{
+		"query": {
+			"multi_match": {
+				"query": "durga solution",
+				"fields": ["title", "description"]
+				"operator": "and"
+			}
+		}
+	}		
 	
 Explain the match phrase query?
 
--	The match phrase query is used to return all documents from the index with required tokens present contigous in specific order.
+-	The match phrase query is used to return all documents from the index with required tokens present inside single field contigously in specific order.
 	
 	Example:
 
@@ -315,6 +354,19 @@ Explain the match phrase query?
 			}
 		}
 	}	
+
+	Example:
+	
+	@Query("""
+		{
+			"match_phrase": {
+				"description": {
+					"query": "#{#descriptionParam}" 
+				}
+			}
+		}
+	""")
+	public SearchHits<Products> findByDescription(String descriptionParam);
 
 -	Elastic search will return document with all the tokens present contigous in specific order.
 
@@ -334,7 +386,7 @@ Explain the match phrase query?
 			}
 		}
 	}	
-	
+
 Explain geospatial query?
 
 -	The geospatial query allows to retrieve document using location information.
@@ -483,6 +535,14 @@ What is fuzziness?
 		}
 	}
 
+	Example:
+	
+	Criteria criteria1 = Criteria.with("city").fuzzy("Bambai");
+	
+	var query = CriteriaQuery.builder(criteria1);
+
+	searchHits = elasticSearchOperations.search(query, Customers.class);
+
 Explain bool query?
 
 -	A bool query is a complex query which combines multiple queries into one.
@@ -502,8 +562,8 @@ Explain bool query?
 			"filter": [
 				"range": {
 					"price": {
-						"lte": 50,
-						"gte": 80
+						"gte": 50,
+						"lte": 80
 					}
 				},
 				"range": {
@@ -514,6 +574,23 @@ Explain bool query?
 			]
 		}
 	}
+	
+	Example:
+	
+    query1 = Query.of(queryBuilder -> queryBuilder.range(
+            RangeQuery.of(rangeBuilder -> rangeBuilder.number(
+                    NumberRangeQuery.of(numberRangeBuilder -> numberRangeBuilder.field("price").gte(50d).lte(80d))))));
+
+    query2 = Query.of(queryBuilder -> queryBuilder.range(
+            RangeQuery.of(rangeBuilder -> rangeBuilder.number(
+                    NumberRangeQuery.of(numberRangeBuilder -> numberRangeBuilder.field("rating").gte(4d))))));
+	
+	query = Query.of(queryBuilder -> queryBuilder.bool(
+            BoolQuery.of(boolBuilder -> boolBuilder.filter(query1, query2))));
+	
+	nativeQuery = NativeQuery.builder().withQuery(query).build();
+	
+	searchHits = elasticSearchOperations.search(nativeQuery, Products.class);
 
 -	The must clause returns document which match multiple conditions separated by AND operator.
 

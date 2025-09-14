@@ -114,7 +114,7 @@ Explain bucket term aggregation?
 
 -	Bucket term aggregation allows to group documents together using common field.
 
--	It is similar to SELECT city, COUNT(*) FROM customers GROUP by city in RDBMS.
+-	It is similar to SELECT city, COUNT(*) FROM customers GROUP BY city in RDBMS.
 
 	Example:
 
@@ -127,6 +127,16 @@ Explain bucket term aggregation?
 			}
 		}
 	}
+	
+	Example:
+	
+	query = Aggregation.of(aggregationBuilder -> aggregationBuilder.terms(
+		TermsAggregation.of(termsAggregationBuilder -> termsAggregationBuilder.field("city"))
+	));
+	
+	nativeQuery = NativeQuery.builder().withQuery(query).build();
+	
+	searchHits = elasticSearchOperations.search(nativeQuery, Customers.class);
 
 Explain range and histogram aggregation?
 
