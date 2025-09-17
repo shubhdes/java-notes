@@ -8,6 +8,10 @@ What is an elastic search?
 
 -	It accepts incoming request on port 9200.
 
+	Example:
+
+	spring.elasticsearch.uris=http://localhost:9200
+
 -	It uses port 9300 for inter-node communication.
 
 -	Elastic search insert, update and delete operations are slow.
